@@ -1,0 +1,540 @@
+body {
+    background-color: white;
+    font-size: 13pt;
+    line-height: 1.3;
+    font-family: "Museo Sans", "Helvetica Neue", Arial, Helvetica, "Nimbus Sans L", "Bitstream Vera Sans", sans-serif;
+}
+
+p, dl {
+    /* font-family: "Hattori Hanzo", sans-serif; */
+    /* color: #000; */
+}
+
+dt {
+    font-weight: bold;
+}
+
+footer {
+    font-size: 85%;
+    max-width: 960px;
+    padding-left: 1em;
+    padding-right: 1em;
+    text-align: center;
+    margin: 2em auto;
+}
+
+#container {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1em;
+    padding-top: 2em;
+    margin-bottom: 0;
+}
+
+blockquote {
+    margin: 0.5em 2em 0.5em 2em;
+    padding: 0;
+}
+
+blockquote:before, blockquote:after {
+    color: #ccc;
+    display: block;
+    font-size: 700%;
+    width: 1em;
+}
+
+blockquote:before {
+    float: left;
+    content: "\201C";
+    height: 0;
+    margin-left: -0.3em;
+    margin-top: -0.25em;
+}
+
+/* # Disabled due to conflict with Twitter widget. This doesn't float well.
+blockquote:after {
+    content: "\201D";
+    float: right;
+    text-align: right;
+    height: 0;
+    margin-right: -0.3em;
+    margin-top: -0.25em;
+}
+*/
+
+p.attribution {
+    text-align: left;
+    padding-left: 2em;
+    font-style: italic;
+    margin-bottom: 1em;
+}
+
+/* Schedule table */
+
+.schedule {
+    margin: 1em 0;
+}
+
+.schedule .dayslot {
+    margin: 0 0 1em 0;
+    min-height: 1em;
+    padding: 0.5em;
+    background-color: #e6e6e6;
+/*    border: 1px solid #aaa; */
+    padding: 0.5em;
+    -webkit-border-radius: 0.25em;
+    -moz-border-radius: 0.25em;
+    border-radius: 0.25em;
+/*    -webkit-box-shadow: 0px 2px 5px #ccc;
+    -moz-box-shadow: 0px 2px 5px #ccc;
+    box-shadow: 0px 2px 5px #ccc; */
+}
+
+.schedule .breakslot {
+/*    background-color: #ccc; */
+}
+
+.schedule .dayslot .icon {
+    float: left;
+    min-width: 32px;
+    height: 24px;
+}
+
+.schedule .dayslot .title {
+    float: left;
+    font-weight: bold;
+    margin-right: 0.5em;
+    padding-top: 1px;
+}
+
+.schedule .dayslot .speaker {
+    float: left;
+    padding-top: 1px;
+}
+
+.schedule .dayslot .time,
+.schedule .dayslot .playback {
+    float: right;
+    margin-left: 0.5em;
+    font-weight: bold;
+    padding-top: 1px;
+}
+
+.schedule .dayslot .playback {
+    height: 24px;
+    padding-top: 0;
+}
+
+.schedule .dayslot .playback a,
+.schedule .dayslot .playback a:hover,
+.schedule .dayslot .playback a:active,
+.schedule .dayslot .playback a:visited {
+    border-bottom: 0;
+    text-decoration: none;
+}
+
+/* Logo type */
+
+h1 {
+    font-size: 300%;
+    margin: 0.5em 0;
+    text-transform: lowercase;
+}
+
+h1 a, h1 a:hover, h1 a:active, h1 a:visited {
+    color: #444; /* IE 7 doesn't understand "color: inherit;" */
+    border-bottom: 0;
+}
+
+h1 sup {
+    font-size: 60%;
+    margin-right: -0.3em;
+}
+
+h1 .brkt {
+    color: #69c;
+}
+
+h1 .bang {
+    color: red;
+}
+
+h1 .domain {
+    color: #999;
+}
+
+#date-location {
+    float: right;
+    /* Tested in Chrome Mac for baseline alignment with h1 */
+    padding-top: 0.85em;
+}
+
+/* Generic */
+
+h2, h3, h4, h5, h6, p, ul, ol, dl, dt, dd, blockquote {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+a, a:hover, a:active, a:visited, .ui-widget-content a {
+    color: #607890;
+    text-decoration: none;
+    border-bottom: 1px solid #d3d3d3;
+}
+
+a:hover {
+    border-bottom: 1px solid #607890;
+}
+
+/* Twitter widget */
+
+#twidget {
+    float: right;
+    margin: 0 0 1em 1em;
+}
+
+#twidget a, #twidget a:hover, #twidget a:active, #twidget a:visited {
+    border-bottom: 0;
+}
+
+/* Headings */
+h2 {
+    font-size: 200%;
+    margin-bottom: 0.25em;
+}
+
+h3 {
+    font-size: 150%;
+    margin-bottom: 0.25em;
+}
+
+h4 {
+    font-size: 125%;
+}
+
+h5 {
+    font-size: 115%;
+}
+
+h6 {
+    font-size: 105%;
+}
+
+h2 + p, h2 + ul, h2 + ol,
+h3 + p, h3 + ul, h3 + ol {
+    margin-top: 0;
+}
+
+.regsuccess, .flash {
+    background-color: #e6e6e6;
+    border: 1px solid #aaa;
+    padding: 0.5em;
+    -webkit-border-radius: 0.25em;
+    -moz-border-radius: 0.25em;
+    border-radius: 0.25em;
+    -webkit-box-shadow: 0px 2px 5px #ccc;
+    -moz-box-shadow: 0px 2px 5px #ccc;
+    box-shadow: 0px 2px 5px #ccc;
+    margin: 1em 0;
+}
+
+.regsuccess:before, .flash-info:before {
+    content: "\2713\00a0";
+}
+
+.flash-error:before {
+    content: "\2639\00a0";
+}
+
+/* Forms */
+form dt {
+    font-weight: bold;
+    margin-top: 1em;
+    margin-bottom: 0;
+}
+
+form label.input {
+    font-weight: bold;
+}
+
+form dd {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+form p.hint {
+    margin: 0;
+    font-size: 85%;
+}
+
+form p.error {
+    font-size: 90%;
+    display: inline;
+    background: #f7ea6f;
+    padding: 0.25em;
+    border: 1px solid black;
+    border-top: 0;
+    margin-left: 1em;
+    -webkit-border-bottom-left-radius: 0.25em;
+    -moz-border-radius-bottomleft: 0.25em;
+    border-bottom-left-radius: 0.25em;
+    -webkit-border-bottom-right-radius: 0.25em;
+    -moz-border-radius-bottomright: 0.25em;
+    border-bottom-right-radius: 0.25em;
+}
+
+form textarea {
+    width: 80%;
+    min-height: 5em;
+}
+
+/* jQuery UI customisation */
+
+.ui-widget {
+    font-size: 1em;
+}
+
+.ui-widget-content {
+    border: 0;
+    color: #444;
+}
+
+.ui-widget-header a, .ui-widget-header a:hover {
+    border-bottom: 0;
+}
+
+.ui-tabs {
+    padding: 0;
+}
+
+.ui-tabs .ui-tabs-panel {
+    padding: 0;
+    margin-top: 1.5em;
+}
+
+.ui-widget-header {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #aaa;
+    font-weight: bold;
+}
+
+.ui-widget-header .ui-state-default {
+    font-weight: bold;
+}
+
+.ui-tabs-vertical .ui-tabs-nav {
+    float: left;
+    width: 20%;
+    padding: 0;
+}
+
+.ui-tabs-vertical .ui-widget-header {
+    border-bottom: 0;
+}
+
+.ui-tabs-vertical .ui-tabs-nav li {
+    clear: left;
+    width: 100%;
+    border: 1px solid #d3d3d3 !important;
+    background: white url(images/ui-bg_glass_65_ffffff_1x400.png) repeat-x 50% 50%;
+    float: none;
+    position: static;
+    top: 0;
+}
+
+.ui-tabs-vertical .ui-tabs-nav li.ui-state-hover {
+    border: 1px solid #aaa !important;
+    background: #e6e6e6 url(images/ui-bg_glass_75_e6e6e6_1x400.png) repeat-x 50% 50%;
+}
+
+.ui-tabs-vertical .ui-tabs-nav li a {
+    display:block;
+}
+.ui-tabs-vertical .ui-tabs-nav li.ui-tabs-selected {
+    margin-bottom: 1px;
+    padding-bottom: 0;
+    border: 1px solid #999 !important;
+    background: #dadada url(images/ui-bg_glass_75_dadada_1x400.png) repeat-x 50% 50%;
+}
+.ui-tabs-vertical .ui-tabs-panel {
+    float: left;
+    width: 75%;
+    margin-top: 0;
+    padding: 0 1em;
+}
+
+.ui-tabs-vertical .ui-tabs-nav li a {
+    float: none;
+}
+
+.ui-tabs-vertical-top {
+    margin-top: 0;
+}
+
+.tabs-bottom {
+    position: relative;
+    padding-bottom: 2.5em;
+}
+
+.tabs-bottom .ui-tabs-nav { float: none; text-align: center; }
+.tabs-bottom .ui-tabs-nav li { float: none; display: inline; padding: 5px 0;}
+.tabs-bottom .ui-tabs-nav li a { float: none; }
+
+.tabs-bottom .ui-widget-header {
+    border-bottom: 0;
+    border-top: 1px solid #AAA;
+}
+
+.tabs-bottom .ui-tabs-nav {
+    position: absolute !important;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    padding: 4px 0.2em 0.2em;
+}
+ 
+.tabs-bottom .ui-tabs-nav li {
+    margin-top: -1px;
+    margin-bottom: 1px !important;
+    border-top: none;
+    border-bottom: 1px solid lightGrey !important;
+    border-top: 1px solid #AAA;
+}
+
+.tabs-bottom .ui-tabs-nav li.ui-tabs-selected {
+    margin-top: -2px !important;
+    padding-bottom: 0.6em !important;
+    border-bottom: 1px solid #AAA !important;
+    border-top: 1px solid white;
+}
+
+.tabs-bottom .ui-tabs-nav li.ui-state-hover {
+    border-bottom: 1px solid #AAA !important;
+}
+
+/* Delicious-powered gallery */
+
+ul.delicious-list {
+    list-style-type: none;
+    margin-left: 0;
+}
+
+ul.delicious-list li {
+    display: block;
+    margin-top: 1em;
+}
+
+.delicious-title {
+    font-weight: bold;
+}
+
+.delicious-title img {
+    margin-right: 0.25em;
+}
+
+a.delicious-link, a.delicious-link:visited {
+    border-bottom: 0;
+    color: #444;
+}
+
+a.delicious-link:hover, a.delicious-link:active {
+    border-bottom: 1px solid #607890;
+    color: #607890;
+}
+
+/* Listing table */
+
+table.listing {
+    width: 100%;
+    border-top: 1px solid #8cacbb;
+    border-bottom: 1px solid #8cacbb;
+    border-collapse: collapse;
+    font-size: 85%;
+}
+
+.listing th, .listing td {
+    padding: 0.2em 0.5em;
+    text-align: left;
+    vertical-align: top;
+    border-left: 1px solid #8cacbb;
+    border-right: 1px solid #8cacbb;
+}
+
+.listing td.wide {
+    border-top: 1px solid #8CACBB;
+    border-bottom: 1px solid #8CACBB;
+}
+
+.listing thead th {
+    background: #dee7ec;
+    padding: 0.4em 0.5em 0.2em;
+}
+
+.listing thead th, .listing thead td {
+    border-bottom: 1px solid #8cacbb;
+}
+
+.listing tbody th, .listing tbody td {
+    background: #eef3f5;
+}
+
+.listing tfoot th, .listing tfoot td {
+    border-top: 1px solid #8cacbb;
+    background: #eef3f5;
+}
+
+.listing th.num, .listing td.num {
+    text-align: right;
+}
+
+/* Map */
+.venuemap {
+    width: 100%;
+    height: 500px;
+}
+
+/* Footer */
+.sponsorlogos, #sponsortabs {
+    margin-top: 2em;
+}
+
+.tile {
+    display: inline-block;
+    text-align: center;
+    margin: 0 1em;
+    position: relative;
+}
+
+.tile .title {
+    font-weight: bold;
+}
+
+.tile img {
+    margin: 0.5em;
+}
+
+.tile a, .tile a:hover, .tile a:active, .tile a:visited {
+    text-decoration: none;
+    border-bottom: 0;
+}
+
+.tile .popup {
+    position: absolute;
+    width: 10em;
+    display: none;
+    background-color: #e6e6e6;
+    border: 1px solid #aaa;
+    padding: 0.5em;
+    -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    border-radius: 0.5em;
+    -webkit-box-shadow: 0px 2px 5px #ccc;
+    -moz-box-shadow: 0px 2px 5px #ccc;
+    box-shadow: 0px 2px 5px #ccc;
+}
+
+#sponsor-tabs {
+    margin-bottom: 2em;
+}

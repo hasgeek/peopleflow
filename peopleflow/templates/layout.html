@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+  <!-- See http://html5boilerplate.com/ for page structure -->
+
+  <!--[if IE]><![endif]-->
+  <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
+
+  {% block titletags -%}
+  <title>{% block title %}{% endblock %}</title>
+  <meta name="DC.title" content="{{ self.title()|e }}"/>
+  {%- endblock %}
+  <meta name="description" content="DocType HTML5 is a one day conference on HTML5, CSS3 and related technologies."/>
+  <meta name="author" content="The doctypehtml5.in team"/>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
+  <link rel="stylesheet" media="handheld" href="{{ url_for('static', filename='css/handheld.css') }}"/>
+  <link rel="stylesheet" media="screen, projector" href="{{ url_for('static', filename='css/jquery-ui.css') }}"/>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/modernizr-1.5.min.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}?v=2"/>
+  <!--[if !IE 7]>
+  	<style type="text/css">
+  		#container {display:table;height:100%}
+  	</style>
+  <![endif]-->
+  <!--[if lt IE 8 ]>
+    <style type="text/css">
+      .tile {
+        zoom: 1;
+        *display: inline;
+        _height: 100px;
+      }
+    </style>
+  <![endif]-->      
+{%- if config['TYPEKIT_CODE'] %}
+  <script type="text/javascript" src="http://use.typekit.com/{{ config['TYPEKIT_CODE'] }}.js"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+{% endif -%}
+{% block pageheaders %}{% endblock %}
+</head>
+
+<!--[if lt IE 7 ]> <body class="ie6"> <![endif]-->
+<!--[if IE 7 ]>    <body class="ie7"> <![endif]-->
+<!--[if IE 8 ]>    <body class="ie8"> <![endif]-->
+<!--[if IE 9 ]>    <body class="ie9"> <![endif]-->
+<!--[if gt IE 9]>  <body>             <![endif]-->
+<!--[if !IE]><!--> <body>         <!--<![endif]-->
+  <div id="container">
+    <header>
+      {%- for category, msg in get_flashed_messages(with_categories=true) %}
+        <div class="flash flash-{{ category }}">{{ msg }}</div>
+      {%- endfor %}
+      {% block header %}{% endblock %}
+    </header>
+    <div id="main">
+      {% block content %}{% endblock %}
+    </div>
+    <div class="clearfix"><!-- --></div>
+  </div> <!--! end of #container -->
+  <footer>
+    {% block footer %}{% endblock %}
+  </footer>
+
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script type="text/javascript">!window.jQuery && document.write('<script src="{{ url_for("static", filename="js/jquery-1.4.2.min.js") }}"><\/script>')</script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-ui-1.8.4.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/sammy-0.5.4.min.js') }}"></script>
+  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.form.js') }}"></script>
+
+  <!--[if lt IE 7 ]>
+    <script src="js/dd_belatedpng.js"></script>
+  <![endif]-->
+
+{% if config['GA_CODE'] and not config['DEBUG'] %}
+  <script type="text/javascript">
+   var _gaq = [['_setAccount', '{{ config['GA_CODE'] }}'], ['_trackPageview']];
+   (function(d, t) {
+    var g = d.createElement(t),
+        s = d.getElementsByTagName(t)[0];
+    g.async = true;
+    g.src = '//www.google-analytics.com/ga.js';
+    s.parentNode.insertBefore(g, s);
+   })(document, 'script');
+  </script>
+{% endif -%}
+
+<!-- <script type="text/javascript">
+  $(function() {
+    navigation.run('#/index');
+  });
+</script> -->
+  {% block footerscripts %}{% endblock %}
+</body>
+</html>
