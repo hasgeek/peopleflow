@@ -65,8 +65,8 @@ def csv_populate(file, eventname):
         participant.tshirt_size = row[8]
         participant.regdate = dateparser.parse(row[9])
         participant.order_id = row[10]
-        # participant.attended = row[11]
-        # participant.attenddate = row[12]
+        # participant.attended
+        # participant.attenddate 
         participant.event_id = event.id
         db.session.add(participant)
         db.session.commit()        
@@ -88,11 +88,11 @@ def event_upload(eventname):
 
 
 	
-@app.route('/<eventname>/signin',methods=['GET','POST'])
-def event_signin(eventname):
-    event = Event.query.filter_by(name=eventname).first()
+@app.route('/<year>/<eventname>/signin',methods=['GET','POST'])
+def event_signin(eventname, year):
+    event = Event.query.filter_by(name=eventname, year=year).first()
     tz = timezone(app.config['TIMEZONE'])
-    participants = Participant.query.filter_by(event_id=event.id).order_by('ticket_number').all()
+    participants = Participant.query.filter_by(event_id=event.id).order_by('name').all()
     return render_template('participants.html',participants=participants,event=event.title, hideemail=hideemail, enumerate=enumerate,
         utc=utc, tz=tz)
 

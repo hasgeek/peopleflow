@@ -14,10 +14,10 @@
             <tbody>
               {% for e in events %}
               <tr class="link">
-                  <td><a href="{{ url_for('index', year=e.year, eventname=e.name) }}">#{{ e.id }}</a></td>
-                  <td><a href="{{ url_for('index', year=e.year, eventname=e.name) }}">{{ e.title }}</a></td>
-                  <td><a href="{{ url_for('index', year=e.year, eventname=e.name) }}">{{e.date}}</a></td>
-                  <td><a href="{{ url_for('index', year=e.year, eventname=e.name) }}">{{ e.venue }}</a></td>
+                  <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">#{{ e.id }}</a></td>
+                  <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.title }}</a></td>
+                  <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{e.date}}</a></td>
+                  <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.venue }}</a></td>
                 </tr>
               {% else %}
                 <tr>
