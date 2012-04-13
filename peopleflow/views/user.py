@@ -7,11 +7,15 @@ from flask import flash, session, g, Response
 from peopleflow.forms import EventForm
 from peopleflow.models import db, Event, Participant
 from dateutil import parser as dateparser
-import os, csv
+from pytz import utc, timezone
+import os, csv, re
+
+hideemail = re.compile('.{1,3}@')
 
 @app.route('/', methods=['GET'])
 def index():
-    return render_template('index.html')
+    events = Event.query.order_by('id').all()
+    return render_template('index.html',events=events)
 
 @app.route('/event/new', methods=['GET'])
 def event_new(eventform=None):
@@ -84,6 +88,14 @@ def event_upload(eventname):
 
 
 	
+@app.route('/<eventname>/signin',methods=['GET','POST'])
+def event_signin(eventname):
+    event = Event.query.filter_by(name=eventname).first()
+    tz = timezone(app.config['TIMEZONE'])
+    participants = Participant.query.filter_by(event_id=event.id).order_by('ticket_number').all()
+    return render_template('participants.html',participants=participants,event=event.title, hideemail=hideemail, enumerate=enumerate,
+        utc=utc, tz=tz)
+
 
 
 # @app.route('event/new', methods=['POST'])

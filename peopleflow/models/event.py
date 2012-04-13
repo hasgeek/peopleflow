@@ -16,6 +16,8 @@ class Event(db.Model, BaseMixin):
     year = db.Column(db.Integer, default=date.today().year, nullable=False)
     #: Date of the event
     date = db.Column(db.Date, nullable=False)
+    #:Venue 
+    venue = db.Column(db.Unicode(80), nullable=False)
     #: List of participants, event.participants gives access to
     #: the objects
     participants = db.relationship('Participant', backref='event',

@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+{% block title %}PeopleFlow -  HasGeek{% endblock %}
+{% block header %}
+{{ event }}- Venue Signup. 
+{% endblock %}
+{% block content %}
+<div id="tabs">
+          <table class="table">
+            <thead>
+              <th>#</th>        
+              <th>Ticket #</th>
+              <th>Date</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Company</th>
+              <th>Job Title</th>              
+              <th>Tshirt Size</th>
+              <th>Action</th>   
+            </thead>
+            <tbody>
+              {% for i, p in enumerate(participants) %}
+                  <tr>
+                  <td>{{ i+1 }}</td>
+                  <td>{{ p.ticket_number }}</td>
+                  <td>{{ utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M')|e }}</td>
+                  <td><strong>{{ p.name|e }}</strong></td>
+                  <td>{{ hideemail.sub('...@', p.email)|e }}</td>
+                  <td>{{ p.company|e }}</td>
+                  <td>{{ p.jobtitle|e }}</td>
+                  <td>{{ p.tshirt_size }}</td>
+                  <td>
+                    {%- if p.attended -%}
+                        Signed in
+                    {%- else -%}
+                    <form id="attend{{ i }}" action="{{ url_for('index', eventname=eventname) }}" method="POST">
+                      <input type="hidden" name="id" value="{{ p.id }}"/>
+                      <input type="submit" name="action.signin" value="Sign in"/>
+                    </form>
+                    {%- endif -%}
+                  </td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td><em>(No participants found)</em></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+{% endblock %}

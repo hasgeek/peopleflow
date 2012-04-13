@@ -3,5 +3,28 @@
 {% block header %}
 {% endblock %}
 {% block content %}
-<p>Hello, there!</p>
+<div id="tabs">
+          <table class="table">
+            <thead>
+              <th>#</th>
+              <th>Title</th>
+              <th>Date</th>
+              <th>Venue</th>
+            </thead>
+            <tbody>
+              {% for e in events %}
+              <tr class="link">
+                  <td><a href="{{ url_for('index', year=e.year, eventname=e.name) }}">#{{ e.id }}</a></td>
+                  <td><a href="{{ url_for('index', year=e.year, eventname=e.name) }}">{{ e.title }}</a></td>
+                  <td><a href="{{ url_for('index', year=e.year, eventname=e.name) }}">{{e.date}}</a></td>
+                  <td><a href="{{ url_for('index', year=e.year, eventname=e.name) }}">{{ e.venue }}</a></td>
+                </tr>
+              {% else %}
+                <tr>
+                  <td><em>(No events found)</em></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
 {% endblock %}
