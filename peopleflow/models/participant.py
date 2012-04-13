@@ -16,7 +16,7 @@ TSHIRT_SIZES = [
 
 class Participant(db.Model, BaseMixin):
   
-    __tablename__ = 'participants'
+    __tablename__ = 'participant'
     
     #: Ticket number
     ticket_number = db.Column(db.Integer, nullable=False)
@@ -35,15 +35,18 @@ class Participant(db.Model, BaseMixin):
     #: Twitter handle
     twitter = db.Column(db.Unicode(80), nullable=True)
     #: T-shirt size
-    tshirtsize = db.Column(db.Integer, nullable=False, default=0)
+    tshirt_size = db.Column(db.Integer, nullable=False, default=0)
     #: Date of registration
     regdate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     #: Order ID
-    orderid = db.Column(db.Integer, nullable=False)
+    order_id = db.Column(db.Integer, nullable=False)
     #: Did the participant attend the event?
     attended = db.Column(db.Boolean, default=False, nullable=False)
     #: Datetime the participant showed up
-    attenddate = db.Column(db.DateTime, nullable=True)
+    attend_date = db.Column(db.DateTime, nullable=True)
+    #: Event the participant is attending
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
+
 
     def __repr__(self):
         return self.name

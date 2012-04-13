@@ -1,80 +1,75 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
-  <!-- See http://html5boilerplate.com/ for page structure -->
-
-  <!--[if IE]><![endif]-->
-  <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><![endif]-->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
   {% block titletags -%}
-  <title>{% block title %}{% endblock %}</title>
+  <title>{% block title %}{% endblock %} — PeopleFlow - HasGeek</title>
   <meta name="DC.title" content="{{ self.title()|e }}"/>
   {%- endblock %}
-  <meta name="description" content="DocType HTML5 is a one day conference on HTML5, CSS3 and related technologies."/>
-  <meta name="author" content="The doctypehtml5.in team"/>
-  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-  <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"/>
-  <link rel="stylesheet" media="handheld" href="{{ url_for('static', filename='css/handheld.css') }}"/>
-  <link rel="stylesheet" media="screen, projector" href="{{ url_for('static', filename='css/jquery-ui.css') }}"/>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/modernizr-1.5.min.js') }}"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}?v=2"/>
-  <!--[if !IE 7]>
-  	<style type="text/css">
-  		#container {display:table;height:100%}
-  	</style>
+
+  <!-- Stylesheets -->
+  <!--[if IE]>
+      <link href="css/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
   <![endif]-->
-  <!--[if lt IE 8 ]>
-    <style type="text/css">
-      .tile {
-        zoom: 1;
-        *display: inline;
-        _height: 100px;
-      }
-    </style>
-  <![endif]-->      
+
+  <script type="text/javascript" src="{{ url_for('static', filename='js/libs/modernizr-1.6.min.js') }}"></script>
 {%- if config['TYPEKIT_CODE'] %}
   <script type="text/javascript" src="http://use.typekit.com/{{ config['TYPEKIT_CODE'] }}.js"></script>
   <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
 {% endif -%}
 {% block pageheaders %}{% endblock %}
 </head>
-
-<!--[if lt IE 7 ]> <body class="ie6"> <![endif]-->
-<!--[if IE 7 ]>    <body class="ie7"> <![endif]-->
-<!--[if IE 8 ]>    <body class="ie8"> <![endif]-->
-<!--[if IE 9 ]>    <body class="ie9"> <![endif]-->
-<!--[if gt IE 9]>  <body>             <![endif]-->
-<!--[if !IE]><!--> <body>         <!--<![endif]-->
-  <div id="container">
-    <header>
-      {%- for category, msg in get_flashed_messages(with_categories=true) %}
-        <div class="flash flash-{{ category }}">{{ msg }}</div>
-      {%- endfor %}
-      {% block header %}{% endblock %}
+<body>
+  <div id="container" class="container">
+    <header id="top">
+      <div class="content">
+        <p id="hasgeek">
+          <a href="http://hasgeek.com/">HasGeek</a>
+        </p>
+          <h1> PeopleFlow - HasGeek</h1>
+      </div>
+    </div>
+        {%- for category, msg in get_flashed_messages(with_categories=true) %}
+          <div class="flash flash-{{ category }}">
+            <div class="flashmessage">{{ msg }}</div>
+          </div>
+        {%- endfor %}
+        {% block header %}{% endblock %}
+      </div>
     </header>
+
     <div id="main">
-      {% block content %}{% endblock %}
+      {% block main %}
+      <div class="content">
+        {% block content %}{% endblock %}
+      </div>
+      {% endblock %}
     </div>
     <div class="clearfix"><!-- --></div>
   </div> <!--! end of #container -->
-  <footer>
-    {% block footer %}{% endblock %}
+  <footer id="ground">
+    <div class="content">
+      {% block footer %}{% endblock %}
+    </div>
   </footer>
 
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-  <script type="text/javascript">!window.jQuery && document.write('<script src="{{ url_for("static", filename="js/jquery-1.4.2.min.js") }}"><\/script>')</script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-ui-1.8.4.min.js') }}"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/sammy-0.5.4.min.js') }}"></script>
-  <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.form.js') }}"></script>
+  {% assets "js_all" -%}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+  {% endassets -%}
+
 
   <!--[if lt IE 7 ]>
-    <script src="js/dd_belatedpng.js"></script>
+    <script src="{{ url_for('static', filename='js/libs/dd_belatedpng.js') }}"></script>
+    <script> DD_belatedPNG.fix('img, .png_bg'); </script>
   <![endif]-->
 
-{% if config['GA_CODE'] and not config['DEBUG'] %}
+<!-- {% if config['GA_CODE'] and not config['DEBUG'] %}
   <script type="text/javascript">
    var _gaq = [['_setAccount', '{{ config['GA_CODE'] }}'], ['_trackPageview']];
    (function(d, t) {
@@ -86,7 +81,7 @@
    })(document, 'script');
   </script>
 {% endif -%}
-
+ -->
 <!-- <script type="text/javascript">
   $(function() {
     navigation.run('#/index');

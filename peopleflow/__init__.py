@@ -7,7 +7,7 @@ Website server for peopleflow
 
 from flask import Flask
 from flaskext.assets import Environment, Bundle
-from flaskext.mail import Mail
+# from flaskext.mail import Mail
 from coaster import configureapp
 from os import environ
 
@@ -15,8 +15,8 @@ from os import environ
 
 app = Flask(__name__, instance_relative_config=True)
 configureapp(app, 'PEOPLEFLOW_ENV')
-mail = Mail()
-mail.init_app(app)
+# mail = Mail()
+# mail.init_app(app)
 assets = Environment(app)
 
 # Second, setup assets

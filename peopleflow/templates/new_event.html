@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% from 'macros.html' import ajaxform%}
+{% block title %}Add a new event{% endblock %}
+{% block main %}
+        {% include 'eventform.html' %}
+{% endblock %}
+{% block footerscripts %}
+
+<!-- Ajax form -->
+{% from "macros.html" import ajaxform -%}
+{{ ajaxform('eventform', request, True) }}
+
+
+{% endblock %}
