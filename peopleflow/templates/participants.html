@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
-{% block title %}PeopleFlow -  HasGeek{% endblock %}
-{% block header %}
-{{ event }}- Venue Signup. 
+{% block baseheadline %}PeopleFlow -  HasGeek{% endblock %}
+{% block headline %}
+<h1>{{ event.title }}- Venue Signup. </h1>
 {% endblock %}
 {% block content %}
 <div id="tabs">
@@ -32,7 +32,7 @@
                     {%- if p.attended -%}
                         Signed in
                     {%- else -%}
-                    <form id="attend{{ i }}" action="{{ url_for('index', eventname=eventname) }}" method="POST">
+                    <form id="attend{{ i }}" action="{{ url_for('event_signin', eventname=event.name, year=event.year) }}" method="POST">
                       <input type="hidden" name="id" value="{{ p.id }}"/>
                       <input type="submit" name="action.signin" value="Sign in"/>
                     </form>
@@ -48,3 +48,13 @@
           </table>
         </div>
 {% endblock %}
+{% block footerscripts %}
+  <script type="text/javascript">
+    $(function() {
+      {% for i,p in enumerate(participants) -%}
+        $("{{ '#attend%d' % i }}").ajaxForm({target: "{{ '#attend%d' % i }}", replaceTarget: true});
+      {% endfor -%}
+    });
+  </script>
+{% endblock %}
+

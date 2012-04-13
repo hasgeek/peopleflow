@@ -8,6 +8,7 @@ Website server for peopleflow
 from flask import Flask
 from flaskext.assets import Environment, Bundle
 # from flaskext.mail import Mail
+from baseframe import baseframe, baseframe_js, baseframe_css
 from coaster import configureapp
 from os import environ
 
@@ -19,7 +20,12 @@ configureapp(app, 'PEOPLEFLOW_ENV')
 # mail.init_app(app)
 assets = Environment(app)
 
-# Second, setup assets
+# Second, setup baseframe and assests
+
+app.register_blueprint(baseframe)
+
+css = Bundle(baseframe_css,
+			 'css/app.css')
 
 js = Bundle('js/libs/jquery-1.6.4.js',
             'js/libs/jquery.form.js',
@@ -27,6 +33,8 @@ js = Bundle('js/libs/jquery-1.6.4.js',
             filters='jsmin', output='js/packed.js')
 
 assets.register('js_all', js)
+assets.register('css_all', css)
+
 
 # Third, after config, import the models and views
 

@@ -9,6 +9,7 @@ from peopleflow.models import db, Event, Participant
 from dateutil import parser as dateparser
 from pytz import utc, timezone
 import os, csv, re
+from datetime import datetime
 
 hideemail = re.compile('.{1,3}@')
 
@@ -90,12 +91,22 @@ def event_upload(eventname):
 	
 @app.route('/<year>/<eventname>/signin',methods=['GET','POST'])
 def event_signin(eventname, year):
-    event = Event.query.filter_by(name=eventname, year=year).first()
-    tz = timezone(app.config['TIMEZONE'])
-    participants = Participant.query.filter_by(event_id=event.id).order_by('name').all()
-    return render_template('participants.html',participants=participants,event=event.title, hideemail=hideemail, enumerate=enumerate,
-        utc=utc, tz=tz)
-
+    if request.method=='GET':
+        event = Event.query.filter_by(name=eventname, year=year).first()
+        tz = timezone(app.config['TIMEZONE'])
+        participants = Participant.query.filter_by(event_id=event.id).order_by('name').all()
+        return render_template('participants.html',participants=participants,event=event, hideemail=hideemail, enumerate=enumerate,
+            utc=utc, tz=tz)
+    else:
+        pid = request.form['id']
+        participant = Participant.query.get(pid)
+        if participant.attended:
+            return "Already Signed in"
+        else:
+            participant.attended=True
+            participant.attend_date = datetime.utcnow()
+            db.session.commit()
+            return "Signed in"
 
 
 # @app.route('event/new', methods=['POST'])

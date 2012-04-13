@@ -1,92 +1,12 @@
-<!DOCTYPE html>
-<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
-<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
-<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
-<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
-  {% block titletags -%}
-  <title>{% block title %}{% endblock %} — PeopleFlow - HasGeek</title>
-  <meta name="DC.title" content="{{ self.title()|e }}"/>
-  {%- endblock %}
-
-  <!-- Stylesheets -->
-  <!--[if IE]>
-      <link href="css/ie.css" media="screen, projection" rel="stylesheet" type="text/css" />
-  <![endif]-->
-
-  <script type="text/javascript" src="{{ url_for('static', filename='js/libs/modernizr-1.6.min.js') }}"></script>
-{%- if config['TYPEKIT_CODE'] %}
-  <script type="text/javascript" src="http://use.typekit.com/{{ config['TYPEKIT_CODE'] }}.js"></script>
-  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-{% endif -%}
-{% block pageheaders %}{% endblock %}
-</head>
-<body>
-  <div id="container" class="container">
-    <header id="top">
-      <div class="content">
-        <p id="hasgeek">
-          <a href="http://hasgeek.com/">HasGeek</a>
-        </p>
-          <h1> PeopleFlow - HasGeek</h1>
-      </div>
+{% extends "baseframe.html" %}
+{% from "baseframe/components.html" import flash_messages with context %}
+{% from "macros.html" import category_list, budget_list %}
+{% block messages %}{# Don't use baseframe's messages #}{% endblock %}
+{% block baseheadline %}{# Don't use baseframe's headline #}{% endblock %}
+{% block basecontent %}
+      {{ flash_messages() }}
+      {% block headline %}<div class="page-header"><h1>{{ self.title() }}</h1></div>{% endblock %}
+      {% block content %}{% endblock %}
     </div>
-        {%- for category, msg in get_flashed_messages(with_categories=true) %}
-          <div class="flash flash-{{ category }}">
-            <div class="flashmessage">{{ msg }}</div>
-          </div>
-        {%- endfor %}
-        {% block header %}{% endblock %}
-      </div>
-    </header>
-
-    <div id="main">
-      {% block main %}
-      <div class="content">
-        {% block content %}{% endblock %}
-      </div>
-      {% endblock %}
-    </div>
-    <div class="clearfix"><!-- --></div>
-  </div> <!--! end of #container -->
-  <footer id="ground">
-    <div class="content">
-      {% block footer %}{% endblock %}
-    </div>
-  </footer>
-
-  {% assets "js_all" -%}
-    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-  {% endassets -%}
-
-
-  <!--[if lt IE 7 ]>
-    <script src="{{ url_for('static', filename='js/libs/dd_belatedpng.js') }}"></script>
-    <script> DD_belatedPNG.fix('img, .png_bg'); </script>
-  <![endif]-->
-
-<!-- {% if config['GA_CODE'] and not config['DEBUG'] %}
-  <script type="text/javascript">
-   var _gaq = [['_setAccount', '{{ config['GA_CODE'] }}'], ['_trackPageview']];
-   (function(d, t) {
-    var g = d.createElement(t),
-        s = d.getElementsByTagName(t)[0];
-    g.async = true;
-    g.src = '//www.google-analytics.com/ga.js';
-    s.parentNode.insertBefore(g, s);
-   })(document, 'script');
-  </script>
-{% endif -%}
- -->
-<!-- <script type="text/javascript">
-  $(function() {
-    navigation.run('#/index');
-  });
-</script> -->
-  {% block footerscripts %}{% endblock %}
-</body>
-</html>
+  </div>
+{% endblock %}
