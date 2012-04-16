@@ -38,6 +38,8 @@ class Participant(db.Model, BaseMixin):
     tshirt_size = db.Column(db.Integer, nullable=False, default=0)
     #: Date of registration
     regdate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    #:NFC ID
+    nfc_id = db.Column(db.Unicode(80), unique=True)
     #: Order ID
     order_id = db.Column(db.Integer, nullable=False)
     #: Did the participant attend the event?

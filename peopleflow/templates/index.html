@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
-{% block title %}PeopleFlow -  HasGeek{% endblock %}
+{% block title %}PeopleFlow -  Events {% endblock %}
 {% block header %}
 {% endblock %}
 {% block content %}
+<a class="btn" href="{{ url_for('event_new') }}">Create an event</a>
 <div id="tabs">
           <table class="table">
             <thead>
@@ -10,6 +11,9 @@
               <th>Title</th>
               <th>Date</th>
               <th>Venue</th>
+              <th>Participants</th>
+              <th>Action</th>
+              <!-- <th>Delete</th> -->
             </thead>
             <tbody>
               {% for e in events %}
@@ -18,8 +22,15 @@
                   <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.title }}</a></td>
                   <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{e.date}}</a></td>
                   <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.venue }}</a></td>
+                  {%- if e.participants.count() -%}
+                  <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.participants.filter_by(attended=1).count() }}/{{  e.participants.count() }}</a></td>
+                  {%- else -%}
+                  <td><a href="{{ url_for('event_upload',year=e.year, eventname=e.name) }}">Upload CSV</a></td>
+                  {% endif %}
+                  <td><a style="display:inline" href="{{ url_for('event_edit',id=e.id) }}"><i class="icon-edit"></i></a>
+                  <a style="display:inline" href="{{ url_for('event_delete', id=e.id) }}"><i class="icon-remove"></i></a></td>
                 </tr>
-              {% else %}
+              {%- else -%}
                 <tr>
                   <td><em>(No events found)</em></td>
                 </tr>

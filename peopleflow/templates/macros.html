@@ -7,7 +7,8 @@
     <div class="label">&nbsp;</div><div class="control checkbox">{% if widget_css_class %}{{ field(class=widget_css_class, tabindex=tabIndex) }}{% else %}{{ field(tabindex=tabIndex) }}{% endif %} {{ field.label }}{% if field.description %}<br/>
       <span class="description">{{ field.description }}</span>{% endif %}</div>
   {% else %}
-    {% if not nolabeldesc %}<div class="label">{{ field.label }}{% if field.flags.required == true %} <span class="required">*</span>{% endif %}</div>{% endif %}
+    {% if not nolabeldesc %}
+    <div class="control-group">{{ field.label }}{% if field.flags.required == true %} <span class="required">*</span>{% endif %}</div>{% endif %}
     <div class="control">
       {% if autofocus %}
         {% if widget_css_class %}
@@ -34,7 +35,7 @@
 
 {% macro rendersubmit(buttons=[], css_class="", tabIndex='') %}
 <div class="field{% if css_class %} {{ css_class}}{% endif %}">
-  <div class="label submit">&nbsp;</div>
+  <div class="control-group">&nbsp;</div>
   <div class="control submit">
     {% for name, value, widget_class in buttons %}
       <input type="submit"

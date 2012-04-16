@@ -13,7 +13,7 @@
               <th>Name</th>
               <th>Email</th>
               <th>Company</th>
-              <th>Job Title</th>              
+              <!-- <th>Job Title</th>               -->
               <th>Tshirt Size</th>
               <th>Action</th>   
             </thead>
@@ -26,15 +26,16 @@
                   <td><strong>{{ p.name|e }}</strong></td>
                   <td>{{ hideemail.sub('...@', p.email)|e }}</td>
                   <td>{{ p.company|e }}</td>
-                  <td>{{ p.jobtitle|e }}</td>
+                  <!-- <td>{{ p.jobtitle|e }}</td> -->
                   <td>{{ p.tshirt_size }}</td>
                   <td>
                     {%- if p.attended -%}
-                        Signed in
+                        {{ p.nfc_id }}
                     {%- else -%}
                     <form id="attend{{ i }}" action="{{ url_for('event_signin', eventname=event.name, year=event.year) }}" method="POST">
-                      <input type="hidden" name="id" value="{{ p.id }}"/>
-                      <input type="submit" name="action.signin" value="Sign in"/>
+                      <input type="hidden" name="id" value="{{ p.id }}"/>                      
+                      <input id="nfc_id{{ i }}" class="btn btn-primary hidden" type="submit" name="nfc_id" value="" />
+                      <input id="signin{{ i }}" class="btn" type="button" value="Sign in" />
                     </form>
                     {%- endif -%}
                   </td>
@@ -50,11 +51,36 @@
 {% endblock %}
 {% block footerscripts %}
   <script type="text/javascript">
+
+    {% for i,p in enumerate(participants) -%}
+    $('input#signin{{ i }}').bind('click', function(){ 
+        $.getJSON("http://127.0.0.1:8008/card_id.json?callback=?", timeout=3000,
+          function(data){
+
+            if(data['error'] || data['card_id'].length<8) {
+              console.log(data);
+              $('input#signin{{ i }}').addClass("btn-danger");
+              // $('input#signin{{ i }}').attr("value",data['error']);
+            }
+
+            else {
+            $('input#nfc_id{{ i }}').attr("value", data['card_id']);
+            $('input#nfc_id{{ i }}').removeClass("hidden");
+            $('input#signin{{ i }}').addClass("hidden");
+            console.log(data['card_id']);
+          };
+
+          });
+        });
+      {% endfor -%}
+
     $(function() {
+              
       {% for i,p in enumerate(participants) -%}
         $("{{ '#attend%d' % i }}").ajaxForm({target: "{{ '#attend%d' % i }}", replaceTarget: true});
       {% endfor -%}
     });
+
   </script>
 {% endblock %}
 
