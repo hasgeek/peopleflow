@@ -30,12 +30,13 @@
                   <td>{{ p.tshirt_size }}</td>
                   <td>
                     {%- if p.attended -%}
-                        {{ p.nfc_id }}
+                      <a id="signout"  href="{{ url_for('event_signout', year=event.year, eventname=event.name, pid=p.id) }}" class="btn">Sign out</a>
                     {%- else -%}
                     <form id="attend{{ i }}" action="{{ url_for('event_signin', eventname=event.name, year=event.year) }}" method="POST">
                       <input type="hidden" name="id" value="{{ p.id }}"/>                      
                       <input id="nfc_id{{ i }}" class="btn btn-primary hidden" type="submit" name="nfc_id" value="" />
                       <input id="signin{{ i }}" class="btn" type="button" value="Sign in" />
+                      <a id="signout{{ i }}"  href="{{ url_for('event_signout', year=event.year, eventname=event.name, pid=p.id) }}" class="btn hidden">Sign out</a>
                     </form>
                     {%- endif -%}
                   </td>
@@ -72,13 +73,46 @@
 
           });
         });
+
+      // $('input#nfc_id{{ i }}').bind('click', function() {
+
+      
+      //  });
       {% endfor -%}
 
     $(function() {
               
       {% for i,p in enumerate(participants) -%}
-        $("{{ '#attend%d' % i }}").ajaxForm({target: "{{ '#attend%d' % i }}", replaceTarget: true});
+        $("{{ '#attend%d' % i }}").ajaxForm({replaceTarget: true, success: function(responseText, statusText, xhr, $form) {
+        console.log({{ i }});
+        if(responseText=="success") {
+          $('input#nfc_id{{ i }}').addClass("hidden");
+          $('a#signout{{ i }}').removeClass("hidden");
+        }
+        else{
+                        $('input#nfc_id{{ i }}').addClass("hidden");
+          $('input#signin{{ i }}').removeClass("hidden");
+
+              $('input#signin{{ i }}').addClass("btn-danger");
+        };
+        }
+
+
+        });
       {% endfor -%}
+
+      // function respond (i, responseText, statusText, xhr, $form) {
+      //   if(responseText=="success") {
+      //     console.log()
+      //     alert("success");
+
+      //   }
+      //   else{
+      //     alert("Fail");
+      //   };
+      // }
+
+
     });
 
   </script>

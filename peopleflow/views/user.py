@@ -117,8 +117,29 @@ def event_signin(eventname, year):
             participant.nfc_id = nfc_id
             participant.attended=True
             participant.attend_date = datetime.utcnow()
+            try:
+                db.session.commit()
+                return "success"
+            except:
+                return "id_used"
+                 
+@app.route('/<year>/<eventname>/<pid>/signout', methods=['GET', 'POST'])
+# @load_model(Participant, {'id':'id'}, 'participant')
+def event_signout(year, eventname, pid):
+    # pid = request.form['id']
+    participant = Participant.query.get(pid)
+    form = ConfirmDeleteForm()
+    if form.validate_on_submit():
+        if 'delete' in request.form:
+            participant.attended=False
+            participant.nfc_id= None
+            participant.attend_date = None
             db.session.commit()
-            return nfc_id
+        return redirect(url_for('event_signin', year=year, eventname=eventname), code=303)
+    return render_template('baseframe/delete.html', form=form, title=u"Confirm sign-out",
+        message=u"Sign-out '%s' ?" % (participant.name))
+
+
 
 
 @app.route('/event/<id>/edit', methods=['GET','POST'])
