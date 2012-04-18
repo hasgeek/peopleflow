@@ -5,7 +5,7 @@ from flask import Flask, abort, request, render_template, redirect, url_for
 from werkzeug import secure_filename
 from flask import flash, session, g, Response
 from coaster.views import load_model
-from peopleflow.forms import EventForm
+from peopleflow.forms import EventForm, ConfirmSignoutForm
 from peopleflow.models import db, Event, Participant
 from peopleflow.views.login import lastuser
 from dateutil import parser as dateparser
@@ -128,15 +128,15 @@ def event_signin(eventname, year):
 def event_signout(year, eventname, pid):
     # pid = request.form['id']
     participant = Participant.query.get(pid)
-    form = ConfirmDeleteForm()
+    form = ConfirmSignoutForm()
     if form.validate_on_submit():
-        if 'delete' in request.form:
+        if 'signout' in request.form:
             participant.attended=False
             participant.nfc_id= None
             participant.attend_date = None
             db.session.commit()
         return redirect(url_for('event_signin', year=year, eventname=eventname), code=303)
-    return render_template('baseframe/delete.html', form=form, title=u"Confirm sign-out",
+    return render_template('signout.html', form=form, title=u"Confirm sign-out",
         message=u"Sign-out '%s' ?" % (participant.name))
 
 
