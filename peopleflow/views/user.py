@@ -6,7 +6,7 @@ from werkzeug import secure_filename
 from flask import flash, session, g, Response
 from coaster.views import load_model, jsonp
 from peopleflow.forms import EventForm, ConfirmSignoutForm, ParticipantForm, KioskForm
-from peopleflow.models import db, Event, Participant, Kiosk, Share
+from peopleflow.models import db, Event, Participant, Kiosk
 from peopleflow.views.login import lastuser
 from dateutil import parser as dateparser
 from pytz import utc, timezone
@@ -249,11 +249,10 @@ def share(kiosk):
         nfc_id = request.form['id']
         kiosk = Kiosk.query.filter_by(name=kiosk_name).first()
         participant = Participant.query.filter_by(nfc_id=nfc_id).first()
-        share = Share()
-        share.share_date = datetime.utcnow()
-        share.participant_id = participant
-        kiosk.participants.append(share)
-
+        # share = Share()
+        # share.share_date = datetime.utcnow()
+        # share.participant_id = participant
+        kiosk.participants.append(participant)
         # share.kiosk_id = kiosk.id
         db.session.commit()
         flash("Contact Shared",'success')
@@ -261,9 +260,12 @@ def share(kiosk):
 
 @app.route('/participant/<nfc_id>', methods=["GET"])
 def get_participant(nfc_id):
-    participant = Participant.query.filter_by(nfc_id=nfc_id).first()
-    response = jsonp(name=participant.name, email=participant.email)
-    return response
+        try:
+            participant = Participant.query.filter_by(nfc_id=nfc_id).first()
+            response = jsonp(name=participant.name, email=participant.email)
+        except:
+            response = jsonp(error="invalid")
+        return response
     
     # return make_response(participant)
 
