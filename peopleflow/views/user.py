@@ -266,6 +266,28 @@ def get_participant(nfc_id):
         except:
             response = jsonp(error="invalid")
         return response
+
+
+@app.route('/kiosk/<id>/delete', methods=['GET','POST'])
+@lastuser.requires_permission('siteadmin')
+@load_model(Kiosk, {'id':'id'}, 'kiosk')
+def kiosk_delete(kiosk):
+    form = ConfirmDeleteForm()
+    event = Event.query.get(kiosk.event_id)
+    if form.validate_on_submit():
+        if 'delete' in request.form:
+            db.session.delete(kiosk)
+            db.session.commit()
+        return render_redirect(url_for('event_kiosks', eventname=event.name), code=303)
+    return render_template('baseframe/delete.html', form=form, title=u"Confirm delete",
+        message=u"Delete '%s' ?" % (kiosk.company))
+
+@app.route('/<eventname>/kiosks', methods=['GET'])
+@load_model(Event, {'name':'eventname'}, 'event')
+def event_kiosks(event):
+    kiosks= Kiosk.query.filter_by(event_id=event.id).all()
+    return render_template('event_kiosks.html', kiosks=kiosks, event=event, enumerate=enumerate)
+
     
     # return make_response(participant)
 

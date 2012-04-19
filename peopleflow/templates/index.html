@@ -12,7 +12,9 @@
               <th>Date</th>
               <th>Venue</th>
               <th>Participants</th>
+              <th>Kiosks</th>
               <th>Action</th>
+
               <!-- <th>Delete</th> -->
             </thead>
             <tbody>
@@ -24,6 +26,7 @@
                   <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.venue }}</a></td>
                   {%- if e.participants.count() -%}
                   <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.participants.filter_by(attended=1).count() }}/{{  e.participants.count() }}</a></td>
+                  <td><a style="display:inline" href="{{ url_for('event_kiosks', eventname=e.name) }}"><i class="icon-edit"></i></a></td>
                   {%- else -%}
                   <td><a href="{{ url_for('event_upload',year=e.year, eventname=e.name) }}">Upload CSV</a></td>
                   {% endif %}
