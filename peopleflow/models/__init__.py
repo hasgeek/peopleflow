@@ -7,3 +7,5 @@ db = SQLAlchemy(app)
 from peopleflow.models.participant import *
 from peopleflow.models.event import *
 from peopleflow.models.user import *
+from peopleflow.models.kiosk import *
+from peopleflow.models.share import *

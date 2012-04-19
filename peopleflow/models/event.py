@@ -22,6 +22,9 @@ class Event(db.Model, BaseMixin):
     #: the objects
     participants = db.relationship('Participant', backref='event',
                       lazy='dynamic')
+    
+    #: List of kiosks. event.kiosks gives access to the objects.
+    # kiosks = db.relationship('Kiosk', backref='event', lazy='dynamic')
 
     def __repr__(self):
         return self.name

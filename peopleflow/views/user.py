@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from peopleflow import app
-from flask import Flask, abort, request, render_template, redirect, url_for
+from flask import Flask, abort, request, render_template, redirect, url_for, make_response
 from werkzeug import secure_filename
 from flask import flash, session, g, Response
-from coaster.views import load_model
-from peopleflow.forms import EventForm, ConfirmSignoutForm, ParticipantForm
-from peopleflow.models import db, Event, Participant
+from coaster.views import load_model, jsonp
+from peopleflow.forms import EventForm, ConfirmSignoutForm, ParticipantForm, KioskForm
+from peopleflow.models import db, Event, Participant, Kiosk, Share
 from peopleflow.views.login import lastuser
 from dateutil import parser as dateparser
 from pytz import utc, timezone
@@ -204,4 +204,67 @@ def event_delete(event):
         return redirect(url_for('index'), code=303)
     return render_template('baseframe/delete.html', form=form, title=u"Confirm delete",
         message=u"Delete '%s' ?" % (event.title))
+
+
+@app.route('/kiosk/new', methods=['GET', 'POST'])
+@lastuser.requires_permission('siteadmin')
+def kiosk_new(kioskform=None):
+    if request.method == 'GET':
+        if kioskform is None:
+            kioskform = KioskForm()
+        context = {'kioskform':kioskform}
+        return render_template('new_kiosk.html', **context)   
+
+    if request.method == 'POST':
+        form = KioskForm()
+        if form.validate_on_submit():
+            kiosk = Kiosk()
+            form.populate_obj(kiosk)
+            db.session.add(kiosk)
+            db.session.commit()
+            flash("Kiosk added")
+            return render_redirect(url_for('index'), code=303)
+        else:
+            if request.is_xhr:
+                return render_template('kioskform.html', kioskform=form, ajax_re_register=True)
+            else:
+                flash("Please check your details and try again.", 'error')
+                return event_add(kioskform=form)
+
+@app.route('/kiosk/<name>', methods=['GET','POST'])
+# @lastuser.requires_permission('kioskadmin')
+def kiosk(name):
+    if request.method=='GET':
+        name = unicode(name)
+        kiosk = Kiosk.query.filter_by(name=name).first()
+        print kiosk.name
+        return render_template('kiosk.html', kiosk = kiosk)
+    
+@app.route('/subscribe/<kiosk>',methods=['GET', 'POST'])
+def share(kiosk):
+    print "here"
+    if request.method=='POST':
+        print "posted"
+        kiosk_name = unicode(kiosk)
+        nfc_id = request.form['id']
+        kiosk = Kiosk.query.filter_by(name=kiosk_name).first()
+        participant = Participant.query.filter_by(nfc_id=nfc_id).first()
+        share = Share()
+        share.share_date = datetime.utcnow()
+        share.participant_id = participant
+        kiosk.participants.append(share)
+
+        # share.kiosk_id = kiosk.id
+        db.session.commit()
+        flash("Contact Shared",'success')
+        return render_redirect(url_for('kiosk', name=kiosk.name), code=303)
+
+@app.route('/participant/<nfc_id>', methods=["GET"])
+def get_participant(nfc_id):
+    participant = Participant.query.filter_by(nfc_id=nfc_id).first()
+    response = jsonp(name=participant.name, email=participant.email)
+    return response
+    
+    # return make_response(participant)
+
 

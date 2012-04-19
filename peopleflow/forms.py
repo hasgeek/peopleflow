@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
+from peopleflow.models import Event
 from flaskext.wtf import (
     Form,
     TextField,
@@ -8,6 +9,7 @@ from flaskext.wtf import (
     DateField,
     SubmitField,
     HiddenField,
+    QuerySelectField,
     )
 
 
@@ -38,11 +40,13 @@ class ParticipantForm(Form):
     twitter = TextField('Twitter')
     tshirt_size = TextField('T-Shirt Size')
     nfc_id = HiddenField('NFC', validators=[Required('Please check the NFC Reader')])
-    # regdate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    # nfc_id = db.Column(db.Unicode(80), unique=True)
-    # attended = db.Column(db.Boolean, default=False, nullable=False)
-    #: Datetime the participant showed up
-    # attend_date = db.Column(db.DateTime, nullable=True)
-    #: Event the participant is attending
-    # event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
 
+def get_events():
+    return Event.query.order_by('id').all()
+
+
+class KioskForm(Form):
+
+    name = TextField('Name', validators=[Required('A name is required')])
+    company = TextField('Title', validators=[Required('A company name is required')])
+    event = QuerySelectField('Select an event', query_factory= get_events, get_label='title', allow_blank=False)

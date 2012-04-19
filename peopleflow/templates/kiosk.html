@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block title %}ContactPoint -  {{ kiosk.company }} {% endblock %}
+{% block header %}
+{{ kiosk.company }}
+{% endblock %}
+{% block content %}
+
+<div id="info">
+<div id="name" >
+
+</div>
+<div id="email"> </div>
+</div>
+
+  <form id="kiosk" action="{{ url_for('share', kiosk=kiosk.name) }}" method="POST">
+    <input id="nfc_id" class="hidden" type="hidden" name="id" value="" />
+    <input id="share" class="btn btn-primary hidden" type="submit" value="Share" />
+  </form>
+
+{% endblock %}
+{% block footerscripts %}
+<script type="text/javascript">
+
+(function poll(){
+   setTimeout(function(){
+      $.getJSON("http://127.0.0.1:8008/card_id.json?callback=?", function(data){
+
+        if (data['card_id']) {
+          url = "/participant/"+data['card_id'];
+          $('input#nfc_id').attr("value",data['card_id'] );
+          $('input#share').removeClass("hidden")
+          $.getJSON(url, function(data){
+            $('div#info').removeClass("hidden");
+            $('div#name').html('<h1>'+data['name']+'</h1>');
+            $('div#email').html('<h2>'+data['email']+'</h2>')
+          }
+
+            );
+
+
+        } else{
+          $('div#info').addClass("hidden");
+        };
+        // console.log(data);
+        poll();
+        
+      });
+  }, 3000);
+})();
+
+</script>
+
+{% endblock %}
