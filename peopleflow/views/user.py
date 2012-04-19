@@ -11,6 +11,7 @@ from peopleflow.views.login import lastuser
 from dateutil import parser as dateparser
 from pytz import utc, timezone
 import os, csv, re
+from StringIO import StringIO
 from datetime import datetime
 from baseframe.forms import render_form, render_redirect, ConfirmDeleteForm
 import time
@@ -232,7 +233,7 @@ def kiosk_new(kioskform=None):
                 return event_add(kioskform=form)
 
 @app.route('/kiosk/<name>', methods=['GET','POST'])
-@lastuser.requires_permission('kioskadmin')
+# @lastuser.requires_permission('kioskadmin')
 def kiosk(name):
     if request.method=='GET':
         name = unicode(name)
@@ -283,10 +284,30 @@ def kiosk_delete(kiosk):
         message=u"Delete '%s' ?" % (kiosk.company))
 
 @app.route('/<eventname>/kiosks', methods=['GET'])
+@lastuser.requires_permission('siteadmin')
 @load_model(Event, {'name':'eventname'}, 'event')
 def event_kiosks(event):
     kiosks= Kiosk.query.filter_by(event_id=event.id).all()
     return render_template('event_kiosks.html', kiosks=kiosks, event=event, enumerate=enumerate)
+
+@app.route('/kiosk/<id>/export', methods=['GET'])
+@load_model(Kiosk, {'id':'id'}, 'kiosk')
+def export_kiosk(kiosk):
+    participants = StringIO()
+    fieldnames= ['Name', 'Email','Company', 'Job']
+    writer = csv.DictWriter(participants, fieldnames=fieldnames, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    writer.writeheader()
+    for participant in kiosk.participants:
+        writer.writerow({"Name":participant.name,
+                        "Email": participant.email,
+                        "Company":participant.company,
+                        "Job":participant.job
+                            })
+    response = make_response(participants.getvalue())
+    response.headers['Content-Type']='text/csv';'charset=utf-8'
+    response.headers['Content-Disposition']='attachment; filename=participants.csv'
+    return response
+
 
     
     # return make_response(participant)
