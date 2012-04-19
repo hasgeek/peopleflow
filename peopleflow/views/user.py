@@ -233,7 +233,7 @@ def kiosk_new(kioskform=None):
                 return event_add(kioskform=form)
 
 @app.route('/kiosk/<name>', methods=['GET','POST'])
-# @lastuser.requires_permission('kioskadmin')
+@lastuser.requires_permission('kioskadmin')
 def kiosk(name):
     if request.method=='GET':
         name = unicode(name)
