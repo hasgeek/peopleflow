@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% from 'macros.html' import ajaxform%}
+{% block title %}New Participant{% endblock %}
+{% block content %}
+        {% include 'participantform.html' %}
+{% endblock %}
+{% block footerscripts %}
+<script type="text/javascript">
+$('input#signin').bind('click',function(){
+
+	    $.getJSON("http://127.0.0.1:8008/card_id.json?callback=?", timeout=3000,
+          function(data){
+
+            if(data['error'] || data['card_id'].length<8) {
+              console.log(data);
+              $('input#signin').addClass("btn-danger");
+            }
+
+            else {
+            $('input#nfc_id').attr("value", data['card_id']);
+            $('input#signin').addClass("hidden");
+        	$('div#submit').removeClass("hidden");
+        	$('input#submit').attr("value", data['card_id']);
+            // $('input#nfc_id{{ i }}').removeClass("hidden");
+            // $('input#signin{{ i }}').addClass("hidden");
+            console.log(data['card_id']);
+          };
+
+          });
+
+        $("#participantform").ajaxForm({replaceTarget: true, success: function(responseText, statusText, xhr, $form) {
+        console.log(responseText);
+        if(responseText=="success") {
+        	window.location.href = "/{{ year }}/{{ eventname }}/signin" ;
+        }
+        else{
+
+              $('div#submit').addClass("hidden");
+              $('input#signin').removeClass("hidden");
+              $('input#nfc_id').attr("value","");
+        };
+        }
+
+
+        });
+});
+
+</script>
+<!-- Ajax form -->
+{% from "macros.html" import ajaxform -%}
+{{ ajaxform('participantform', request, True) }}
+
+
+{% endblock %}

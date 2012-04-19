@@ -5,7 +5,7 @@ from flask import Flask, abort, request, render_template, redirect, url_for
 from werkzeug import secure_filename
 from flask import flash, session, g, Response
 from coaster.views import load_model
-from peopleflow.forms import EventForm, ConfirmSignoutForm
+from peopleflow.forms import EventForm, ConfirmSignoutForm, ParticipantForm
 from peopleflow.models import db, Event, Participant
 from peopleflow.views.login import lastuser
 from dateutil import parser as dateparser
@@ -27,7 +27,6 @@ def index():
 def event_new(eventform=None):
     if eventform is None:
         eventform = EventForm()
-        print eventform
     context = {'eventform':eventform}
     return render_template('new_event.html', **context)   
 
@@ -139,6 +138,39 @@ def event_signout(year, eventname, pid):
     return render_template('signout.html', form=form, title=u"Confirm sign-out",
         message=u"Sign-out '%s' ?" % (participant.name))
 
+@app.route('/event/<id>/participant/new', methods=['GET', 'POST'])
+@load_model(Event, {'id': 'id'}, 'event')
+def venue_signup(event, participantform=None):
+    if request.method=='GET':
+        if participantform is None:
+            participantform = ParticipantForm()
+        context = {'participantform':participantform, 'eventname':event.name, 'year':event.year}
+        return render_template('new_participant.html', **context)
+    
+    if request.method=='POST':
+        form = ParticipantForm()
+        if form.validate_on_submit():
+            print "valid"
+            participant = Participant()
+            form.populate_obj(participant)
+            participant.attended = True
+            participant.attend_date = datetime.utcnow()
+            participant.event_id = event.id
+            db.session.add(participant)
+            try:
+                db.session.commit()
+                # flash('Done')
+                flash('Participant %s added.' % participant.name, 'success')
+                return "success"
+            except:
+                 return "fail"
+        else:
+            print "invalid"
+            if request.is_xhr:
+                return render_template('participantform.html', participantform=form, ajax_re_register=True)
+            else:
+                flash("Please check your details and try again.", 'error')
+                return venue_signup(participantform=form)
 
 
 
