@@ -29,7 +29,6 @@ css = Bundle(baseframe_css,
 
 js = Bundle('js/libs/jquery-1.6.4.js',
             'js/libs/jquery.form.js',
-            'js/scripts.js',
             filters='jsmin', output='js/packed.js')
 
 assets.register('js_all', js)

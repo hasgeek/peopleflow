@@ -100,6 +100,7 @@ def event_upload(year,eventname):
 
 	
 @app.route('/<year>/<eventname>/signin',methods=['GET','POST'])
+@lastuser.requires_permission('siteadmin')
 def event_signin(eventname, year):
     if request.method=='GET':
         event = Event.query.filter_by(name=eventname, year=year).first()
@@ -253,11 +254,16 @@ def share(kiosk):
         # share = Share()
         # share.share_date = datetime.utcnow()
         # share.participant_id = participant
-        kiosk.participants.append(participant)
-        # share.kiosk_id = kiosk.id
-        db.session.commit()
-        flash("Contact Shared",'success')
-        return render_redirect(url_for('kiosk', name=kiosk.name), code=303)
+        if participant in kiosk.participants:
+            flash("Contact already shared",'error')
+            return render_redirect(url_for('kiosk', name=kiosk.name), code=303)
+        else:
+
+            kiosk.participants.append(participant)
+            # share.kiosk_id = kiosk.id
+            db.session.commit()
+            flash("Contact Shared",'success')
+            return render_redirect(url_for('kiosk', name=kiosk.name), code=303)
 
 @app.route('/participant/<nfc_id>', methods=["GET"])
 def get_participant(nfc_id):

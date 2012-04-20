@@ -26,14 +26,14 @@
                     <a  href="{{ url_for('kiosk_delete', id=k.id) }}"><i class="icon-remove"></i></a>
                   </td>
                   {%- if k.participants.__len__() -%}
-                    <td><a href="{{ url_for('export_kiosk', id=k.id) }}" class= "btn btn-primary" >Export</a></td>
+                    <td><a href="{{ url_for('export_kiosk', id=k.id) }}" class= "btn btn-small btn-primary" >Export</a></td>
                   {%- else -%}
                     <td></td>
                    {%- endif -%}   
                 </tr>
               {% else %}
                 <tr>
-                  <td><em>(No participants found)</em></td>
+                  <td><em>(No kiosks found)</em></td>
                 </tr>
               {% endfor %}
             </tbody>
