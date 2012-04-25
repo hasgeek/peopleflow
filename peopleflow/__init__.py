@@ -25,10 +25,12 @@ assets = Environment(app)
 app.register_blueprint(baseframe)
 
 css = Bundle(baseframe_css,
-			 'css/app.css')
+			 'css/app.css',
+			 'css/jquery-ui.css')
 
 js = Bundle('js/libs/jquery-1.6.4.js',
             'js/libs/jquery.form.js',
+            'js/libs/jquery-ui-1.8.4.min.js',
             filters='jsmin', output='js/packed.js')
 
 assets.register('js_all', js)

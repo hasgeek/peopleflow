@@ -4,6 +4,9 @@
 <h1>{{ event.title }}- Venue Signup. </h1> <a href="{{ url_for('venue_signup', id=event.id) }}" class="btn btn-primary">New Participant</a>
 {% endblock %}
 {% block content %}
+<div class="hero-unit">
+  <input id="search" type="text" name="key" value=""/>                      
+</div>
 <div id="tabs">
           <table class="table">
             <thead>
@@ -19,7 +22,7 @@
             </thead>
             <tbody>
               {% for i, p in enumerate(participants) %}
-                  <tr>
+                  <tr class="hidden">
                   <td>{{ i+1 }}</td>
                   <td>{{ p.ticket_number }}</td>
                   <td>{{ utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M')|e }}</td>
@@ -52,7 +55,7 @@
 {% endblock %}
 {% block footerscripts %}
   <script type="text/javascript">
-
+    console.log({{ participants.name }});
     {% for i,p in enumerate(participants) -%}
     $('input#signin{{ i }}').bind('click', function(){ 
         $.getJSON("http://127.0.0.1:8008/card_id.json?callback=?", timeout=3000,
@@ -115,6 +118,26 @@
 
     });
 
+var list = [];
+{% for p in participants %}
+list.push("{{ p.name }}");
+{% endfor %}
+
+$('input#search').autocomplete({
+  source:list,
+  search: function(event, ui) {
+    var query=this.value;
+    $('tr').addClass("hidden");
+    $('tr:contains("'+query+'")').removeClass("hidden");
+    // alert(this.value);
+   },
+     select: function(event, ui) {
+    var query=this.value;
+    $('tr').addClass("hidden");
+    $('tr:contains("'+query+'")').removeClass("hidden");
+    // alert(this.value);
+   }
+});
   </script>
 {% endblock %}
 

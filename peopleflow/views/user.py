@@ -17,6 +17,8 @@ from baseframe.forms import render_form, render_redirect, ConfirmDeleteForm
 import time
 
 hideemail = re.compile('.{1,3}@')
+tz = timezone(app.config['TIMEZONE'])
+
 
 @app.route('/', methods=['GET'])
 def index():
@@ -86,13 +88,10 @@ def event_upload(year,eventname):
         return render_template('upload.html')
 
     if request.method == 'POST':
-        print "POST"
         file = request.files['file']
-        # print file
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            print "here"
             flash("Uploaded "+filename)
             csv_populate(os.path.join(app.config['UPLOAD_FOLDER'], filename), year, eventname)
             return redirect(url_for('index'))
@@ -152,7 +151,6 @@ def venue_signup(event, participantform=None):
     if request.method=='POST':
         form = ParticipantForm()
         if form.validate_on_submit():
-            print "valid"
             participant = Participant()
             form.populate_obj(participant)
             participant.attended = True
@@ -167,7 +165,6 @@ def venue_signup(event, participantform=None):
             except:
                  return "fail"
         else:
-            print "invalid"
             if request.is_xhr:
                 return render_template('participantform.html', participantform=form, ajax_re_register=True)
             else:
@@ -239,14 +236,11 @@ def kiosk(name):
     if request.method=='GET':
         name = unicode(name)
         kiosk = Kiosk.query.filter_by(name=name).first()
-        print kiosk.name
         return render_template('kiosk.html', kiosk = kiosk)
     
 @app.route('/subscribe/<kiosk>',methods=['GET', 'POST'])
 def share(kiosk):
-    print "here"
     if request.method=='POST':
-        print "posted"
         kiosk_name = unicode(kiosk)
         nfc_id = request.form['id']
         kiosk = Kiosk.query.filter_by(name=kiosk_name).first()
@@ -315,7 +309,15 @@ def export_kiosk(kiosk):
     return response
 
 
-    
+@app.route('/<eid>/search', methods=['POST'])
+@load_model(Event,{'id':'eid'},'event')
+def search(event, participants=None):
+    query = request.form['key']
+    participant = Participant.query.filter_by(event_id=event.id, ticket_number=int(query)).first()
+    response = jsonp(ticket_number=participant.ticket_number, name=participant.name, email=participant.email)
+    return response
+
+
     # return make_response(participant)
 
 
