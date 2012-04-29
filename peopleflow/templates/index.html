@@ -25,13 +25,15 @@
                   <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{e.date}}</a></td>
                   <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.venue }}</a></td>
                   {%- if e.participants.count() -%}
-                  <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.participants.filter_by(attended=1).count() }}/{{  e.participants.count() }}</a></td>
+                  <td><a style="display:inline" href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.participants.filter_by(attended=1).count() }}/{{  e.participants.count() }}</a>
+                    <a style="display:inline" href="{{ url_for('event_upload',year=e.year, eventname=e.name) }}"><i class="icon-upload-alt"></i></a>
+                  </td>
                   <td><a style="display:inline" href="{{ url_for('event_kiosks', eventname=e.name) }}"><i class="icon-edit"></i></a></td>
                   {%- else -%}
                   <td><a href="{{ url_for('event_upload',year=e.year, eventname=e.name) }}">Upload CSV</a></td>
                   {% endif %}
                   <td><a style="display:inline" href="{{ url_for('event_edit',id=e.id) }}"><i class="icon-edit"></i></a>
-                  <a style="display:inline" href="{{ url_for('event_delete', id=e.id) }}"><i class="icon-remove"></i></a></td>
+                  <a style="display:inline" href="{{ url_for('event_delete', id=e.id) }}"><i class="icon-trash"></i></a></td>
                 </tr>
               {%- else -%}
                 <tr>

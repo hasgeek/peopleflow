@@ -61,7 +61,34 @@ def csv_populate(file, year, eventname):
     reader.next()
     # Get the event
     event = Event.query.filter_by(year=year, name=eventname).first()
-    for row in reader:
+    # Get all the participants of the event
+    participants = Participant.query.filter_by(event_id=event.id).all()
+    duplicates = 0
+    new = 0
+    if participants:
+        for row in reader:
+            for participant in participants:
+                if participant.ticket_number == int(row[0]):
+                    duplicates = duplicates+1
+                    break
+            else:
+                new_participant = Participant()
+                new_participant.ticket_number = row[0]
+                new_participant.name = row[1]
+                new_participant.email = row[2]
+                new_participant.ticket_type = row[3]
+                new_participant.company = row[4]
+                new_participant.job = row[5]
+                new_participant.city = row[6]
+                new_participant.twitter = row[7]
+                new_participant.tshirt_size = row[8]
+                new_participant.regdate = dateparser.parse(row[9])
+                new_participant.order_id = row[10]
+                new_participant.event_id = event.id
+                db.session.add(new_participant)
+                db.session.commit()
+                new= new+1
+    else:
         participant = Participant()
         participant.ticket_number = row[0]
         participant.name = row[1]
@@ -74,11 +101,12 @@ def csv_populate(file, year, eventname):
         participant.tshirt_size = row[8]
         participant.regdate = dateparser.parse(row[9])
         participant.order_id = row[10]
-        # participant.attended
-        # participant.attenddate 
         participant.event_id = event.id
         db.session.add(participant)
-        db.session.commit()        
+        db.session.commit()
+        new = new+1
+
+    flash("%d duplicates, %d new records." % (duplicates, new), 'success')
     return redirect(url_for('index'))
 
 @app.route('/<year>/<eventname>/upload', methods=['GET', 'POST'])
