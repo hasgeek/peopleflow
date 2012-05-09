@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from peopleflow import app
+from peopleflow import app, mail
 from flask import Flask, abort, request, render_template, redirect, url_for, make_response
 from werkzeug import secure_filename
 from flask import flash, session, g, Response
@@ -15,6 +15,9 @@ from StringIO import StringIO
 from datetime import datetime
 from baseframe.forms import render_form, render_redirect, ConfirmDeleteForm
 import time
+from flaskext.mail import Message
+from markdown import markdown
+
 
 hideemail = re.compile('.{1,3}@')
 tz = timezone(app.config['TIMEZONE'])
@@ -311,10 +314,10 @@ def kiosk_delete(kiosk):
     return render_template('baseframe/delete.html', form=form, title=u"Confirm delete",
         message=u"Delete '%s' ?" % (kiosk.company))
 
-@app.route('/<eventname>/kiosks', methods=['GET'])
+@app.route('/<year>/<eventname>/kiosks', methods=['GET'])
 @lastuser.requires_permission('siteadmin')
-@load_model(Event, {'name':'eventname'}, 'event')
-def event_kiosks(event):
+def event_kiosks(year,eventname):
+    event = Event.query.filter_by(name=eventname, year=year).first()
     kiosks= Kiosk.query.filter_by(event_id=event.id).all()
     return render_template('event_kiosks.html', kiosks=kiosks, event=event, enumerate=enumerate)
 
@@ -345,7 +348,35 @@ def search(event, participants=None):
     response = jsonp(ticket_number=participant.ticket_number, name=participant.name, email=participant.email)
     return response
 
+@app.route('/<year>/<eventname>/connect', methods=['GET','POST'])
+@lastuser.requires_permission('siteadmin')
+@load_model(Event, {'name':'eventname'}, 'event')
+def connect(event):
+    if request.method=='GET':
+        return render_template('connect.html', event = event)
+    
+    if request.method == 'POST':
+        participants = []
+        ids = request.form['id']
+        ids = set(ids.split(','))
+        msg = Message("Hello from "+event.title)
+        for id in ids:
+            participant = Participant.query.filter_by(event_id=event.id, nfc_id=id).first()
+            participants.append(participant)
 
-    # return make_response(participant)
+        for participant in participants:
+            exchange = []
+            for other in participants:
+                if other!=participant:
+                    exchange.append(other)
+            msg.body= render_template('connectemail.md', name= participant.name, participants=exchange, event=event)
+            msg.recipients=[participant.email]
+            mail.send(msg)
+        flash("Email sent!", "success")
+        return render_template('connect.html', event = event)
+
+
+
+
 
 
