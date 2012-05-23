@@ -92,22 +92,23 @@ def csv_populate(file, year, eventname):
                 db.session.commit()
                 new= new+1
     else:
-        participant = Participant()
-        participant.ticket_number = row[0]
-        participant.name = row[1]
-        participant.email = row[2]
-        participant.ticket_type = row[3]
-        participant.company = row[4]
-        participant.job = row[5]
-        participant.city = row[6]
-        participant.twitter = row[7]
-        participant.tshirt_size = row[8]
-        participant.regdate = dateparser.parse(row[9])
-        participant.order_id = row[10]
-        participant.event_id = event.id
-        db.session.add(participant)
-        db.session.commit()
-        new = new+1
+        for row in reader:
+            participant = Participant()
+            participant.ticket_number = row[0]
+            participant.name = row[1]
+            participant.email = row[2]
+            participant.ticket_type = row[3]
+            participant.company = row[4]
+            participant.job = row[5]
+            participant.city = row[6]
+            participant.twitter = row[7]
+            participant.tshirt_size = row[8]
+            participant.regdate = dateparser.parse(row[9])
+            participant.order_id = row[10]
+            participant.event_id = event.id
+            db.session.add(participant)
+            db.session.commit()
+            new = new+1
 
     flash("%d duplicates, %d new records." % (duplicates, new), 'success')
     return redirect(url_for('index'))

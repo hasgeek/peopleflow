@@ -1,7 +1,7 @@
 BeautifulSoup==3.2.1
 Flask==0.8
 Flask-Assets==0.6.2
-Flask-LastUser==0.3
+https://github.com/hasgeek/flask-lastuser/zipball/master
 Flask-Mail==0.6.1
 Flask-OAuth==0.11
 Flask-OpenID==1.0.1
@@ -13,10 +13,10 @@ SQLAlchemy==0.7.7
 WTForms==1.0.1
 Werkzeug==0.8.3
 argparse==1.2.1
-baseframe==0.2.1
+https://github.com/hasgeek/coaster/zipball/master
+https://github.com/hasgeek/baseframe/zipball/master
 blinker==1.2
 chardet==1.0.1
-coaster==0.2
 cssmin==0.1.4
 distribute==0.6.26
 greatape==0.3.2
