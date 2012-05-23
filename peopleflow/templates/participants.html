@@ -91,9 +91,15 @@
         if(responseText=="success") {
           $('input#nfc_id{{ i }}').addClass("hidden");
           $('a#signout{{ i }}').removeClass("hidden");
+
+          $.post('http://127.0.0.1:8008/print/{{ p.name }}/@{{ p.twitter }}', function(data) {
+            console.log(data)
+          });
+
+
         }
         else{
-                        $('input#nfc_id{{ i }}').addClass("hidden");
+            $('input#nfc_id{{ i }}').addClass("hidden");
           $('input#signin{{ i }}').removeClass("hidden");
 
               $('input#signin{{ i }}').addClass("btn-danger");
