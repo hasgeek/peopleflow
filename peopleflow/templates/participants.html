@@ -129,12 +129,16 @@ var list = [];
 list.push("{{ p.name }}");
 {% endfor %}
 
+jQuery.expr[':'].Contains = function(a, i, m) { 
+  return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0; 
+};
+
+
 $('input#search').autocomplete({
-  source:list,
   search: function(event, ui) {
     var query=this.value;
     $('tr').addClass("hidden");
-    $('tr:contains("'+query+'")').removeClass("hidden");
+    $('tr:Contains("'+query+'")').removeClass("hidden");
     // alert(this.value);
    },
      select: function(event, ui) {
