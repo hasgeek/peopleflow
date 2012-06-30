@@ -12,7 +12,8 @@
               <th>Date</th>
               <th>Venue</th>
               <th>Participants</th>
-              <th>Kiosks</th>
+              <th>Sponsor Kiosks</th>
+              <th>Participant Kiosk</th>
               <th>Action</th>
 
               <!-- <th>Delete</th> -->
@@ -29,6 +30,7 @@
                     <a style="display:inline" href="{{ url_for('event_upload',year=e.year, eventname=e.name) }}"><i class="icon-upload-alt"></i></a>
                   </td>
                   <td><a style="display:inline" href="{{ url_for('event_kiosks', year = e.year, eventname=e.name) }}"><i class="icon-edit"></i></a></td>
+                  <td><a style="display:inline" href="{{ url_for('connect', year = e.year, eventname=e.name) }}"><i class="icon-user"></i></a></td>
                   {%- else -%}
                   <td><a href="{{ url_for('event_upload',year=e.year, eventname=e.name) }}">Upload CSV</a></td>
                   {% endif %}
