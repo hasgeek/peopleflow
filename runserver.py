@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: iso-8859-15 -*-
 from peopleflow import app
 from peopleflow.models import db
 from os import environ
