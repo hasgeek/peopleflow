@@ -1,1 +1,9 @@
 PeopleFlow - HasGeek
+
+Following Libraries are required
+-----
+Install following libraries from synaptic
+
+    -libccid, libpcsclite1, libacsccid1, python-pyscard
+
+sudo apt-get install libccid libusb-0.1-4 pcscd libpcsclite1
