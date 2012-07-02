@@ -6,7 +6,7 @@ Website server for peopleflow
 """
 
 from flask import Flask
-from flaskext.assets import Environment, Bundle
+from flask.ext.assets import Environment, Bundle
 from flaskext.mail import Mail
 from baseframe import baseframe, baseframe_js, baseframe_css
 from coaster import configureapp

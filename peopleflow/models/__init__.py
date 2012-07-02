@@ -1,4 +1,4 @@
-from flaskext.sqlalchemy import SQLAlchemy
+from flask.ext.sqlalchemy import SQLAlchemy
 from peopleflow import app
 from coaster.sqlalchemy import BaseMixin, BaseNameMixin
 
