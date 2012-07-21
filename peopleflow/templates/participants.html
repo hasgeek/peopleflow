@@ -1,14 +1,20 @@
 {% extends "layout.html" %}
 {% block baseheadline %}Peopleflow -  HasGeek{% endblock %}
 {% block headline %}
-<h1>{{ event.title }}- Venue Signup. </h1> <a href="{{ url_for('venue_signup', id=event.id) }}" class="btn btn-primary">New Participant</a>
+<h1>{{ event.title }}- Venue Signup. </h1> 
 {% endblock %}
 {% block content %}
-<div class="hero-unit">
-  <input id="search" type="text" name="key" value=""/>                      
+
+<div class="row">
+    <form class="well form-search form-horizontal">
+    <input autofocus class="input-medium search-query" id="search" type="text" name="key" value=""/>
+    <a href="{{ url_for('venue_signup', id=event.id) }}" class="pull-right btn btn-primary">New Participant</a>
+    <strong id="count"></strong>                      
+    </form>
 </div>
+
 <div id="tabs">
-          <table class="table">
+          <table class="table table-striped">
             <thead>
               <th>#</th>        
               <th>Ticket #</th>
@@ -16,7 +22,6 @@
               <th>Name</th>
               <th>Email</th>
               <th>Company</th>
-              <!-- <th>Job Title</th>               -->
               <th>Tshirt Size</th>
               <th>Action</th>   
             </thead>
@@ -29,7 +34,6 @@
                   <td><strong>{{ p.name|e }}</strong></td>
                   <td>{{ hideemail.sub('...@', p.email)|e }}</td>
                   <td>{{ p.company|e }}</td>
-                  <!-- <td>{{ p.jobtitle|e }}</td> -->
                   <td>{{ p.tshirt_size }}</td>
                   <td>
                     {%- if p.attended -%}
@@ -55,45 +59,37 @@
 {% endblock %}
 {% block footerscripts %}
   <script type="text/javascript">
-    console.log({{ participants.name }});
+
     {% for i,p in enumerate(participants) -%}
     $('input#signin{{ i }}').bind('click', function(){ 
         $.getJSON("http://127.0.0.1:8008/card_id.json?callback=?", timeout=3000,
           function(data){
 
             if(data['error'] || data['card_id'].length<8) {
-              console.log(data);
               $('input#signin{{ i }}').addClass("btn-danger");
-              // $('input#signin{{ i }}').attr("value",data['error']);
             }
 
             else {
             $('input#nfc_id{{ i }}').attr("value", data['card_id']);
             $('input#nfc_id{{ i }}').removeClass("hidden");
             $('input#signin{{ i }}').addClass("hidden");
-            console.log(data['card_id']);
+            $('#search').focus();
+
           };
 
           });
         });
-
-      // $('input#nfc_id{{ i }}').bind('click', function() {
-
-      
-      //  });
       {% endfor -%}
 
     $(function() {
               
       {% for i,p in enumerate(participants) -%}
         $("{{ '#attend%d' % i }}").ajaxForm({replaceTarget: true, success: function(responseText, statusText, xhr, $form) {
-        console.log({{ i }});
         if(responseText=="success") {
           $('input#nfc_id{{ i }}').addClass("hidden");
           $('a#signout{{ i }}').removeClass("hidden");
 
           $.post('http://127.0.0.1:8008/print/{{ p.name }}/@{{ p.twitter }}', function(data) {
-            console.log(data)
           });
 
 
@@ -109,25 +105,12 @@
 
         });
       {% endfor -%}
-
-      // function respond (i, responseText, statusText, xhr, $form) {
-      //   if(responseText=="success") {
-      //     console.log()
-      //     alert("success");
-
-      //   }
-      //   else{
-      //     alert("Fail");
-      //   };
-      // }
-
-
     });
 
 var list = [];
 {% for p in participants %}
 list.push("{{ p.name }}");
-{% endfor %}
+{%- endfor %}
 
 jQuery.expr[':'].Contains = function(a, i, m) { 
   return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0; 
@@ -139,15 +122,25 @@ $('input#search').autocomplete({
     var query=this.value;
     $('tr').addClass("hidden");
     $('tr:Contains("'+query+'")').removeClass("hidden");
-    // alert(this.value);
    },
      select: function(event, ui) {
     var query=this.value;
     $('tr').addClass("hidden");
     $('tr:contains("'+query+'")').removeClass("hidden");
-    // alert(this.value);
    }
 });
+
+(function poll(){
+   setTimeout(function(){
+      $.getJSON("/event/{{ event.id }}/count", function(data){
+        if(data['signed']){
+          $('#count').html(data['signed']+'/'+data['total']);
+            }
+        poll();
+          }
+        );
+  }, 5000);
+})();
   </script>
 {% endblock %}
 
