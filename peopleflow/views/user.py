@@ -171,6 +171,14 @@ def event_signout(year, eventname, pid):
     return render_template('signout.html', form=form, title=u"Confirm sign-out",
         message=u"Sign-out '%s' ?" % (participant.name))
 
+@app.route('/event/<id>/count', methods=['GET', 'POST'])
+@load_model(Event, {'id': 'id'}, 'event')
+def get_count(event):
+    response = jsonp(signed=event.participants.filter_by(attended=1).count(), total=event.participants.count())
+    return response
+
+
+
 @app.route('/event/<id>/participant/new', methods=['GET', 'POST'])
 @load_model(Event, {'id': 'id'}, 'event')
 def venue_signup(event, participantform=None):
