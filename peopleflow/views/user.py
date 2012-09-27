@@ -15,7 +15,7 @@ from StringIO import StringIO
 from datetime import datetime
 from baseframe.forms import render_form, render_redirect, ConfirmDeleteForm
 import time
-from flaskext.mail import Message
+from flask.ext.mail import Message
 from markdown import markdown
 
 
