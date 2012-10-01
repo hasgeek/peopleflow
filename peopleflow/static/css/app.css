@@ -18,3 +18,7 @@
       margin-left: 20px;
   } */
 }
+
+a.rfid_card span {display: none;}
+a.rfid_card.tap .timeout, a.rfid_card.tap .tap_card, a.rfid_card.assigned .unassign, a.rfid_card.unassigned .assign {display: inline;}
+a.rfid_card.tap .unassign, a.rfid_card.tap .assign {display: none;}
