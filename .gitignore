@@ -9,3 +9,5 @@ test.db
 .sass-cache
 error.log
 *.csv
+.webassets-cache
+baseframe-packed.js
