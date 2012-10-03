@@ -168,8 +168,8 @@ def event_signout(year, eventname, pid):
             participant.attend_date = None
             db.session.commit()
         return redirect(url_for('event_signin', year=year, eventname=eventname), code=303)
-    return render_template('signout.html', form=form, title=u"Confirm sign-out",
-        message=u"Sign-out '%s' ?" % (participant.name))
+    return render_template('signout.html', form=form, title=u"Confirm card unassignment",
+        message=u"Unassign card for '%s' ?" % (participant.name))
 
 @app.route('/event/<id>/count', methods=['GET', 'POST'])
 @load_model(Event, {'id': 'id'}, 'event')
