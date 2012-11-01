@@ -82,9 +82,7 @@
           failure: function(data){
             console.log(data.msg);
           }
-        })
-        console.log($(this).attr('data-twitter'));
-        console.log($(this).attr('data-name'));
+        });
       });
       $('a.rfid_card').live('click', function(event){
         var current = $(this);
