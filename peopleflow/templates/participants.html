@@ -2,7 +2,7 @@
 {% block networkbar %}{% endblock %}
 {% block baseheadline %}Peopleflow -  HasGeek{% endblock %}
 {% block headline %}
-<h1>{{ event.title }}- Venue Signup. </h1> 
+<h1>{{ event.title }}- Venue Signup. </h1>
 {% endblock %}
 {% block content %}
 
@@ -10,21 +10,22 @@
     <form class="well form-search form-horizontal">
     <input autofocus class="input-medium search-query" id="search" type="text" name="key" value=""/>
     <a href="{{ url_for('venue_signup', id=event.id) }}" class="pull-right btn btn-primary">New Participant</a>
-    <strong id="count"></strong>                      
+    <strong id="count"></strong>
     </form>
 </div>
 
 <div id="tabs">
           <table class="table table-striped">
             <thead>
-              <th>#</th>        
+              <th>#</th>
               <th>Ticket #</th>
               <th>Date</th>
               <th>Name</th>
               <th>Email</th>
               <th>Company</th>
               <th>Tshirt Size</th>
-              <th>Action</th>   
+              <th>Action</th>
+              <th>Print </th>
             </thead>
             <tbody>
               {% for i, p in enumerate(participants) %}
@@ -44,6 +45,9 @@
                       <span class="unassign" rel="{{ url_for('event_signout', year=event.year, eventname=event.name, pid=p.id) }}">Unassign Card</span>
                       <span class="tap_card">Tap the card (<span class="timeout"></span>)</span>
                     </a>
+                  </td>
+                  <td>
+                    <a class="btn print_card" data-url="{{ url_for('print_card') }}" data-method="POST" data-name='{{ p.name|e }}' data-twitter='{{ p.twitter }}'>Print</a>
                   </td>
                 </tr>
               {% else %}
@@ -65,6 +69,23 @@
       interval = null;
     };
     $(function(){
+      $('a.print_card').on('click', function(event) {
+        $.ajax({
+          url: $(this).attr('data-url'),
+          data: {'name': $(this).attr('data-name'),
+                 'twitter': $(this).attr('data-twitter')
+               },
+          type: $(this).attr('data-method'),
+          success: function(data) {
+            console.log(data.msg);
+          },
+          failure: function(data){
+            console.log(data.msg);
+          }
+        })
+        console.log($(this).attr('data-twitter'));
+        console.log($(this).attr('data-name'));
+      });
       $('a.rfid_card').live('click', function(event){
         var current = $(this);
         if( current.hasClass('disabled') ) return true;
@@ -104,7 +125,7 @@
           "url": participant.find('span:visible').attr('rel'),
           "type": "POST"
         };
-        
+
         if( !assigned ) {
           if( typeof card == 'undefined' ) return false;
           ajax.data = {nfc_id: card, id: id};
@@ -135,8 +156,8 @@
     list.push("{{ p.name }}");
     {%- endfor %}
 
-    jQuery.expr[':'].Contains = function(a, i, m) { 
-      return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0; 
+    jQuery.expr[':'].Contains = function(a, i, m) {
+      return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
     };
 
 
