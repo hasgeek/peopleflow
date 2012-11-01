@@ -17,7 +17,7 @@ from baseframe.forms import render_form, render_redirect, ConfirmDeleteForm
 import time
 from flask.ext.mail import Message
 from markdown import markdown
-from .printlabel import printlabel
+from peopleflow.helpers.printlabel import printlabel
 
 
 hideemail = re.compile('.{1,3}@')
