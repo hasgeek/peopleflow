@@ -73,12 +73,20 @@
 {% if force or request.is_xhr -%}
 <script type="text/javascript">
   $(function() {
+    var redir = $('.assign').attr('rel');
     $("#{{ formid }}").ajaxForm({
       target: '#{{ formid }}',
-      replaceTarget: true,
-    });
-    $('#{{ formid }} input[type="submit"]').click(function() {
-      $('#{{ formid }}').find(".loading").removeClass('hidden');
+      replaceTarget: true, 
+      success: function(responseText, statusText, xhr, $form) {
+          console.log(responseText);
+          if(responseText=="success") {
+              window.location = redir ;
+          }
+          else{
+            $('div#submit').addClass("hidden");
+            $('input#nfc_id').attr("value","");
+          };
+      }
     });
   });
 </script>
@@ -100,8 +108,15 @@
     {{ renderfield(field, "small") }}
     {%- endif %}
   {% endfor %}
+  <div class="field">
+    <a class="btn rfid_card unassigned"
+      href="javascript:void(0);">
+      <span class="assign" rel="">Assign Card And Submit</span>
+      <span class="tap_card">Tap the card (<span class="timeout"></span>)</span>
+    </a>
+  </div>
   <div id="nfc" style="padding-bottom:40px" >
-  <input id="signin" class="btn" type="button" value="Get ID" /> </div>
+  <!-- <input id="signin" class="btn" type="button" value="Get ID" /> </div> -->
   {{ rendersubmit([(None, submit or "Submit", None)], "small hidden") }}
   </form>
 {% endmacro %}

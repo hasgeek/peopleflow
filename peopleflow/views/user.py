@@ -289,14 +289,14 @@ def share(kiosk):
         # share.share_date = datetime.utcnow()
         # share.participant_id = participant
         if participant in kiosk.participants:
-            flash("Contact already shared",'error')
+            # flash("Contact already shared",'error')
             return render_redirect(url_for('kiosk', name=kiosk.name), code=303)
         else:
 
             kiosk.participants.append(participant)
             # share.kiosk_id = kiosk.id
             db.session.commit()
-            flash("Contact Shared",'success')
+            # flash("Contact Shared",'success')
             return render_redirect(url_for('kiosk', name=kiosk.name), code=303)
 
 @app.route('/participant/<nfc_id>', methods=["GET"])
