@@ -1,6 +1,8 @@
 .DS_Store
 *.pyc
 settings.py
+build
+development.py
 test.db
 *.wpr
 .project
