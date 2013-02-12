@@ -63,7 +63,7 @@ def allowed_file(filename):
 
 
 def csv_populate(file, year, eventname):
-    reader = csv.reader(open(file,'rb'))
+    reader = csv.reader(open(file,'rb'), dialect='excel', quotechar='|')
     # Skip the header
     reader.next()
     # Get the event
