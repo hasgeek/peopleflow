@@ -9,7 +9,7 @@ UPLOAD_FOLDER = 'uploads/'
 #: Supported extensions
 ALLOWED_EXTENSIONS = set(['txt', 'csv'])
 #: LastUser server
-LASTUSER_SERVER = ''
+LASTUSER_SERVER = 'https://auth.hasgeek.com/'
 #: LastUser client id
 LASTUSER_CLIENT_ID = ''
 #: LastUser client secret

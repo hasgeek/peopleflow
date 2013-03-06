@@ -30,6 +30,7 @@ def index():
     return render_template('index.html', events=events)
 
 
+
 @app.route('/event/new', methods=['GET'])
 @lastuser.requires_permission('siteadmin')
 def event_new(eventform=None):
@@ -37,6 +38,7 @@ def event_new(eventform=None):
         eventform = EventForm()
     context = {'eventform':eventform}
     return render_template('new_event.html', **context)
+
 
 @app.route('/event/new', methods=['POST'])
 @lastuser.requires_permission('siteadmin')
@@ -61,7 +63,7 @@ def allowed_file(filename):
 
 
 def csv_populate(file, year, eventname):
-    reader = csv.reader(open(file,'rb'))
+    reader = csv.reader(open(file,'rb'), dialect='excel', quotechar='|')
     # Skip the header
     reader.next()
     # Get the event
@@ -74,11 +76,14 @@ def csv_populate(file, year, eventname):
         for row in reader:
             for participant in participants:
                 if participant.ticket_number == int(row[0]):
-                    duplicates = duplicates+1
+                    duplicates = duplicates + 1
                     break
             else:
                 new_participant = Participant()
-                new_participant.ticket_number = row[0]
+                try:
+                    participant.ticket_number = int(row[0])
+                except ValueError:
+                    participant.ticket_number = None
                 new_participant.name = row[1]
                 new_participant.email = row[2]
                 new_participant.ticket_type = row[3]
@@ -88,15 +93,21 @@ def csv_populate(file, year, eventname):
                 new_participant.twitter = row[7]
                 new_participant.tshirt_size = row[8]
                 new_participant.regdate = dateparser.parse(row[9])
-                new_participant.order_id = row[10]
+                try:
+                    participant.order_id = int(row[10])
+                except ValueError:
+                    participant.order_id = None
                 new_participant.event_id = event.id
                 db.session.add(new_participant)
                 db.session.commit()
-                new= new+1
+                new = new + 1
     else:
         for row in reader:
             participant = Participant()
-            participant.ticket_number = row[0]
+            try:
+                participant.ticket_number = int(row[0])
+            except ValueError:
+                participant.ticket_number = None
             participant.name = row[1]
             participant.email = row[2]
             participant.ticket_type = row[3]
@@ -106,14 +117,18 @@ def csv_populate(file, year, eventname):
             participant.twitter = row[7]
             participant.tshirt_size = row[8]
             participant.regdate = dateparser.parse(row[9])
-            participant.order_id = row[10]
+            try:
+                participant.order_id = int(row[10])
+            except ValueError:
+                participant.order_id = None
             participant.event_id = event.id
             db.session.add(participant)
             db.session.commit()
-            new = new+1
+            new = new + 1
 
     flash("%d duplicates, %d new records." % (duplicates, new), 'success')
     return redirect(url_for('index'))
+
 
 @app.route('/<year>/<eventname>/upload', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
@@ -176,7 +191,7 @@ def event_signout(year, eventname, pid):
 @app.route('/event/<id>/count', methods=['GET', 'POST'])
 @load_model(Event, {'id': 'id'}, 'event')
 def get_count(event):
-    response = jsonp(signed=event.participants.filter_by(attended=1).count(), total=event.participants.count())
+    response = jsonp(signed=event.participants.filter_by(attended=True).count(), total=event.participants.count())
     return response
 
 
