@@ -5,7 +5,7 @@
 <h1>{{ event.title }}- Venue Signup. </h1>
 {% endblock %}
 {% block content %}
-
+<a id="rfid_status" href="javascript:void(0)">&bull;</a>
 <div class="row">
     <form class="well form-search form-horizontal">
     <input autofocus class="input-medium search-query" id="search" type="text" name="key" value=""/>
@@ -147,6 +147,14 @@
         if( current.length !== 1 ) return;
         toggle(current, data.card_id);
       });
+
+      $(window).on('rfid:active', function(e, data) {
+        $('#rfid_status').addClass('active');
+      });
+      $(window).on('rfid:inactive', function(e, data) {
+        $('#rfid_status').removeClass('active');
+      });
+
     });
 
     var list = [];
