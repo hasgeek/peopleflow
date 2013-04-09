@@ -142,17 +142,32 @@
         //$.ajax(ajax);
       };
 
-      $(window).on('tap:received', function(e, data) {
-        var current = $('a.rfid_card.tap.unassigned');
-        if( current.length !== 1 ) return;
-        toggle(current, data.card_id);
+      var rfid = {
+        'init': function(data) {
+          return;
+        },
+        'tag_placed': function(data) {
+          this.init(data);
+          $('#rfid_status').addClass('tag_placed');
+          var current = $('a.rfid_card.tap.unassigned');
+          if( current.length !== 1 ) return;
+          toggle(current, data.tag_id);
+        },
+        'tag_removed': function(data) {
+          this.init(data);
+          $('#rfid_status').removeClass('tag_placed');
+        }
+      };
+
+      $(window).on('rfid:action', function(e, data) {
+        if( typeof rfid[data.action] == 'function' ) rfid[data.action](data);
       });
 
-      $(window).on('rfid:active', function(e, data) {
-        $('#rfid_status').addClass('active');
+      $(window).on('rfid:server_inactive', function(e, data) {
+        $('#rfid_status').removeClass('server_active');
       });
-      $(window).on('rfid:inactive', function(e, data) {
-        $('#rfid_status').removeClass('active');
+      $(window).on('rfid:server_active', function(e, data) {
+        $('#rfid_status').addClass('server_active');
       });
 
     });

@@ -25,4 +25,5 @@ a.rfid_card.tap .unassign, a.rfid_card.tap .assign {display: none;}
 
 #rfid_status {position: absolute;bottom: 15px; left: 15px;z-index: 2222;font-size: 3em;color: #A00;text-shadow: 0 0 10px #444;opacity: 0.75}
 #rfid_status:hover {opacity: 1; text-decoration: none}
-#rfid_status.active {color: #0A0;}
+#rfid_status.server_active {color: #F0EC00;}
+#rfid_status.tag_placed {color: #0A0;}
