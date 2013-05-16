@@ -21,16 +21,15 @@
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
     <button class="btn" data-dismiss="modal" aria-hidden="true">I'm not <span class="name"></span></button>
-    <button class="btn btn-primary">Share</button>
+    <form id="kiosk" action="{{ url_for('share', kiosk=kiosk.name) }}" method="POST">
+      <input id="nfc_id" class="hidden" type="hidden" name="id" value="" />
+      <input id="share" class="btn btn-primary hidden" type="submit" value="Share" />
+      <input type="submit" class="btn btn-primary" value="Share">
+    </form>
   </div>
 </div>
 <div id="error"> </div>
 <div id="card"><h2>Tap your card to share contact information</h2></div>
-
-  <form id="kiosk" action="{{ url_for('share', kiosk=kiosk.name) }}" method="POST">
-    <input id="nfc_id" class="hidden" type="hidden" name="id" value="" />
-    <input id="share" class="btn btn-primary hidden" type="submit" value="Share" />
-  </form>
 
 {% endblock %}
 {% block footerscripts %}
@@ -45,7 +44,6 @@ rfid['tag_placed'] = function(data) {
     // $('input#share').removeClass("hidden")
 
     $.getJSON(url, function(data){
-      data = {name: "Mitesh Ashar", "email": "email@miteshashar.com"};
       if(data["error"]){
         $('div#info, input#share').addClass("hidden");
         $('div#error').removeClass("hidden").html('<h2>Invalid Card</h2>');
@@ -57,13 +55,10 @@ rfid['tag_placed'] = function(data) {
         $('div#email').html('<h2>'+data['email']+'</h2>');
         $('#info .name').html(data.name);
         $('#info').modal();
-        // setTimeout( function() { $('form#kiosk').submit() }, 800);
-        // $('form#kiosk').submit().delay(1200);
       };
     });
   }
 };
-// $(window).trigger('rfid:action',[{'action': 'tag_placed', 'tag_id': '12345678'}]);
 
 </script>
 

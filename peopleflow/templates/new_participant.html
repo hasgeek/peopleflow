@@ -6,6 +6,7 @@
 {% endblock %}
 {% block footerscripts %}
 <script src="http://127.0.0.1:8008/assets/js/lib.js"></script>
+<script src="/static/js/rfid/init.js"></script>
 <script type="text/javascript">
     var timer = null, interval = null;
     var stop_listening = function() {
@@ -56,12 +57,12 @@
             }
         };
 
-        $(window).on('tap:received', function(e, data) {
+        rfid.tag_placed = function(data) {
             var current = $('a.rfid_card.tap.unassigned');
             if( current.length !== 1 ) return;
-            $('input#nfc_id').attr("value", data['card_id']);
+            $('input#nfc_id').attr("value", data.tag_id);
             $("#participantform").submit();
-        });
+        };
     });
 </script>
 <!-- Ajax form -->

@@ -18,7 +18,6 @@ var rfid = {
         $('body').append('<a id="rfid_status" href="javascript:void(0)">&bull;</a>');
     },
     'action': function(action, data) {
-        console.log(action, data);
         if( typeof this.indicator[action] == 'function' ) {
             this.indicator[action](data);
         }
