@@ -1,1 +1,4 @@
-.container {width: 100%;}
+.container {width: auto;}
+#page-header {border-bottom: 0px;}
+.page-header h1 {display: none;}
+header {margin: 0px;}
