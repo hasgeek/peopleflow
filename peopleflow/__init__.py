@@ -40,6 +40,7 @@ assets.register('css_all', css)
 
 import peopleflow.models
 import peopleflow.views
+import peopleflow.helpers
 # from peopleflow.views.login import lastuser
 # if environ.get('PEOPLEFLOW_ENV') == 'prod':
 #     import peopleflow.loghandler

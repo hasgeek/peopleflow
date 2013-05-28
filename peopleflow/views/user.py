@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from peopleflow import app, mail
-from flask import Flask, abort, request, render_template, redirect, url_for, make_response
+from flask import Flask, abort, request, render_template, redirect, url_for, make_response, jsonify
 from werkzeug import secure_filename
 from flask import flash, session, g, Response
 from coaster.views import load_model, jsonp
@@ -17,6 +17,7 @@ from baseframe.forms import render_form, render_redirect, ConfirmDeleteForm
 import time
 from flask.ext.mail import Message
 from markdown import markdown
+from peopleflow.helpers.printlabel import printlabel
 
 
 hideemail = re.compile('.{1,3}@')
@@ -26,7 +27,8 @@ tz = timezone(app.config['TIMEZONE'])
 @app.route('/', methods=['GET'])
 def index():
     events = Event.query.order_by('id').all()
-    return render_template('index.html',events=events)
+    return render_template('index.html', events=events)
+
 
 
 @app.route('/event/new', methods=['GET'])
@@ -35,7 +37,7 @@ def event_new(eventform=None):
     if eventform is None:
         eventform = EventForm()
     context = {'eventform':eventform}
-    return render_template('new_event.html', **context)   
+    return render_template('new_event.html', **context)
 
 
 @app.route('/event/new', methods=['POST'])
@@ -139,20 +141,19 @@ def event_upload(year,eventname):
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash("Uploaded "+filename)
+            flash("Uploaded " + filename)
             csv_populate(os.path.join(app.config['UPLOAD_FOLDER'], filename), year, eventname)
             return redirect(url_for('index'))
 
 
-	
-@app.route('/<year>/<eventname>/signin',methods=['GET','POST'])
+@app.route('/<year>/<eventname>/signin', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
 def event_signin(eventname, year):
-    if request.method=='GET':
+    if request.method == 'GET':
         event = Event.query.filter_by(name=eventname, year=year).first()
         tz = timezone(app.config['TIMEZONE'])
         participants = Participant.query.filter_by(event_id=event.id).order_by('name').all()
-        return render_template('participants.html',participants=participants,event=event, hideemail=hideemail, enumerate=enumerate,
+        return render_template('participants.html', participants=participants, event=event, hideemail=hideemail, enumerate=enumerate,
             utc=utc, tz=tz)
     else:
         pid = request.form['id']
@@ -162,14 +163,15 @@ def event_signin(eventname, year):
         else:
             nfc_id = unicode(request.form['nfc_id'])
             participant.nfc_id = nfc_id
-            participant.attended=True
+            participant.attended = True
             participant.attend_date = datetime.utcnow()
             try:
                 db.session.commit()
                 return "success"
             except:
                 return "id_used"
-                 
+
+
 @app.route('/<year>/<eventname>/<pid>/signout', methods=['GET', 'POST'])
 # @load_model(Participant, {'id':'id'}, 'participant')
 def event_signout(year, eventname, pid):
@@ -202,7 +204,7 @@ def venue_signup(event, participantform=None):
             participantform = ParticipantForm()
         context = {'participantform':participantform, 'eventname':event.name, 'year':event.year}
         return render_template('new_participant.html', **context)
-    
+
     if request.method=='POST':
         form = ParticipantForm()
         if form.validate_on_submit():
@@ -267,7 +269,7 @@ def kiosk_new(kioskform=None):
         if kioskform is None:
             kioskform = KioskForm()
         context = {'kioskform':kioskform}
-        return render_template('new_kiosk.html', **context)   
+        return render_template('new_kiosk.html', **context)
 
     if request.method == 'POST':
         form = KioskForm()
@@ -292,7 +294,7 @@ def kiosk(name):
         name = unicode(name)
         kiosk = Kiosk.query.filter_by(name=name).first()
         return render_template('kiosk.html', kiosk = kiosk)
-    
+
 @app.route('/subscribe/<kiosk>',methods=['GET', 'POST'])
 def share(kiosk):
     if request.method=='POST':
@@ -304,14 +306,14 @@ def share(kiosk):
         # share.share_date = datetime.utcnow()
         # share.participant_id = participant
         if participant in kiosk.participants:
-            flash("Contact already shared",'error')
+            # flash("Contact already shared",'error')
             return render_redirect(url_for('kiosk', name=kiosk.name), code=303)
         else:
 
             kiosk.participants.append(participant)
             # share.kiosk_id = kiosk.id
             db.session.commit()
-            flash("Contact Shared",'success')
+            # flash("Contact Shared",'success')
             return render_redirect(url_for('kiosk', name=kiosk.name), code=303)
 
 @app.route('/participant/<nfc_id>', methods=["GET"])
@@ -378,7 +380,7 @@ def search(event, participants=None):
 def connect(event):
     if request.method=='GET':
         return render_template('connect.html', event = event)
-    
+
     if request.method == 'POST':
         participants = []
         ids = request.form['id']
@@ -400,7 +402,12 @@ def connect(event):
         return render_template('connect.html', event = event)
 
 
-
-
-
-
+@app.route('/print_card', methods=['POST'])
+def print_card():
+    twitter_handle = request.form['twitter']
+    name = request.form['name']
+    try:
+        printlabel(line1=name, line2=twitter_handle)
+        return jsonify({'msg': 'success'})
+    except:
+        return jsonify({'msg': 'failed'})
