@@ -1,12 +1,7 @@
-{% extends "layout.html" %}
-{% block networkbar %}{% endblock %}
+{% extends "kiosks_layout.html" %}
 {% block title %}Sponsors Kiosk -  {{ kiosk.name }} {% endblock %}
 
-{% block pageheaders %}
-<link rel="stylesheet" type="text/css" href="/static/css/kiosks.css">
-{% endblock %}
-
-{% block content %}
+{% block basecontent %}
 
 <div id="info" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="info-label" aria-hidden="true">
   <div class="modal-header">
@@ -33,8 +28,7 @@
 
 {% endblock %}
 {% block footerscripts %}
-<script src="http://127.0.0.1:8008/assets/js/lib.js"></script>
-<script src="/static/js/rfid/init.js"></script>
+{{ super() }}
 <script type="text/javascript">
 rfid['tag_placed'] = function(data) {
   this.action('tag_placed', data);
