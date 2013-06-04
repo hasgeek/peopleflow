@@ -24,7 +24,7 @@ class Kiosk(db.Model, BaseMixin):
 	company_logo = db.Column(db.Unicode(120), nullable=True)
 
 	#: Tap Message - Tap your badge here to ________
-	tap_msg = db.Column(db.Unicode(200), nullable=True, default="share your details")
+	tap_msg = db.Column(db.Unicode(200), nullable=True, default=u"share your details")
 
 	#: Event at which the kiosk is present. kiosk.event gives access.
 	event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
