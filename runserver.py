@@ -1,11 +1,13 @@
 #!/usr/bin/env python
-from peopleflow import app
+import sys
+from peopleflow import app, init_for
 from peopleflow.models import db
-from os import environ
+init_for('dev')
+db.create_all()
 
-environ['PEOPLEFLOW_ENV'] = 'dev'
+try:
+    port = int(sys.argv[1])
+except (IndexError, ValueError):
+    port = 8000
 
-if __name__=='__main__':
-    db.create_all()
-    app.config['ASSETS_DEBUG'] = True
-    app.run('0.0.0.0', 8000, debug=True)
+app.run('0.0.0.0', port, debug=True)
