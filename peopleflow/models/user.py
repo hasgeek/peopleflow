@@ -7,7 +7,7 @@ from . import db
 __all__ = ['User']
 
 
-class User(db.Model, UserBase):
+class User(UserBase, db.Model):
 
     __tablename__ = 'user'
     #: Events that a user owns
