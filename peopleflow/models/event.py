@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from peopleflow.models import db, BaseMixin
+from . import db, BaseMixin
 from datetime import date
 
 

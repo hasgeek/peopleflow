@@ -1,6 +1,6 @@
 
-from peopleflow.models import db, BaseMixin
-from peopleflow.models.event import Event
+from . import db, BaseMixin
+from .event import Event
 from datetime import datetime
 
 kiosk_participants = db.Table('kiosk_participants',

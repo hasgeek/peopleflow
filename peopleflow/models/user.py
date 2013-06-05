@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from flask import g
 from flask.ext.lastuser.sqlalchemy import UserBase
-from peopleflow.models import db
+from . import db
 
 
 __all__ = ['User']
