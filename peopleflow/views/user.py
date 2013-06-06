@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 from .. import app
 from flask import Flask, abort, request, render_template, redirect, url_for, make_response, jsonify
 from werkzeug import secure_filename
@@ -20,13 +21,6 @@ from markdown import markdown
 from ..helpers.printlabel import printlabel
 
 hideemail = re.compile('.{1,3}@')
-
-@app.route('/', methods=['GET'])
-def index():
-    events = Event.query.order_by('id').all()
-    return render_template('index.html', events=events)
-
-
 
 @app.route('/event/new', methods=['GET'])
 @lastuser.requires_permission('siteadmin')
