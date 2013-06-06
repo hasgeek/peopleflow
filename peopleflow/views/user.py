@@ -19,10 +19,7 @@ from flask.ext.mail import Message
 from markdown import markdown
 from ..helpers.printlabel import printlabel
 
-
 hideemail = re.compile('.{1,3}@')
-tz = timezone(app.config['TIMEZONE'])
-
 
 @app.route('/', methods=['GET'])
 def index():
