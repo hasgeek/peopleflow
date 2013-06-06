@@ -8,7 +8,7 @@ from flask import flash, session, g, Response
 from coaster.views import load_model, jsonp
 from ..forms import EventForm, ConfirmSignoutForm, ParticipantForm, KioskForm
 from ..models import db, Event, Participant, Kiosk
-from ..views.login import lastuser
+from .. import lastuser
 from dateutil import parser as dateparser
 from pytz import utc, timezone
 import os, csv, re
