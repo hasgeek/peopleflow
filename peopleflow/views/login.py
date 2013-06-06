@@ -8,6 +8,8 @@ from coaster.views import get_next_url
 from .. import app
 from ..models import db, User
 
+from .. import lastuser
+
 @app.route('/login')
 @lastuser.login_handler
 def login():

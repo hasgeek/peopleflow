@@ -21,7 +21,7 @@ lastuser = Lastuser()
 
 assets['peopleflow.css'][version] = 'css/app.css'
 
-from . import models
+from . import models, views
 from .models import db
 
 def init_for(env):
