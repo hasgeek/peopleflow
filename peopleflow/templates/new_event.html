@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% from 'macros.html' import ajaxform%}
 {% block titletags -%}
-  <title>{% block title %}Add Event - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
-  <meta name="DC.title" content="Add Event - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
+  <title>{% block title %}Add Event - {{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="Add Event - {{ config['SITE_TITLE'] }}"/>
 {%- endblock %}
 {% block content %}
         {% include 'eventform.html' %}
