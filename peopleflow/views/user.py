@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from peopleflow import app, mail
+from .. import app
 from flask import Flask, abort, request, render_template, redirect, url_for, make_response, jsonify
 from werkzeug import secure_filename
 from flask import flash, session, g, Response
 from coaster.views import load_model, jsonp
-from peopleflow.forms import EventForm, ConfirmSignoutForm, ParticipantForm, KioskForm
-from peopleflow.models import db, Event, Participant, Kiosk
-from peopleflow.views.login import lastuser
+from ..forms import EventForm, ConfirmSignoutForm, ParticipantForm, KioskForm
+from ..models import db, Event, Participant, Kiosk
+from ..views.login import lastuser
 from dateutil import parser as dateparser
 from pytz import utc, timezone
 import os, csv, re
@@ -17,7 +17,7 @@ from baseframe.forms import render_form, render_redirect, ConfirmDeleteForm
 import time
 from flask.ext.mail import Message
 from markdown import markdown
-from peopleflow.helpers.printlabel import printlabel
+from ..helpers.printlabel import printlabel
 
 
 hideemail = re.compile('.{1,3}@')

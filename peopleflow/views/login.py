@@ -5,8 +5,8 @@ from flask.ext.lastuser import LastUser
 from flask.ext.lastuser.sqlalchemy import UserManager
 from coaster.views import get_next_url
 
-from peopleflow import app
-from peopleflow.models import db, User
+from .. import app
+from ..models import db, User
 
 lastuser = LastUser(app)
 lastuser.init_usermanager(UserManager(db, User))
