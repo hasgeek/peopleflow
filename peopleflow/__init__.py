@@ -27,3 +27,5 @@ from .models import db
 def init_for(env):
     coaster.app.init_app(app, env)
     baseframe.init_app(app, requires=['baseframe', 'peopleflow'])
+    lastuser.init_app(app)
+    lastuser.init_usermanager(UserManager(db, models.User))
