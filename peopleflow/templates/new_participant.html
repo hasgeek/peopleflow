@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% from 'macros.html' import ajaxform%}
-{% block title %}New Participant{% endblock %}
+{% block titletags -%}
+  <title>{% block title %}Add Participant - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="Add Participant - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
 {% block content %}
         {% include 'participantform.html' %}
 {% endblock %}

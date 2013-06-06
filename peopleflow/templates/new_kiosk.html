@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% from 'macros.html' import ajaxform%}
-{% block title %}Add a new kiosk{% endblock %}
+{% block titletags -%}
+  <title>{% block title %}Add Kiosk - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="Add Kiosk - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
 {% block content %}
         {% include 'kioskform.html' %}
 {% endblock %}

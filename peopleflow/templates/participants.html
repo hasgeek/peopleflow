@@ -1,6 +1,10 @@
 {% extends "layout.html" %}
 {% block networkbar %}{% endblock %}
 {% block baseheadline %}Peopleflow -  HasGeek{% endblock %}
+{% block titletags -%}
+  <title>{% block title %}Venue Signup - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="Venue Signup - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
 {% block headline %}
 <h1>{{ event.title }}- Venue Signup. </h1>
 {% endblock %}

@@ -1,5 +1,8 @@
 {% extends "kiosks_layout.html" %}
-{% block title %}Sponsors Kiosk -  {{ kiosk.name }} {% endblock %}
+{% block titletags -%}
+  <title>{% block title %}{{ kiosk.name }} Kiosk - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="{{ kiosk.name }} Kiosk - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
 
 {% block basecontent %}
 
