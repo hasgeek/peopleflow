@@ -8,10 +8,6 @@ from coaster.views import get_next_url
 from .. import app
 from ..models import db, User
 
-lastuser = LastUser(app)
-lastuser.init_usermanager(UserManager(db, User))
-
-
 @app.route('/login')
 @lastuser.login_handler
 def login():
@@ -28,10 +24,15 @@ def logout():
 @app.route('/login/redirect')
 @lastuser.auth_handler
 def lastuserauth():
-    # Save the user object
-    db.session.commit()
     return redirect(get_next_url())
 
+@app.route('/login/notify', methods=['POST'])
+@lastuser.notification_handler
+def lastusernotify(user):
+    # Perform operations here if required.
+    # Warning: this *could* be a spoof call, so ignore all request data.
+    # Only trust the 'user' parameter to this function.
+    db.session.commit()
 
 @lastuser.auth_error_handler
 def lastuser_error(error, error_description=None, error_uri=None):
