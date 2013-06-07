@@ -22,10 +22,10 @@
             <tbody>
               {% for i, k in enumerate(kiosks) %}
                   <tr class="link">
-                  <td><a href="{{ url_for('kiosk',name=k.name) }}">{{ i+1 }}</a></td>
-                  <td><a href="{{ url_for('kiosk',name=k.name) }}">{{ k.name }}</a></td>
-                  <td><a href="{{ url_for('kiosk',name=k.name) }}"><strong>{{ k.company|e }}</strong></a></td>
-                  <td><a href="{{ url_for('kiosk',name=k.name) }}">{{ k.participants.__len__() }}</a></td>
+                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}">{{ i+1 }}</a></td>
+                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}">{{ k.name }}</a></td>
+                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}"><strong>{{ k.company|e }}</strong></a></td>
+                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}">{{ k.participants.__len__() }}</a></td>
                   <td>
                     <a  href="{{ url_for('kiosk_delete', id=k.id) }}"><i class="icon-remove"></i></a>
                   </td>

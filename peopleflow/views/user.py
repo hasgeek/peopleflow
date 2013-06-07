@@ -5,7 +5,7 @@ from .. import app
 from flask import Flask, abort, request, render_template, redirect, url_for, make_response, jsonify
 from werkzeug import secure_filename
 from flask import flash, session, g, Response
-from coaster.views import load_model, jsonp
+from coaster.views import load_model, load_models, jsonp
 from ..forms import EventForm, ConfirmSignoutForm, ParticipantForm, KioskForm
 from ..models import db, Event, Participant, Kiosk
 from .. import lastuser
@@ -287,13 +287,15 @@ def kiosk_new(event, kioskform=None):
                 flash("Please check your details and try again.", 'error')
                 return event_add(kioskform=form)
 
-@app.route('/kiosk/<name>', methods=['GET','POST'])
+@app.route('/event/<event>/kiosk/<kiosk>', methods=['GET','POST'])
+@load_models(
+    (Event, {'id':'event'}, 'event'),
+    (Kiosk, {'id': 'kiosk'}, 'kiosk')
+    )
 @lastuser.requires_permission('kioskadmin')
-def kiosk(name):
+def kiosk(event, kiosk):
     if request.method=='GET':
-        name = unicode(name)
-        kiosk = Kiosk.query.filter_by(name=name).first()
-        return render_template('kiosk.html', kiosk = kiosk)
+        return render_template('kiosk.html', kiosk=kiosk, event=event)
 
 @app.route('/subscribe/<kiosk>',methods=['GET', 'POST'])
 def share(kiosk):
