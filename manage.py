@@ -2,7 +2,8 @@
 
 from flask.ext.script import Manager, Server, Option, prompt_bool
 from flask.ext.script.commands import Clean, ShowUrls
-from flask.ext.alembic import ManageMigrations
+from flask.ext.alembic import ManageMigrations, FlaskAlembicConfig
+from alembic import command
 
 from peopleflow import app, init_for
 from peopleflow import models
@@ -44,12 +45,24 @@ def drop(env):
     if prompt_bool("Are you sure you want to lose all your data?"):
         db.drop_all()
 
-
 @database.option('-e', '--env', default='dev', help="runtime environment [default 'dev']")
 def create(env):
     "Creates database tables from sqlalchemy models"
     init_for(env)
     db.create_all()
+    config = FlaskAlembicConfig("alembic.ini")
+    command.stamp(config, "head")
+
+@database.option('-e', '--env', default='dev', help="runtime environment [default 'dev']")
+def setversion(env):
+    '''
+    Manually set the alembic version of the
+    database to the provided value.
+    '''
+    init_for(env)
+    config = FlaskAlembicConfig("alembic.ini")
+    version = raw_input("Enter the alembic version to be set:")
+    command.stamp(config, version)
 
 
 manager.add_command("db", database)
