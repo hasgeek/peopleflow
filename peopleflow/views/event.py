@@ -7,12 +7,12 @@ import re
 from .. import app
 from .. import lastuser
 from ..models import db, Event, Participant
-from ..forms import EventForm, ConfirmSignoutForm, ConfirmDeleteForm
+from ..forms import EventForm, ConfirmSignoutForm
 from pytz import utc, timezone
 from datetime import datetime
 from flask import request, flash, url_for, render_template
 from werkzeug import secure_filename
-from baseframe.forms import render_redirect
+from baseframe.forms import render_redirect, ConfirmDeleteForm
 from coaster.views import jsonp, load_model
 
 hideemail = re.compile('.{1,3}@')

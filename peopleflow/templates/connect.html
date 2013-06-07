@@ -31,7 +31,7 @@ $('input#nfc_id').attr("value","");
         console.log(data)
 
         if (data['card_id']) {
-          url = "/participant/"+data['card_id'];
+          url = "/event/{{ event.id }}/participant/"+data['card_id'];
           if ($('input#nfc_id').val() == "") {
           $('input#nfc_id').attr("value", data['card_id'] );
           }
