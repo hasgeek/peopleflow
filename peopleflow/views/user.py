@@ -271,7 +271,7 @@ def kiosk_new(event, kioskform=None):
             kiosk = Kiosk()
             form.populate_obj(kiosk)
             file = urllib.urlopen(kiosk.company_logo).read()
-            filename = os.path.join(app.config['UPLOAD_FOLDER'], hashlib.md5(file).hexdigest())
+            filename = os.path.join(app.config['STATIC_UPLOAD_FOLDER'], 'sponsors', hashlib.md5(file).hexdigest())
             with open(filename, 'wb') as f:
                 f.write(file)
                 f.close()
