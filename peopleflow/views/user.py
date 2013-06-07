@@ -253,13 +253,14 @@ def event_delete(event):
         message=u"Delete '%s' ?" % (event.title))
 
 
-@app.route('/kiosk/new', methods=['GET', 'POST'])
+@app.route('/event/<id>/kiosk/new', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
-def kiosk_new(kioskform=None):
+@load_model(Event, {'id':'id'}, 'event')
+def kiosk_new(event, kioskform=None):
     if request.method == 'GET':
         if kioskform is None:
             kioskform = KioskForm()
-        context = {'kioskform':kioskform}
+        context = {'kioskform':kioskform, 'event':event}
         return render_template('new_kiosk.html', **context)
 
     if request.method == 'POST':
