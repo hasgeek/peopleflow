@@ -19,6 +19,8 @@ import time
 from flask.ext.mail import Message
 from markdown import markdown
 from ..helpers.printlabel import printlabel
+import urllib
+import hashlib
 
 hideemail = re.compile('.{1,3}@')
 
@@ -268,6 +270,12 @@ def kiosk_new(event, kioskform=None):
         if form.validate_on_submit():
             kiosk = Kiosk()
             form.populate_obj(kiosk)
+            file = urllib.urlopen(kiosk.company_logo).read()
+            filename = os.path.join(app.config['UPLOAD_FOLDER'], hashlib.md5(file).hexdigest())
+            with open(filename, 'wb') as f:
+                f.write(file)
+                f.close()
+            kiosk.company_logo = filename
             db.session.add(kiosk)
             db.session.commit()
             flash("Kiosk added")
