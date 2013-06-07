@@ -193,7 +193,7 @@ def venue_signup(event, participantform=None):
     if request.method=='GET':
         if participantform is None:
             participantform = ParticipantForm()
-        context = {'participantform':participantform, 'eventname':event.name, 'year':event.year}
+        context = {'participantform':participantform, 'event': event, 'year':event.year}
         return render_template('new_participant.html', **context)
 
     if request.method=='POST':
@@ -211,7 +211,7 @@ def venue_signup(event, participantform=None):
                 flash('Participant %s added.' % participant.name, 'success')
                 return "success"
             except:
-                 return "fail"
+                return "fail"
         else:
             if request.is_xhr:
                 return render_template('participantform.html', participantform=form, ajax_re_register=True)
