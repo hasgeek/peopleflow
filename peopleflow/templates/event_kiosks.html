@@ -27,10 +27,10 @@
                   <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}"><strong>{{ k.company|e }}</strong></a></td>
                   <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}">{{ k.participants.__len__() }}</a></td>
                   <td>
-                    <a  href="{{ url_for('kiosk_delete', id=k.id) }}"><i class="icon-remove"></i></a>
+                    <a  href="{{ url_for('kiosk_delete', event=event.id, kiosk=k.id) }}"><i class="icon-remove"></i></a>
                   </td>
                   {%- if k.participants.__len__() -%}
-                    <td><a href="{{ url_for('export_kiosk', id=k.id) }}" class= "btn btn-small btn-primary" >Export</a></td>
+                    <td><a href="{{ url_for('export_kiosk', event=event.id, id=k.id) }}" class= "btn btn-small btn-primary" >Export</a></td>
                   {%- else -%}
                     <td></td>
                    {%- endif -%}   

@@ -19,7 +19,7 @@
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
     <button class="btn" data-dismiss="modal" aria-hidden="true">I'm not <span class="name"></span></button>
-    <form id="kiosk" action="{{ url_for('share', kiosk=kiosk.name) }}" method="POST">
+    <form id="kiosk" action="{{ url_for('share', kiosk=kiosk.id, event=event.id) }}" method="POST">
       <input id="nfc_id" class="hidden" type="hidden" name="id" value="" />
       <input id="share" class="btn btn-primary hidden" type="submit" value="Share" />
       <input type="submit" class="btn btn-primary" value="Share">

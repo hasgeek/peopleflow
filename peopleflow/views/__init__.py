@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from . import index, user, login, event, participant
+from . import index, user, login, event, participant, kiosk
