@@ -5,9 +5,9 @@ from flask.ext.script.commands import Clean, ShowUrls
 from flask.ext.alembic import ManageMigrations, FlaskAlembicConfig
 from alembic import command
 
-from . import app, init_for
-from . import models
-from .models import db
+from peopleflow import app, init_for
+from peopleflow import models
+from peopleflow.models import db
 
 
 manager = Manager(app)
