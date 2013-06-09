@@ -26,8 +26,23 @@
     </form>
   </div>
 </div>
+<div id="company_logo">
+  <img src="/static/uploads/sponsors/{{ kiosk.company_logo }}" alt="{{ kiosk.company }} Logo">
+</div>
+<div id="company_info">
+  <h1 class="name">{{ kiosk.company }}</h1>
+  <h3 class="tag">{{ kiosk.company_tag }}</h3>
+</div>
 <div id="error"> </div>
-<div id="card"><h2>Tap your card to share contact information</h2></div>
+<div id="bottom">
+  <h2 id="company_tap_msg">
+    Tap your badge to {% if kiosk.tap_msg %} {{ company.tap_msg }} {% else %} share your details {% endif %}
+  </h2>
+  <div id="sponsor_privacy">
+    <h3>Privacy Policy</h3>
+    <p>Privacy Policy Text</p>
+  </div>
+</div>
 
 {% endblock %}
 {% block footerscripts %}
