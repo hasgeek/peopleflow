@@ -1,6 +1,8 @@
 .container {width: auto;}
-#footerlogo {position: absolute;top: 10px; bottom: 10px; right: 5px;}
-#footerlogo img {max-height: 100%}
+#footerlogo {position: absolute;top: 10px; bottom: 10px; right: 5px;width: 300px;text-align: right;}
+#footerlogo img {max-height: 100%;}
+#root {min-height: 0;}
+footer {position: absolute;bottom:0px;width: 100%;}
 
 /*Sponsor Kiosk Styles*/
 #company_logo, #company_info, #bottom {position: absolute;top: 1%;bottom: 51%;}
