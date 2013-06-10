@@ -17,6 +17,14 @@ from coaster.views import jsonp, load_model
 
 hideemail = re.compile('.{1,3}@')
 
+@app.route('/event/new', methods=['GET'])
+@lastuser.requires_permission('siteadmin')
+def event_new(eventform=None):
+    if eventform is None:
+        eventform = EventForm()
+    context = {'eventform':eventform}
+    return render_template('new_event.html', **context)
+
 @app.route('/event/new', methods=['POST'])
 @lastuser.requires_permission('siteadmin')
 def event_submit():
