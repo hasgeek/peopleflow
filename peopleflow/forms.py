@@ -2,7 +2,7 @@
 # -*- coding: iso-8859-15 -*-
 
 from peopleflow.models import Event
-from flaskext.wtf import (
+from flask.ext.wtf import (
     Form,
     TextField,
     Required,
