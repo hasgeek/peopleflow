@@ -16,3 +16,9 @@ footer {position: absolute;bottom:0px;width: 100%;}
 #company_tap_msg {font-size: 35px; line-height: 40px;}
 #sponsor_privacy {margin: 0px 10%;}
 #sponsor_privacy h3 {color:#000; }
+
+/*Sponsor Kiosk when company name is not specified*/
+#company_logo.nocompany, #company_info.nocompany{left: 1%; right: 1%;}
+#company_logo.nocompany.comptag{bottom: 61%;}
+#company_info.nocompany.comptag{top: 41%;}
+#company_info.nocompany.comptag .name, #company_info.nocompany.nocomptag {display: none;}

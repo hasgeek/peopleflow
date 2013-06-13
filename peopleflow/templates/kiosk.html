@@ -26,10 +26,20 @@
     </form>
   </div>
 </div>
-<div id="company_logo">
+{% set company_class = "" %}
+{% if kiosk.company == None or kiosk.company == '' %}
+  {% set company_class = company_class + ' nocompany' %}
+{% endif %}
+{% if kiosk.company_tag == None or kiosk.company_tag == '' %}
+  {% set company_class = company_class + ' nocomptag' %}
+{% endif %}
+{% if kiosk.company_tag != None and kiosk.company_tag != '' %}
+  {% set company_class = company_class + ' comptag' %}
+{% endif %}
+<div id="company_logo"{% if company_class %} class="{{ company_class }}" {% endif %}>
   <img src="/static/uploads/sponsors/{{ kiosk.company_logo }}" alt="{{ kiosk.company }} Logo">
 </div>
-<div id="company_info">
+<div id="company_info"{% if company_class %} class="{{ company_class }}" {% endif %}>
   <h1 class="name">{{ kiosk.company }}</h1>
   <h3 class="tag">{{ kiosk.company_tag }}</h3>
 </div>
