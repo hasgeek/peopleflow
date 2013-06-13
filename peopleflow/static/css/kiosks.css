@@ -7,9 +7,9 @@ footer {position: absolute;bottom:0px;width: 100%;}
 /*Sponsor Kiosk Styles*/
 #company_logo, #company_info, #bottom {position: absolute;top: 1%;bottom: 51%;}
 #company_logo, #company_tap_msg {text-align: center;}
-#company_logo { left: 1%; right: 51%;padding: 1%;}
+#company_logo { left: 1%; right: 41%;padding: 1%;}
 #company_logo img {max-width: 98%; max-height: 98%;}
-#company_info {left: 51%; right: 1%;}
+#company_info {left: 41%; right: 1%;}
 #company_info .name {font-size: 50px; line-height: 60px;}
 #company_info .tag {font-size: 25px; line-height: 30px;}
 #bottom {left: 1%;top: 51%;bottom: 55px;right: 1%;}
