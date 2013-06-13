@@ -33,7 +33,7 @@ def kiosk_new(event, kioskform=None):
             filename = hashlib.md5(file).hexdigest()
             filepath = os.path.join(app.config['STATIC_UPLOAD_FOLDER'], 'sponsors', filename)
             with open(filepath, 'wb') as f:
-                f.write(filepath)
+                f.write(file)
                 f.close()
             kiosk.company_logo = filename
             db.session.add(kiosk)
