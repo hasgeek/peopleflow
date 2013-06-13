@@ -21,4 +21,5 @@ footer {position: absolute;bottom:0px;width: 100%;}
 #company_logo.nocompany, #company_info.nocompany{left: 1%; right: 1%;}
 #company_logo.nocompany.comptag{bottom: 61%;}
 #company_info.nocompany.comptag{top: 41%;}
+#company_info.nocompany.comptag .tag {text-align: center;}
 #company_info.nocompany.comptag .name, #company_info.nocompany.nocomptag {display: none;}
