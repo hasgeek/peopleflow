@@ -40,4 +40,4 @@ ADMINS = []
 #: Log file
 LOGFILE = 'error.log'
 UPLOAD_FOLDER = 'uploads'
-STATIC_UPLOAD_FOLDER = 'static/uploads'
+STATIC_UPLOAD_FOLDER = 'peopleflow/static/uploads'
