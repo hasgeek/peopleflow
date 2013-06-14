@@ -1,8 +1,12 @@
 {% extends "layout.html" %}
-{% block baseheadline %}PeopleFlow -  HasGeek{% endblock %}
+{% block titletags -%}
+  <title>{% block title %}Kiosks - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="Kiosks - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
+{% block baseheadline %}Peopleflow -  HasGeek{% endblock %}
 {% block headline %}
-<h1>{{ event.title }}- Kiosks. </h1>
-<a class="btn" href="{{ url_for('kiosk_new') }}">Add a new kiosk</a>
+<h1>{{ event.title }} - Kiosks. </h1>
+<a class="btn" href="{{ url_for('kiosk_new', id=event.id) }}">Add a new kiosk</a>
 {% endblock %}
 {% block content %}
 <div id="tabs">
@@ -18,15 +22,15 @@
             <tbody>
               {% for i, k in enumerate(kiosks) %}
                   <tr class="link">
-                  <td><a href="{{ url_for('kiosk',name=k.name) }}">{{ i+1 }}</a></td>
-                  <td><a href="{{ url_for('kiosk',name=k.name) }}">{{ k.name }}</a></td>
-                  <td><a href="{{ url_for('kiosk',name=k.name) }}"><strong>{{ k.company|e }}</strong></a></td>
-                  <td><a href="{{ url_for('kiosk',name=k.name) }}">{{ k.participants.__len__() }}</a></td>
+                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}">{{ i+1 }}</a></td>
+                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}">{{ k.name }}</a></td>
+                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}"><strong>{{ k.company|e }}</strong></a></td>
+                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}">{{ k.participants.__len__() }}</a></td>
                   <td>
-                    <a  href="{{ url_for('kiosk_delete', id=k.id) }}"><i class="icon-remove"></i></a>
+                    <a  href="{{ url_for('kiosk_delete', event=event.id, kiosk=k.id) }}"><i class="icon-remove"></i></a>
                   </td>
                   {%- if k.participants.__len__() -%}
-                    <td><a href="{{ url_for('export_kiosk', id=k.id) }}" class= "btn btn-small btn-primary" >Export</a></td>
+                    <td><a href="{{ url_for('export_kiosk', event=event.id, id=k.id) }}" class= "btn btn-small btn-primary" >Export</a></td>
                   {%- else -%}
                     <td></td>
                    {%- endif -%}   

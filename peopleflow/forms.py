@@ -6,6 +6,7 @@ from flask.ext.wtf import (
     Form,
     TextField,
     Required,
+    URL,
     DateField,
     SubmitField,
     HiddenField,
@@ -17,7 +18,7 @@ class EventForm(Form):
 
     name = TextField('Name', validators=[Required('A name is required')])
     title = TextField('Title', validators=[Required('A title is required')])
-    date = DateField('Date', validators=[Required('Propose a date')])
+    date = DateField('Date', description="Format: YYYY-MM-DD", validators=[Required('Propose a date')])
     venue = TextField('Venue', validators=[Required('Venue information is required')])
 
 
@@ -47,6 +48,9 @@ def get_events():
 
 class KioskForm(Form):
 
-    name = TextField('Name', validators=[Required('A name is required')])
-    company = TextField('Title', validators=[Required('A company name is required')])
+    name = TextField('Kiosk Name', validators=[Required('A name is required')])
+    company = TextField('Company Name', description="Optional. You may want to leave this attribute empty if the name of the company is clear from the logo.")
+    company_tag = TextField('Company Tagline', description="Optional")
+    company_logo = TextField('Company Logo', description="Provide the URL for the image of the sponsor's logo. Best size: 715 X 508 pixels.", validators=[Required('The logo is required'), URL(message="Please provide a valid URL")])
+    tap_msg = TextField('Tapping message', description='Optional. Please tap your badge to ____? Leave blank to use default message.')
     event = QuerySelectField('Select an event', query_factory= get_events, get_label='title', allow_blank=False)

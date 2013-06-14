@@ -1,75 +1,86 @@
-{% extends "layout.html" %}
-{% block title %}ContactPoint -  {{ kiosk.company }} {% endblock %}
-{% block header %}
-{{ kiosk.company }}
-{% endblock %}
-{% block content %}
+{% extends "kiosks_layout.html" %}
+{% block titletags -%}
+  <title>{% block title %}{{ kiosk.name }} Kiosk - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="{{ kiosk.name }} Kiosk - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
 
-<div id="info" class="hero-unit">
-<div id="name" >
+{% block basecontent %}
 
+<div id="info" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="info-label" aria-hidden="true">
+  <div class="modal-header">
+    <h3 id="info-label">Confirmation</h3>
+  </div>
+  <div class="modal-body">
+    <div>
+      <h2>Hi <strong><span class="name"></span></strong>!</h2>
+      <h3>Your contact details will be shared with {{ kiosk.name }}.</h3>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true">I'm not <span class="name"></span></button>
+    <form id="kiosk" action="{{ url_for('share', kiosk=kiosk.id, event=event.id) }}" method="POST">
+      <input id="nfc_id" class="hidden" type="hidden" name="id" value="" />
+      <input id="share" class="btn btn-primary hidden" type="submit" value="Share" />
+      <input type="submit" class="btn btn-primary" value="Share">
+    </form>
+  </div>
 </div>
-<div id="email"> </div>
+{% set company_class = "" %}
+{% if kiosk.company == None or kiosk.company == '' %}
+  {% set company_class = company_class + ' nocompany' %}
+{% endif %}
+{% if kiosk.company_tag == None or kiosk.company_tag == '' %}
+  {% set company_class = company_class + ' nocomptag' %}
+{% endif %}
+{% if kiosk.company_tag != None and kiosk.company_tag != '' %}
+  {% set company_class = company_class + ' comptag' %}
+{% endif %}
+<div id="company_logo"{% if company_class %} class="{{ company_class }}" {% endif %}>
+  <img src="/static/uploads/sponsors/{{ kiosk.company_logo }}" alt="{{ kiosk.company }} Logo">
+</div>
+<div id="company_info"{% if company_class %} class="{{ company_class }}" {% endif %}>
+  <h1 class="name">{{ kiosk.company }}</h1>
+  <h3 class="tag">{{ kiosk.company_tag }}</h3>
 </div>
 <div id="error"> </div>
-<div id="card"> </div>
-
-  <form id="kiosk" action="{{ url_for('share', kiosk=kiosk.name) }}" method="POST">
-    <input id="nfc_id" class="hidden" type="hidden" name="id" value="" />
-    <input id="share" class="btn btn-primary hidden" type="submit" value="Share" />
-  </form>
+<div id="bottom">
+  <h2 id="company_tap_msg">
+    Tap your badge to {% if kiosk.tap_msg %} {{ kiosk.tap_msg }} {% else %} share your details {% endif %}
+  </h2>
+  <div id="sponsor_privacy">
+    <h3>Privacy Policy</h3>
+    <p>Privacy Policy Text</p>
+  </div>
+</div>
 
 {% endblock %}
 {% block footerscripts %}
+{{ super() }}
 <script type="text/javascript">
+rfid['tag_placed'] = function(data) {
+  this.action('tag_placed', data);
+  if (data['tag_id']) {
+    url = "/event/{{ event.id }}/participant/"+data['tag_id'];
+    $('input#nfc_id').attr("value",data['tag_id'] );
+    // $('input#share').removeClass("hidden")
 
-(function poll(){
-   setTimeout(function(){
-      $.getJSON("http://127.0.0.1:8008/card_id.json?callback=?", function(data){
-        console.log(data)
-
-        if (data['card_id']) {
-          url = "/participant/"+data['card_id'];
-          $('input#nfc_id').attr("value",data['card_id'] );
-          // $('input#share').removeClass("hidden")
-            
-          $.getJSON(url, function(data){
-            if(data["error"]){
-              
-          $('div#info').addClass("hidden");
-          $('div#error').removeClass("hidden");
-          $('div#error').html('<h2>Invalid Card</h2>');
-          $('input#share').addClass("hidden");
-            }
-              else{
-            $('div#error').addClass("hidden");
-            $('div#info').removeClass("hidden");
-            $('div#name').html('<h1>'+data['name']+'</h1>');
-            $('div#email').html('<h2>'+data['email']+'</h2>');
-            setTimeout( function() { $('form#kiosk').submit() }, 800);
-            // $('form#kiosk').submit().delay(1200);
-          };
-          }
-
-            );
-        }
-        else if(data['error']=="no_card") {
-          $('#div#error').addClass("hidden");
-          $('div#info').addClass("hidden");
-          $('input#share').addClass("hidden");
-          $('div#error').addClass("hidden");
-          $('div#card').removeClass("hidden");
-          $('div#card').html('<h2>Tap your card to share contact information</h2>');
-             }  
-        else{
-          $('div#error').html('<h2>Check the reader</h2>');
-        };
-
-        poll();
-        
-      });
-  }, 3000);
-})();
+    $.getJSON(url, function(data){
+      if(data["error"]){
+        $('div#info, input#share').addClass("hidden");
+        $('div#error').removeClass("hidden").html('<h2>Invalid Card</h2>');
+      }
+      else{
+        $('div#error').addClass("hidden");
+        $('div#info').removeClass("hidden");
+        $('div#name').html('<h1>'+data['name']+'</h1>');
+        $('div#email').html('<h2>'+data['email']+'</h2>');
+        $('#info .name').html(data.name);
+        $('#info').modal();
+      };
+    });
+  }
+};
 
 </script>
 

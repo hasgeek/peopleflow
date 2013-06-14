@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from flask import g
 from flask.ext.lastuser.sqlalchemy import UserBase
-from peopleflow.models import db
+from . import db
 
 
 __all__ = ['User']
 
 
-class User(db.Model, UserBase):
+class User(UserBase, db.Model):
 
     __tablename__ = 'user'
     #: Events that a user owns

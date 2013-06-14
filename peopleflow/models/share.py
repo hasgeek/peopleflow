@@ -1,7 +1,7 @@
 
-from peopleflow.models import db, BaseMixin
-from peopleflow.models.participant import Participant
-from peopleflow.models.kiosk import Kiosk
+from . import db, BaseMixin
+from .participant import Participant
+from .kiosk import Kiosk
 from datetime import datetime
 
 

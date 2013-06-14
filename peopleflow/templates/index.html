@@ -1,5 +1,8 @@
 {% extends "layout.html" %}
-{% block title %}PeopleFlow -  Events {% endblock %}
+{% block titletags -%}
+  <title>{% block title %}{{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="{{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
 {% block header %}
 {% endblock %}
 {% block content %}
@@ -12,7 +15,8 @@
               <th>Date</th>
               <th>Venue</th>
               <th>Participants</th>
-              <th>Kiosks</th>
+              <th>Sponsor Kiosks</th>
+              <th>Participant Kiosk</th>
               <th>Action</th>
 
               <!-- <th>Delete</th> -->
@@ -25,10 +29,11 @@
                   <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{e.date}}</a></td>
                   <td><a href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.venue }}</a></td>
                   {%- if e.participants.count() -%}
-                  <td><a style="display:inline" href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.participants.filter_by(attended=1).count() }}/{{  e.participants.count() }}</a>
+                  <td><a style="display:inline" href="{{ url_for('event_signin', year=e.year, eventname=e.name) }}">{{ e.participants.filter_by(attended=True).count() }}/{{  e.participants.count() }}</a>
                     <a style="display:inline" href="{{ url_for('event_upload',year=e.year, eventname=e.name) }}"><i class="icon-upload-alt"></i></a>
                   </td>
                   <td><a style="display:inline" href="{{ url_for('event_kiosks', year = e.year, eventname=e.name) }}"><i class="icon-edit"></i></a></td>
+                  <td><a style="display:inline" href="{{ url_for('connect', year = e.year, eventname=e.name) }}"><i class="icon-user"></i></a></td>
                   {%- else -%}
                   <td><a href="{{ url_for('event_upload',year=e.year, eventname=e.name) }}">Upload CSV</a></td>
                   {% endif %}

@@ -1,10 +1,10 @@
 
-from peopleflow.models import db, BaseMixin
+from . import db, BaseMixin
 from datetime import datetime
 
 
 TSHIRT_SIZES = [
-    ('',  u''),
+    ('0',  u''),
     ('1', u'XS'),
     ('2', u'S'),
     ('3', u'M'),
@@ -13,6 +13,7 @@ TSHIRT_SIZES = [
     ('6', u'XXL'),
     ('7', u'XXXL'),
     ]
+
 
 class Participant(db.Model, BaseMixin):
   

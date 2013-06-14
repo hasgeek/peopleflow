@@ -1,0 +1,25 @@
+.container {width: auto;}
+#footerlogo {position: absolute;top: 10px; bottom: 10px; right: 5px;width: 300px;text-align: right;}
+#footerlogo img {max-height: 100%;}
+#root {min-height: 0;}
+footer {position: absolute;bottom:0px;width: 100%;}
+
+/*Sponsor Kiosk Styles*/
+#company_logo, #company_info, #bottom {position: absolute;top: 1%;bottom: 51%;}
+#company_logo, #company_tap_msg {text-align: center;}
+#company_logo { left: 1%; right: 61%;padding: 1%;}
+#company_logo img {max-width: 98%; max-height: 98%;}
+#company_info {left: 41%; right: 1%;}
+#company_info .name {font-size: 50px; line-height: 60px;}
+#company_info .tag {font-size: 25px; line-height: 30px;}
+#bottom {left: 1%;top: 51%;bottom: 55px;right: 1%;}
+#company_tap_msg {font-size: 35px; line-height: 40px;}
+#sponsor_privacy {margin: 0px 10%;}
+#sponsor_privacy h3 {color:#000; }
+
+/*Sponsor Kiosk when company name is not specified*/
+#company_logo.nocompany, #company_info.nocompany{left: 1%; right: 1%;}
+#company_logo.nocompany.comptag{bottom: 61%;}
+#company_info.nocompany.comptag{top: 41%;}
+#company_info.nocompany.comptag .tag {text-align: center;}
+#company_info.nocompany.comptag .name, #company_info.nocompany.nocomptag {display: none;}
