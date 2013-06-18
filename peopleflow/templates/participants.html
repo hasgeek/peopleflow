@@ -185,31 +185,11 @@
       return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
     };
 
-    var autocompfn = function(event, ui) {
-      var query=this.value;
-      console.log("Query:", query);
-      if(query == '') {
-        $('tr').removeClass("hidden");
-      }
-      else {
-        $('tr').addClass("hidden");
-        $('tr:Contains("'+query+'")').removeClass("hidden");
-      }
-    };
-    var autocompfn2 = function(event, ui) {
-      console.log('select');
-      autocompfn(event, ui);
-    }
-    // $('input#search').autocomplete({
-    //   search: autocompfn,
-    //   select: autocompfn2
-    // });
     var old_search_value = '';
     $('input#search').keyup(function(event, ui){
       var query = this.value;
       if(old_search_value != query) {
         old_search_value = query;
-        console.log("Query:", query);
         if(query == '') {
           $('tr').removeClass("hidden");
         }
