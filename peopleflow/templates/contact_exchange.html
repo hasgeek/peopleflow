@@ -11,12 +11,12 @@
 {% block footerscripts %}
 {{ super() }}
 <script type="text/javascript">
-rfid['tag_placed'] = function(data) {
+rfid.on( 'tag_placed', function(data) {
   this.action('tag_placed', data);
   if (data['tag_id']) {
     
   }
-};
+});
 
 </script>
 
