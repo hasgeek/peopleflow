@@ -28,3 +28,11 @@ footer {position: absolute;bottom:0px;width: 100%;}
 #company_info.nocompany.comptag{top: 41%;}
 #company_info.nocompany.comptag .tag {text-align: center;}
 #company_info.nocompany.comptag .name, #company_info.nocompany.nocomptag {display: none;}
+
+/*Contact Exchange Kiosk Styles*/
+#contact_exchange {position: absolute;width: 100%;height: 100%;}
+#contact_exchange .top {position: absolute; top: 0px; left: 1%;right: 1%; bottom: 60px}
+#contact_exchange .logo, #contact_exchange .message { position: absolute; top: 1%; bottom: 1%;}
+#contact_exchange .logo {left: 1%; right: 61%;text-align: center;}
+#contact_exchange .logo img {max-width: 98%;max-height: 98%;}
+#contact_exchange .message {left: 41%; right: 1%; top: 10%;font-size: 4.0em;line-height: 1.25em}
