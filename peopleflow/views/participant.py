@@ -43,10 +43,9 @@ def venue_signup(event, participantform=None):
 
 
 @app.route('/event/<event>/participant/<nfc_id>', methods=["GET"])
-@load_model(Event, {'id': 'event'}, 'event')
 def get_participant(event, nfc_id):
         try:
-            participant = Participant.query.filter_by(nfc_id=nfc_id).first()
+            participant = Participant.query.filter_by(event_id=event, nfc_id=nfc_id).first()
             response = jsonp(name=participant.name, email=participant.email)
         except:
             response = jsonp(error="invalid")
