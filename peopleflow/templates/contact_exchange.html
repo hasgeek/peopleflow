@@ -12,7 +12,6 @@
 {{ super() }}
 <script type="text/javascript">
 rfid.on( 'tag_placed', function(data) {
-  this.action('tag_placed', data);
   if (data['tag_id']) {
     
   }
