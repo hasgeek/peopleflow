@@ -23,34 +23,6 @@ import urllib
 import hashlib
 
 
-@app.route('/<year>/<eventname>/connect', methods=['GET','POST'])
-@lastuser.requires_permission('siteadmin')
-@load_model(Event, {'name':'eventname'}, 'event')
-def connect(event):
-    if request.method=='GET':
-        return render_template('connect.html', event = event)
-
-    if request.method == 'POST':
-        participants = []
-        ids = request.form['id']
-        ids = set(ids.split(','))
-        msg = Message("Hello from "+event.title)
-        for id in ids:
-            participant = Participant.query.filter_by(event_id=event.id, nfc_id=id).first()
-            participants.append(participant)
-
-        for participant in participants:
-            exchange = []
-            for other in participants:
-                if other!=participant:
-                    exchange.append(other)
-            msg.body= render_template('connectemail.md', name= participant.name, participants=exchange, event=event)
-            msg.recipients=[participant.email]
-            mail.send(msg)
-        flash("Email sent!", "success")
-        return render_template('connect.html', event = event)
-
-
 @app.route('/print_card', methods=['POST'])
 def print_card():
     twitter_handle = request.form['twitter']

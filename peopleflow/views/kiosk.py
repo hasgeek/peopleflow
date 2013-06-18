@@ -119,3 +119,30 @@ def export_kiosk(kiosk):
     response.headers['Content-Type']='text/csv';'charset=utf-8'
     response.headers['Content-Disposition']='attachment; filename=participants.csv'
     return response
+
+@app.route('/event/<event>/contact_exchange', methods=['GET','POST'])
+@lastuser.requires_permission('siteadmin')
+@load_model(Event, {'id':'event'}, 'event')
+def contact_exchange(event):
+    if request.method=='GET':
+        return render_template('contact_exchange.html', event = event)
+
+    if request.method == 'POST':
+        participants = []
+        ids = request.form['id']
+        ids = set(ids.split(','))
+        msg = Message("Hello from "+event.title)
+        for id in ids:
+            participant = Participant.query.filter_by(event_id=event.id, nfc_id=id).first()
+            participants.append(participant)
+
+        for participant in participants:
+            exchange = []
+            for other in participants:
+                if other!=participant:
+                    exchange.append(other)
+            msg.body= render_template('connectemail.md', name= participant.name, participants=exchange, event=event)
+            msg.recipients=[participant.email]
+            mail.send(msg)
+        flash("Email sent!", "success")
+        return render_template('connect.html', event = event)
