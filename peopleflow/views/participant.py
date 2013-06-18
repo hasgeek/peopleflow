@@ -46,7 +46,7 @@ def venue_signup(event, participantform=None):
 def get_participant(event, nfc_id):
         try:
             participant = Participant.query.filter_by(event_id=event, nfc_id=nfc_id).first()
-            response = jsonp(name=participant.name, email=participant.email)
+            response = jsonp(id=participant.id,name=participant.name, email=participant.email,twitter=participant.twitter)
         except:
             response = jsonp(error="invalid")
         return response

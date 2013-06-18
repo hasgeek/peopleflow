@@ -17,15 +17,10 @@
 
 {% block footerscripts %}
 {{ super() }}
-<script type="text/javascript">
-rfid.on( 'tag_placed', function(data) {
-  if (data['tag_id']) {
-    
-  }
-});
-
+<script src="/static/js/rfid/contact_exchange.js"></script>
+<script>
+contex({eventid: {{ event.id }}});
 </script>
-
 {% endblock %}
 
 {% block footer_logo %}{% endblock %}
