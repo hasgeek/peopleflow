@@ -58,8 +58,7 @@
 {% block footerscripts %}
 {{ super() }}
 <script type="text/javascript">
-rfid['tag_placed'] = function(data) {
-  this.action('tag_placed', data);
+rfid.on( 'tag_placed', function(data) {
   if (data['tag_id']) {
     url = "/event/{{ event.id }}/participant/"+data['tag_id'];
     $('input#nfc_id').attr("value",data['tag_id'] );
@@ -81,7 +80,7 @@ rfid['tag_placed'] = function(data) {
       };
     });
   }
-};
+});
 
 </script>
 
