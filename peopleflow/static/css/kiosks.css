@@ -4,6 +4,11 @@
 #root {min-height: 0;}
 footer {position: absolute;bottom:0px;width: 100%;}
 
+/*toastr customisations*/
+.toast-title{font-size: 5.0em;text-transform: uppercase;line-height: 1.5em;}
+.toast-message{font-size: 3.0em;line-height: 1.5em;}
+#toast-container > div {background-position: 15px 4.25em;opacity: 0.9}
+
 /*Sponsor Kiosk Styles*/
 #company_logo, #company_info, #bottom {position: absolute;top: 1%;bottom: 51%;}
 #company_logo, #company_tap_msg {text-align: center;}
