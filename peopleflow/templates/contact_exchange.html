@@ -1,11 +1,10 @@
-{% extends "layout.html" %}
+{% extends "kiosks_layout.html" %}
 {% block titletags -%}
-  <title>{% block title %}{{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
-  <meta name="DC.title" content="{{ event.title }} - {{ config['SITE_TITLE'] }}"/>
+  <title>{% block title %}Contact Exchange - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="Contact Exchange - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
 {%- endblock %}
-{% block header %}
-{% endblock %}
-{% block content %}
+
+{% block basecontent %}
 
 <div id="info" class="hero-unit">
 <div id="name" >
