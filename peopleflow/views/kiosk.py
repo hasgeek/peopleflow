@@ -125,7 +125,7 @@ def export_kiosk(kiosk):
 @load_model(Event, {'id':'event'}, 'event')
 def contact_exchange(event):
     if request.method=='GET':
-        return render_template('contact_exchange.html', event = event)
+        return render_template('contact_exchange.html', event = event, debug = str(app.config['DEBUG']).lower())
 
     if request.method == 'POST':
         participants = []

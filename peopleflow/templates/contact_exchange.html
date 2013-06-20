@@ -15,7 +15,6 @@
   <div class="contex_users"></div>
   <div id="contex_user_sample">
     <div class="user">
-      <a href="javascript:void(0)">C</a>
       <div class="name"></div>
       <div class="twitter"></div>
     </div>
@@ -27,7 +26,7 @@
 {{ super() }}
 <script src="/static/js/rfid/contact_exchange.js"></script>
 <script>
-contex({eventid: {{ event.id }}});
+contex({eventid: {{ event.id }}, debug: {{ debug }}});
 </script>
 {% endblock %}
 

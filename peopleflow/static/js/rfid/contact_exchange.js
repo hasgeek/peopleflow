@@ -7,6 +7,7 @@ var userui = function() {
     var len = 0;
     var MAX = {"COLUMNS": 5, "ROWS": 4}; // COLUMNS = ROWS or ROWS + 1
     var last_size = [0,0];
+    var options;
 
     var add = function(user) {
         // Function to add a user card to the UI
@@ -35,9 +36,11 @@ var userui = function() {
         w = Math.round(10000/size[0])/100;
         h = Math.round(10000/size[1])/100;
 
-        last.find('a').on('click', function(){
-            ui.process(user);
-        });
+        if(options.debug) {
+            last.on('click', function(){
+                ui.process(user);
+            });
+        }
 
         last.css({
             'left': (pos[0] * w + 1) + '%',
@@ -151,8 +154,6 @@ var userui = function() {
         }
 
         // Eliminate empty rows
-        console.log('Before', user_matrix);
-
         for(i = 0; i < MAX.ROWS - 1; i++) {
             is_empty = true;
             for(j = 0; j < MAX.COLUMNS; j++) is_empty = (is_empty && typeof user_matrix[j][i] == 'undefined');
@@ -204,7 +205,8 @@ var userui = function() {
         user_matrix = [[],[],[],[],[]];
     }
 
-    var init = function() {
+    ui.init = function(opts) {
+        options = opts;
         if(MAX.COLUMNS != MAX.ROWS && MAX.COLUMNS != MAX.ROWS + 1){
             console.log("MAX.COLUMNS should be = either MAX.ROWS or MAX.ROWS + 1");
         }
@@ -213,13 +215,15 @@ var userui = function() {
         $('#contex_user_sample').remove();
     };
 
-    init();
-
     return ui;
 }();
 
 var contex = function(options) {
     var init = function() {
+        userui.init(options);
+        if(options.debug) {
+            toastr.warning("The application is running in debug mode. You can tap the same badge to add multiple people. To remove a person, just click his card in the UI.");
+        }
         rfid.on( 'tag_placed', function(data) {
             if (data['tag_id']) {
                 if (data['tag_id']) {
@@ -233,8 +237,9 @@ var contex = function(options) {
                             );
                         }
                         else{
-                            // For testing with the same card, uncomment the first line below
-                            // user.id = Math.floor((Math.random()*10000)+1);
+                            if(options.debug) {
+                                user.id = Math.floor((Math.random()*10000)+1);
+                            }
                             userui.process(user);
                         };
                     });
