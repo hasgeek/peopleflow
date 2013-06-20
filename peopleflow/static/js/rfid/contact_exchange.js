@@ -189,13 +189,11 @@ var userui = function() {
 
     ui.process = function(user) {
         if( typeof users[user.id] == 'undefined') {
-            toastr.clear();
             if(add(user)) toastr.success("", "Added " + user.name + ".");
             else toastr.warning("Upto " + (MAX.COLUMNS * MAX.ROWS) + " members can be connected only.", "Limit reached");
         }
         else {
             remove(user.id);
-            toastr.clear();
             toastr.success("", "Removed " + user.name + ".");
         }
     }
