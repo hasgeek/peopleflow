@@ -67,6 +67,8 @@ var userui = function() {
         h = Math.round(10000/size[1])/100;
         if(len == 0) main.removeClass('users');
         else if(len == 1) main.addClass('users');
+        if(size[1]) main.addClass('rows' + size[1]);
+        if(last_size[1] && size[1] != last_size[1]) main.removeClass('rows' + last_size[1]);
         
         if(size[0] != last_size[0] && len != 1) {
             for(c = 0; c < size[0]; c++) {
@@ -160,7 +162,6 @@ var userui = function() {
             
             if(is_empty) {
                 for(j = 0; j < MAX.COLUMNS - 1; j++) {
-                    console.log('Col', j);
                     if(typeof user_matrix[j][i+1] != 'undefined') {
                         user_matrix[j][i] = user_matrix[j][i+1];
                         user_matrix[j][i+1] = undefined;

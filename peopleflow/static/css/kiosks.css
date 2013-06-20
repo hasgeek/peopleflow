@@ -31,15 +31,28 @@ footer {position: absolute;bottom:0px;width: 100%;}
 
 /*Contact Exchange Kiosk Styles*/
 #contact_exchange {position: absolute;width: 100%;top: 0px;bottom: 60px;}
-#contact_exchange .top {position: absolute; top: 0%; left: 1%;right: 1%; bottom: 0%}
+#contact_exchange .top {position: absolute; top: 0%; left: 1%;right: 1%; bottom: 0%; transition: bottom 1s; z-index: 3002;}
 #contact_exchange .logo, #contact_exchange .message { position: absolute; top: 1%; bottom: 1%;}
 #contact_exchange .logo {left: 1%; right: 61%;text-align: center;}
 #contact_exchange .logo img {max-width: 98%;max-height: 98%;}
-#contact_exchange .message {left: 41%; right: 1%; top: 10%;font-size: 4.0em;line-height: 1.25em}
+#contact_exchange .message {left: 41%; right: 1%; top: 10%;font-size: 4.0em;line-height: 1.25em;transition: font-size 1s;}
 
 /*Contact Exchange Kiosk: User cards styling starts*/
-#contact_exchange .contex_users {position: absolute; top:61%; bottom: 0%;left: 5%;right: 5%;}
-#contact_exchange.users .top {bottom: 41%;}
+#contact_exchange .contex_users {transition: top 1s, bottom 1s;position: absolute; top: 0%; bottom: -50%; z-index: 3001;}
+#contact_exchange.users .contex_users {bottom: 0%;left: 5%;right: 5%;}
 #contact_exchange.users .user {
     box-sizing: border-box;border-radius: 5px;background: #CCC;padding: 1%;position: absolute;opacity: 0;
 }
+
+#contact_exchange.users.rows1 .top {bottom: 41%;}
+#contact_exchange.users.rows1 .message {font-size: 3.75em;}
+#contact_exchange.users.rows1 .contex_users {top: 61%;}
+#contact_exchange.users.rows2 .top {bottom: 43%;}
+#contact_exchange.users.rows2 .message {font-size: 3.65em;}
+#contact_exchange.users.rows2 .contex_users {top: 59%;}
+#contact_exchange.users.rows3 .top {bottom: 45%;}
+#contact_exchange.users.rows3 .message {font-size: 3.65em;}
+#contact_exchange.users.rows3 .contex_users {top: 57%;}
+#contact_exchange.users.rows4 .top {bottom: 51%;}
+#contact_exchange.users.rows4 .message {font-size: 3.65em;}
+#contact_exchange.users.rows4 .contex_users {top: 51%;}
