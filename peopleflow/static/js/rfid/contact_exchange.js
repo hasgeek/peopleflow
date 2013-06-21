@@ -25,7 +25,7 @@ var userui = function() {
         user.node = last;
         user_matrix[pos[0]][pos[1]] = user;
         last.attr('id', 'user_' + user.id);
-        last.find('.name').html(user.name);
+        last.find('.name').html(user.name.split(" ")[0]);
         if(user.twitter) {
             last.find('.twitter').html('@' + user.twitter);
         }
