@@ -31,28 +31,30 @@ footer {position: absolute;bottom:0px;width: 100%;}
 
 /*Contact Exchange Kiosk Styles*/
 #contact_exchange {position: absolute;width: 100%;top: 0px;bottom: 60px;}
-#contact_exchange .top {position: absolute; top: 0%; left: 1%;right: 1%; bottom: 0%; transition: bottom 1s; z-index: 3002;}
-#contact_exchange .logo, #contact_exchange .message { position: absolute; top: 1%; bottom: 1%;}
-#contact_exchange .logo {left: 1%; right: 61%;text-align: center;}
+#contact_exchange .top {position: absolute; top: 0%; left: 1%;right: 1%; bottom: 0%; transition: all 1s; z-index: 3002;}
+#contact_exchange .logo, #contact_exchange .message { position: absolute; left: 1%; right: 1%;transition: all 1s;}
+#contact_exchange .logo { top: 1%; bottom: 41%;text-align: center;}
 #contact_exchange .logo img {max-width: 98%;max-height: 98%;}
-#contact_exchange .message {left: 41%; right: 1%; top: 10%;font-size: 4.0em;line-height: 1.25em;transition: font-size 1s;}
+#contact_exchange .message { top: 61%; bottom: 1%; font-size: 4em;line-height: 1.25em;}
+#contact_exchange .message * {transition: all 1s;}
+#contact_exchange .message .step {margin: 0px 0px 10px; clear: left;}
+#contact_exchange .message .step .icon {
+    padding: 0.2em; width: 1em; height: 1em; margin: 0px 10px; font-size: 1.25em; color: white;
+    float: left; line-height: 1em; text-align: center; clear: left;border-radius: 1em;
+}
+#contact_exchange .message .step.plus .icon {background: #393}
+#contact_exchange .message .step.minus .icon {background: #C33}
+#contact_exchange .message .step.plus .info {color: #393}
+#contact_exchange .message .step.minus .info {color: #C33}
 
 /*Contact Exchange Kiosk: User cards styling starts*/
 #contact_exchange .contex_users {transition: top 1s, bottom 1s;position: absolute; top: 0%; bottom: -50%; z-index: 3001;}
-#contact_exchange.users .contex_users {bottom: 0%;left: 5%;right: 5%;}
+#contact_exchange.users .contex_users {bottom: 0%;left: 5%;right: 5%;top: 57%}
+#contact_exchange.users .top { top: 3%; bottom: 45%;}
+#contact_exchange.users .logo {bottom: 1%; right: 37%}
+#contact_exchange.users .message { top: 5%; left: 63%}
+#contact_exchange.users .message .step {margin: 0 0 25px;}
+#contact_exchange.users .message .step .info {font-size: 0.6em; line-height: 1.2em;}
 #contact_exchange.users .user {
     box-sizing: border-box;border-radius: 5px;background: #CCC;padding: 1%;position: absolute;opacity: 0;
 }
-
-#contact_exchange.users.rows1 .top {bottom: 41%;}
-#contact_exchange.users.rows1 .message {font-size: 3.75em;}
-#contact_exchange.users.rows1 .contex_users {top: 61%;}
-#contact_exchange.users.rows2 .top {bottom: 43%;}
-#contact_exchange.users.rows2 .message {font-size: 3.65em;}
-#contact_exchange.users.rows2 .contex_users {top: 59%;}
-#contact_exchange.users.rows3 .top {bottom: 45%;}
-#contact_exchange.users.rows3 .message {font-size: 3.65em;}
-#contact_exchange.users.rows3 .contex_users {top: 57%;}
-#contact_exchange.users.rows4 .top {bottom: 51%;}
-#contact_exchange.users.rows4 .message {font-size: 3.65em;}
-#contact_exchange.users.rows4 .contex_users {top: 51%;}
