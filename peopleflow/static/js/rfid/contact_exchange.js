@@ -37,8 +37,10 @@ var userui = function() {
         last.addClass('r' + pos[1]);
 
         size = matrix_size();
-        w = Math.round(10000/size[0])/100;
-        h = Math.round(10000/size[1])/100;
+        w = 100/size[0];
+        h = 100/size[1];
+        if(w > h) fontfactor = h;
+        else fontfactor = w;
 
         if(options.debug) {
             last.on('click', function(){
@@ -52,6 +54,9 @@ var userui = function() {
             'top': (pos[1] * h + 1) + '%',
             'height': (h - 5) + '%'
         });
+
+        last.find('.name').css({"font-size": (fontfactor * 7.2/100) + 'em'});
+        last.find('.twitter').css({"font-size": (fontfactor * 6/100) + 'em'});
 
         resize(last);
 
@@ -67,8 +72,11 @@ var userui = function() {
             }
         };
         size = matrix_size();
-        w = Math.round(10000/size[0])/100;
-        h = Math.round(10000/size[1])/100;
+        w = 100/size[0];
+        h = 100/size[1];
+        if(w > h) fontfactor = h;
+        else fontfactor = w;
+
         if(len == 0) main.removeClass('users');
         else if(len == 1) main.addClass('users');
         if(size[1]) main.addClass('rows' + size[1]);
@@ -90,6 +98,9 @@ var userui = function() {
                 }, 800, show_last);
             }
         }
+
+        container.find('.user .name').css({"font-size": (fontfactor * 7.2/100) + 'em'});
+        container.find('.user .twitter').css({"font-size": (fontfactor * 6/100) + 'em'});
 
         if((size[0] == last_size[0] && size[1] == last_size[1]) || len ==1) {
             show_last();

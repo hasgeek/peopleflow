@@ -50,7 +50,7 @@ footer {position: absolute;bottom:0px;width: 100%;}
 /*Contact Exchange Kiosk: User cards styling starts*/
 #contact_exchange .contex_users {transition: all 1s;position: absolute; top: 0%; bottom: -50%; z-index: 3001;}
 #contact_exchange .user {
-    box-sizing: border-box;border-radius: 1em;padding: 1%;position: absolute;opacity: 0;
+    box-sizing: border-box;border-radius: 1em;padding: 1%;position: absolute;opacity: 0;overflow: hidden; transition: padding 0.8s;
     background: -webkit-radial-gradient(10% 20%, farthest-side, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8), rgba(204, 204, 204, 0.7));
     border: 1px solid rgba(0,0,0, 0.5); -webkit-box-shadow: 0.5em 0.35em 1.65em rgba(128, 128, 128, 0.7);
 }
@@ -62,4 +62,11 @@ footer {position: absolute;bottom:0px;width: 100%;}
 #contact_exchange.users .message .step {margin: 0 0 25px;}
 #contact_exchange.users .message .step .info {font-size: 0.6em; line-height: 1.2em;}
 
-#contact_exchange.users.rows2 .user {}
+#contact_exchange.users .user .name, #contact_exchange.users .user .twitter {line-height: 1.1em; transition: all 0.8s;}
+#contact_exchange.users .user .name {font-weight: bold;white-space: nowrap;}
+#contact_exchange.users .user .twitter {color: #666666;}
+
+#contact_exchange.users.rows3 .user, #contact_exchange.users.rows4 .user {padding: 1% 0.75%}
+#contact_exchange.users.rows3 .user .name, #contact_exchange.users.rows3 .user .twitter,
+#contact_exchange.users.rows4 .user .name, #contact_exchange.users.rows4 .user .twitter
+{line-height: 1em}
