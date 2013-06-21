@@ -30,7 +30,7 @@ footer {position: absolute;bottom:0px;width: 100%;}
 #company_info.nocompany.comptag .name, #company_info.nocompany.nocomptag {display: none;}
 
 /*Contact Exchange Kiosk Styles*/
-#contact_exchange {position: absolute;width: 100%;top: 0px;bottom: 60px;}
+#contact_exchange {position: absolute;width: 100%;top: 0px;bottom: 60px;background: url(/static/images/contact-exchange-bg.gif) 50% 15%; background-size: 115%;}
 #contact_exchange .top {position: absolute; top: 0%; left: 1%;right: 1%; bottom: 0%; transition: all 1s; z-index: 3002;}
 #contact_exchange .logo, #contact_exchange .message { position: absolute; left: 1%; right: 1%;transition: all 1s;}
 #contact_exchange .logo { top: 1%; bottom: 41%;text-align: center;}
@@ -57,4 +57,7 @@ footer {position: absolute;bottom:0px;width: 100%;}
 #contact_exchange.users .message .step .info {font-size: 0.6em; line-height: 1.2em;}
 #contact_exchange.users .user {
     box-sizing: border-box;border-radius: 5px;background: #CCC;padding: 1%;position: absolute;opacity: 0;
+
 }
+
+#contact_exchange.users.rows2 .user {}
