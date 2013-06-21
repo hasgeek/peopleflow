@@ -37,15 +37,24 @@ footer {position: absolute;bottom:0px;width: 100%;}
 #contact_exchange .logo img {max-width: 98%;max-height: 98%;}
 #contact_exchange .message { top: 61%; bottom: 1%; font-size: 4em;line-height: 1.25em;}
 #contact_exchange .message * {transition: all 1s;}
+
+#contact_exchange.users .top { top: 3%; bottom: 45%;}
+#contact_exchange.users .logo {bottom: 1%; right: 37%}
+#contact_exchange.users .message { top: 5%; left: 63%}
+
 #contact_exchange .message .step {margin: 0px 0px 10px; clear: left;}
 #contact_exchange .message .step .icon {
     padding: 0.2em; width: 1em; height: 1em; margin: 0px 10px; font-size: 1.25em; color: white;
-    float: left; line-height: 1em; text-align: center; clear: left;border-radius: 1em;
+    float: left; line-height: 1em; text-align: center; clear: left;border-radius: 1em; font-weight: bolder;
 }
 #contact_exchange .message .step.plus .icon {background: #393}
 #contact_exchange .message .step.minus .icon {background: #C33}
 #contact_exchange .message .step.plus .info {color: #393}
 #contact_exchange .message .step.minus .info {color: #C33}
+
+#contact_exchange.users .message .step {margin: 0 0 25px;}
+#contact_exchange.users .message .step .info {font-size: 0.6em; line-height: 1.2em;text-align: right}
+#contact_exchange.users .message .step .icon {float: right;}
 
 /*Contact Exchange Kiosk: User cards styling starts*/
 #contact_exchange .contex_users {transition: all 1s;position: absolute; top: 0%; bottom: -50%; z-index: 3001;}
@@ -56,11 +65,6 @@ footer {position: absolute;bottom:0px;width: 100%;}
 }
 
 #contact_exchange.users .contex_users {bottom: 0%;left: 5%;right: 5%;top: 57%}
-#contact_exchange.users .top { top: 3%; bottom: 45%;}
-#contact_exchange.users .logo {bottom: 1%; right: 37%}
-#contact_exchange.users .message { top: 5%; left: 63%}
-#contact_exchange.users .message .step {margin: 0 0 25px;}
-#contact_exchange.users .message .step .info {font-size: 0.6em; line-height: 1.2em;}
 
 #contact_exchange.users .user .name, #contact_exchange.users .user .twitter {line-height: 1.1em; transition: all 0.8s;}
 #contact_exchange.users .user .name {font-weight: bold;white-space: nowrap;}
