@@ -27,7 +27,7 @@ var userui = function() {
         last.attr('id', 'user_' + user.id);
         last.find('.name').html(user.name);
         if(user.twitter) {
-            last.find('.twitter').html(user.twitter);
+            last.find('.twitter').html('@' + user.twitter);
         }
         last.addClass('c' + pos[0]);
         last.addClass('r' + pos[1]);
