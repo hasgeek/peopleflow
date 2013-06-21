@@ -44,9 +44,9 @@ var userui = function() {
 
         last.css({
             'left': (pos[0] * w + 1) + '%',
-            'width': (w - 1) + '%',
+            'width': (w - 1.5) + '%',
             'top': (pos[1] * h + 1) + '%',
-            'height': (h - 2) + '%'
+            'height': (h - 5) + '%'
         });
 
         resize(last);
@@ -74,7 +74,7 @@ var userui = function() {
             for(c = 0; c < size[0]; c++) {
                 container.find('.c' + c).animate({
                     'left': (c * w + 1) + '%',
-                    'width': (w - 1) + '%'
+                    'width': (w - 1.5) + '%'
                 }, 800, show_last);
             }
         }
@@ -82,7 +82,7 @@ var userui = function() {
             for(r = 0; r < size[1]; r++) {
                 container.find('.r' + r).animate({
                     'top': (r * h + 1) + '%',
-                    'height': (h - 2) + '%'
+                    'height': (h - 5) + '%'
                 }, 800, show_last);
             }
         }

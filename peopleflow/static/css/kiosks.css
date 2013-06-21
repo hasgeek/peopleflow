@@ -48,16 +48,18 @@ footer {position: absolute;bottom:0px;width: 100%;}
 #contact_exchange .message .step.minus .info {color: #C33}
 
 /*Contact Exchange Kiosk: User cards styling starts*/
-#contact_exchange .contex_users {transition: top 1s, bottom 1s;position: absolute; top: 0%; bottom: -50%; z-index: 3001;}
+#contact_exchange .contex_users {transition: all 1s;position: absolute; top: 0%; bottom: -50%; z-index: 3001;}
+#contact_exchange .user {
+    box-sizing: border-box;border-radius: 1em;padding: 1%;position: absolute;opacity: 0;
+    background: -webkit-radial-gradient(10% 20%, farthest-side, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8), rgba(204, 204, 204, 0.7));
+    border: 1px solid rgba(0,0,0, 0.5); -webkit-box-shadow: 0.5em 0.35em 1.65em rgba(128, 128, 128, 0.7);
+}
+
 #contact_exchange.users .contex_users {bottom: 0%;left: 5%;right: 5%;top: 57%}
 #contact_exchange.users .top { top: 3%; bottom: 45%;}
 #contact_exchange.users .logo {bottom: 1%; right: 37%}
 #contact_exchange.users .message { top: 5%; left: 63%}
 #contact_exchange.users .message .step {margin: 0 0 25px;}
 #contact_exchange.users .message .step .info {font-size: 0.6em; line-height: 1.2em;}
-#contact_exchange.users .user {
-    box-sizing: border-box;border-radius: 5px;background: #CCC;padding: 1%;position: absolute;opacity: 0;
-
-}
 
 #contact_exchange.users.rows2 .user {}
