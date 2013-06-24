@@ -67,8 +67,8 @@ footer {position: absolute;bottom:0px;width: 100%;}
 #contact_exchange.users .contex_users {bottom: 0%;left: 5%;right: 5%;top: 57%}
 
 #contact_exchange.users .user .name, #contact_exchange.users .user .twitter {line-height: 1.1em; transition: all 0.8s;}
-#contact_exchange.users .user .name {font-weight: bold;white-space: nowrap;}
-#contact_exchange.users .user .twitter {color: #666666;}
+#contact_exchange.users .user .name {font-weight: bold;white-space: nowrap;color: #666}
+#contact_exchange.users .user .twitter {color: #999;}
 
 #contact_exchange.users.rows3 .user, #contact_exchange.users.rows4 .user {padding: 1% 0.75%}
 #contact_exchange.users.rows3 .user .name, #contact_exchange.users.rows3 .user .twitter,
