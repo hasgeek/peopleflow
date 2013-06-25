@@ -1,3 +1,59 @@
+var timer = function() {
+    var timer = {};
+    var handler = null;
+    var TOTAL_TIME = 30; //Time before the automatic submission happens
+    var ALERT_TIME = 10; //Time before the automatic submission, when the timer needs to be shown
+    var cooldown = null, timer_content;
+    var DEBUG_TOTAL_TIME = 6;
+    var DEBUG_ALERT_TIME = 5;
+
+    timer.start = function() {
+        timer.reset();
+        handler = window.setTimeout(timer.show, (TOTAL_TIME - ALERT_TIME) * 1000);
+    };
+
+    timer.reset = function() {
+        if(handler) {
+            window.clearTimeout(handler);
+            handler = null;
+        }
+        if(cooldown) {
+            cooldown.stop();
+            timer_content.css({opacity: 0});
+        }
+    };
+
+    timer.show = function() {
+        timer_content.css({opacity: 1});
+        cooldown.start(ALERT_TIME);
+    };
+
+    timer.init = function(options) {
+        if(options.debug) {
+            TOTAL_TIME = DEBUG_TOTAL_TIME;
+            ALERT_TIME = DEBUG_ALERT_TIME;
+        }
+        $('body').append('<div id="cooldown" class="overlay"><div class="timer"><div class="elem"></div></div></div>');
+        timer_content = $('#cooldown');
+        cooldown = $('#cooldown .timer .elem').cooldown({
+            tickFrequency: 1000,
+            arcWidth: 50,
+            toFixed: 0,
+            introDuration: 0,
+            countdownCss: {
+                fontSize: '3.75em',
+                opacity: 0.7,
+                fontWeight: 'bolder'
+            },
+            completeFn: function() {
+                userui.disable();
+                // Share the request to connect.
+            }
+        });
+    };
+
+    return timer;
+}();
 
 var userui = function() {
     var ui = {};
@@ -8,6 +64,7 @@ var userui = function() {
     var MAX = {"COLUMNS": 5, "ROWS": 4}; // COLUMNS = ROWS or ROWS + 1
     var last_size = [0,0];
     var options;
+    var disabled = false;
 
     var add = function(user) {
         // Function to add a user card to the UI
@@ -204,13 +261,17 @@ var userui = function() {
     };
 
     ui.process = function(user) {
-        if( typeof users[user.id] == 'undefined') {
-            if(add(user)) toastr.success("", "Added " + user.name + ".");
-            else toastr.warning("Upto " + (MAX.COLUMNS * MAX.ROWS) + " members can be connected only.", "Limit reached");
-        }
-        else {
-            remove(user.id);
-            toastr.success("", "Removed " + user.name + ".");
+        if(!disabled) {
+            timer.start();
+
+            if( typeof users[user.id] == 'undefined') {
+                if(add(user)) toastr.success("", "Added " + user.name + ".");
+                else toastr.warning("Upto " + (MAX.COLUMNS * MAX.ROWS) + " members can be connected only.", "Limit reached");
+            }
+            else {
+                remove(user.id);
+                toastr.success("", "Removed " + user.name + ".");
+            }
         }
     }
 
@@ -229,14 +290,19 @@ var userui = function() {
         $('#contex_user_sample').remove();
     };
 
+    ui.disable = function() {
+        disabled = true;
+    };
+
     return ui;
 }();
 
 var contex = function(options) {
     var init = function() {
         userui.init(options);
+        timer.init(options);
         if(options.debug) {
-            toastr.warning("The application is running in debug mode. You can tap the same badge to add multiple people. To remove a person, just click his card in the UI.");
+            toastr.warning("The application is running in debug mode. You can tap the same badge to add multiple cards. To remove a card, just click the card. In debug mode, some options like timer duration are optimised for smoother testing.");
         }
         rfid.on( 'tag_placed', function(data) {
             if (data['tag_id']) {
