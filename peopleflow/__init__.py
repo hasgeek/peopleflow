@@ -20,12 +20,13 @@ app = Flask(__name__, instance_relative_config=True)
 lastuser = Lastuser()
 
 assets['peopleflow.css'][version] = 'css/app.css'
+assets['cooldown.js'][version] = 'js/cooldown.js'
 
 from . import models, views
 from .models import db
 
 def init_for(env):
     coaster.app.init_app(app, env)
-    baseframe.init_app(app, requires=['baseframe', 'toastr', 'peopleflow'])
+    baseframe.init_app(app, requires=['baseframe', 'toastr', 'peopleflow', 'cooldown'])
     lastuser.init_app(app)
     lastuser.init_usermanager(UserManager(db, models.User))
