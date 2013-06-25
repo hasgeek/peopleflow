@@ -2,7 +2,7 @@ var timer = function() {
     var timer = {};
     var handler = null;
     var TOTAL_TIME = 30; //Time before the automatic submission happens
-    var ALERT_TIME = 10; //Time before the automatic submission, when the timer needs to be shown
+    var ALERT_TIME = 15; //Time before the automatic submission, when the timer needs to be shown
     var cooldown = null, timer_content;
     var DEBUG_TOTAL_TIME = 6;
     var DEBUG_ALERT_TIME = 5;
@@ -33,16 +33,20 @@ var timer = function() {
             TOTAL_TIME = DEBUG_TOTAL_TIME;
             ALERT_TIME = DEBUG_ALERT_TIME;
         }
-        $('body').append('<div id="cooldown" class="overlay"><div class="timer"><div class="elem"></div></div></div>');
+        $('body').append('<div id="cooldown" class="overlay contact_exchange"></div>');
         timer_content = $('#cooldown');
+        timer_content.append('<div class="timer"><div class="elem"></div></div>');
+        timer_content.find('.timer').append('<div class="seconds">seconds</div>');
+        timer_content.find('.timer').append('<div class="message">for automatic submission</div>');
+        timer_content.append('<div class="instructions">The following people will be connected.<br>You can: Add/remove people &bull; Exchange Contacts Now &bull; Cancel</div>');
         cooldown = $('#cooldown .timer .elem').cooldown({
             tickFrequency: 1000,
-            arcWidth: 50,
+            arcWidth: 40,
             toFixed: 0,
             introDuration: 0,
             countdownCss: {
-                fontSize: '3.75em',
-                opacity: 0.7,
+                fontSize: '3.25em',
+                color: '#FFF',
                 fontWeight: 'bolder'
             },
             completeFn: function() {
