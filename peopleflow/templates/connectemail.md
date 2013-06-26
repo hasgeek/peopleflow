@@ -1,16 +1,17 @@
-Hello {{ name }},
+Hello,
 
-This email brings you the contact information of people you met at {{ event.title }}.
+This email brings you the contact information of people you met at {{ event.title }}, {{ event.year }}.
 Hope you had a good time!
 
-{% for p in participants %}
-		Name: {{ p.name }}
-		Company: {{ p.company }}
-		Twitter: {{ p.twitter }}
+Given below is a list of your fellow participants:
+{% for user in users %}
+	* {{ user.name }}, {{ user.email }}{% if user.company %} - {{ user.company }}{% endif %}{% if user.twitter %}(@{{ user.twitter }}){% endif %}{% endfor %}
 
-{% endfor %}
+All of the above are marked on this email, so you can continue with your conversation(s) on this thread!
 
-ContactPoint is a HasGeek service. Write to us at info@hasgeek.in if you have suggestions or questions on this service.
+You can also use the attached contact cards to store the contact details in your address books.
 
-Regards  
+ContactExchange is a HasGeek service. Please do write to us at info@hasgeek.com if you have suggestions or questions on this service.
+
+Regards
 The non-sentient HasGeek email robot

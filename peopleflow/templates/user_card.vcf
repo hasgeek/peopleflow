@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:4.0
+PRODID:-//HasGeek LLP.//ContactExchange//EN{% if user.name %}
+FN:{{ user.name }}{% endif %}{% if user.email %}
+EMAIL:{{ user.email }}{% endif %}{% if user.city %}
+ADR;TYPE=office:;;;{{ user.city }};;;{% endif %}{% if user.company %}
+ORG:{{ user.company }}{% endif %}{% if user.job %}
+ROLE:{{ user.job }}{% endif %}{% if user.twitter %}
+URL:http://twitter.com/{{ user.twitter }}
+X-TWITTER:{{ user.twitter }}{% endif %}
+NOTE:Met at {{ event.title }}, {{ event.year }}
+END:VCARD

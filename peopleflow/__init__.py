@@ -10,7 +10,7 @@ from flask import Flask
 from flask.ext.assets import Environment, Bundle
 from flask.ext.lastuser import Lastuser
 from flask.ext.lastuser.sqlalchemy import UserManager
-from flask.ext.mail import Mail
+from flask.ext.mail import Mail, Message
 from baseframe import baseframe, assets, Version
 import coaster.app
 from ._version import __version__

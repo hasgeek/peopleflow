@@ -9,9 +9,10 @@ from .. import app
 from .. import lastuser
 from ..models import db, Kiosk, Event, Participant
 from ..forms import KioskForm, ConfirmSignoutForm
-from flask import request, flash, url_for, render_template
+from flask import request, flash, url_for, render_template, jsonify
 from baseframe.forms import render_redirect, ConfirmDeleteForm
 from coaster.views import jsonp, load_model, load_models
+from flask.ext.mail import Mail, Message
 
 
 @app.route('/event/<id>/kiosk/new', methods=['GET', 'POST'])
@@ -128,21 +129,24 @@ def contact_exchange(event):
         return render_template('contact_exchange.html', event = event, debug = str(app.config['DEBUG']).lower())
 
     if request.method == 'POST':
-        participants = []
-        ids = request.form['id']
-        ids = set(ids.split(','))
-        msg = Message("Hello from "+event.title)
-        for id in ids:
-            participant = Participant.query.filter_by(event_id=event.id, nfc_id=id).first()
-            participants.append(participant)
+        ids = tuple(request.form.getlist('ids[]'))
+        users = Participant.query.filter(Participant.event_id == event.id, Participant.nfc_id.in_(ids)).all()
+        mail = Mail(app)
+        message = Message("You connected with " + str(len(users) - 1) + " people using ContactExchange")
+        message.cc = list()
+        for user in users:
+            email = user.name + "<" + user.email + ">"
+            if message.reply_to is None:
+                message.reply_to = email
+                message.add_recipient(email)
+            else:
+                message.cc.append(email)
+            message.attach(user.name + '.vcf', 'text/vcard', render_template('user_card.vcf', user=user, event=event))
 
-        for participant in participants:
-            exchange = []
-            for other in participants:
-                if other!=participant:
-                    exchange.append(other)
-            msg.body= render_template('connectemail.md', name= participant.name, participants=exchange, event=event)
-            msg.recipients=[participant.email]
-            mail.send(msg)
-        flash("Email sent!", "success")
-        return render_template('connect.html', event = event)
+        message.sender = 'HasGeek<info@hasgeek.com>'
+        message.body = render_template('connectemail.md', users=users, event=event)
+        try:
+            mail.send(message)
+            return jsonify(success=True)
+        except Exception, e:
+            return jsonify(success=False)

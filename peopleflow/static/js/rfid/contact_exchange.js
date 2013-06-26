@@ -50,13 +50,25 @@ var timer = function() {
                 fontWeight: 'bolder'
             },
             completeFn: function() {
-                userui.disable();
+                userui.exchange();
                 // Share the request to connect.
             }
         });
     };
 
     return timer;
+}();
+
+var exchange = function() {
+    var exchange = {};
+    
+    exchange.now = function(users) {
+        $.post('contact_exchange', users, function(response) {
+            console.log('Response', response);
+        }, 'json');
+    };
+
+    return exchange;
 }();
 
 var userui = function() {
@@ -294,8 +306,15 @@ var userui = function() {
         $('#contex_user_sample').remove();
     };
 
-    ui.disable = function() {
+    ui.exchange = function() {
         disabled = true;
+        var user_list = {'ids': []};
+        for(i = 0; i < user_matrix.length; i++) {
+            for(j = 0; j < user_matrix[i].length; j++) {
+                user_list.ids.push(user_matrix[i][j].nfc_id);
+            }
+        }
+        exchange.now(user_list);
     };
 
     return ui;
