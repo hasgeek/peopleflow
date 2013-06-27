@@ -7,7 +7,7 @@ import urllib
 import hashlib
 from .. import app
 from .. import lastuser
-from ..models import db, Kiosk, Event, Participant
+from ..models import db, Kiosk, Event, Participant, CXLog
 from ..forms import KioskForm, ConfirmSignoutForm
 from flask import request, flash, url_for, render_template, jsonify
 from baseframe.forms import render_redirect, ConfirmDeleteForm
@@ -130,6 +130,8 @@ def contact_exchange(event):
 
     if request.method == 'POST':
         ids = tuple(request.form.getlist('ids[]'))
+        if len(ids) < 2:
+            return jsonify(status=False, error=u'Insufficient users to connect')
         users = Participant.query.filter(Participant.event_id == event.id, Participant.nfc_id.in_(ids)).all()
         mail = Mail(app)
         message = Message("You connected with " + str(len(users) - 1) + " people using ContactExchange")
@@ -145,8 +147,15 @@ def contact_exchange(event):
 
         message.sender = 'HasGeek<info@hasgeek.com>'
         message.body = render_template('connectemail.md', users=users, event=event)
+        log = CXLog()
         try:
             mail.send(message)
-            return jsonify(success=True)
-        except Exception, e:
-            return jsonify(success=False)
+            log.sent = True
+            log.log_message = u"Mail delivered to postfix server"
+        except Exception as error:
+            log.sent = True
+            log.log_message = unicode(error)
+        log.users = u','.join(ids)
+        db.session.add(log)
+        db.session.commit()
+        return jsonify(success=True)
