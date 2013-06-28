@@ -137,7 +137,7 @@ def contact_exchange(event):
         message = Message("You connected with " + str(len(users) - 1) + " people using ContactExchange")
         message.cc = list()
         for user in users:
-            email = user.name + "<" + user.email + ">"
+            email = (user.name, user.email)
             if message.reply_to is None:
                 message.reply_to = email
                 message.add_recipient(email)
@@ -145,7 +145,7 @@ def contact_exchange(event):
                 message.cc.append(email)
             message.attach(user.name + '.vcf', 'text/vcard', render_template('user_card.vcf', user=user, event=event))
 
-        message.sender = 'HasGeek<info@hasgeek.com>'
+        message.sender = ('HasGeek', 'no-reply@hasgeek.com>')
         message.body = render_template('connectemail.md', users=users, event=event)
         log = CXLog()
         try:
