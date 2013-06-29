@@ -28,7 +28,7 @@ class Kiosk(db.Model, BaseMixin):
 
 	#: Event at which the kiosk is present. kiosk.event gives access.
 	event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
-	event = db.relationship(Event, primaryjoin=event_id == Event.id)
+	event = db.relationship(Event, primaryjoin=event_id == Event.id, backref=db.backref('kiosks'))
 
 	#: List of participants who showed up at the Kiosk. kiosk.participants gives access to the objects.
 	participants = db.relationship('Participant', secondary=kiosk_participants,
