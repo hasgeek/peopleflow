@@ -96,15 +96,16 @@ def kiosk_delete(event, kiosk):
     return render_template('baseframe/delete.html', form=form, title=u"Confirm delete",
         message=u"Delete '%s' ?" % (kiosk.company))
 
-@app.route('/<year>/<eventname>/kiosks', methods=['GET'])
+@app.route('/event/<event>/kiosks', methods=['GET'])
 @lastuser.requires_permission('siteadmin')
-def event_kiosks(year,eventname):
-    event = Event.query.filter_by(name=eventname, year=year).first()
-    kiosks= Kiosk.query.filter_by(event_id=event.id).all()
-    return render_template('event_kiosks.html', kiosks=kiosks, event=event, enumerate=enumerate)
+@load_models(
+    (Event, {'id':'event'}, 'event')
+    )
+def event_kiosks(event):
+    return render_template('event_kiosks.html', kiosks=event.kiosks, event=event, enumerate=enumerate)
 
 @app.route('/event/<event>/kiosk/<kiosk>/export', methods=['GET'])
-@load_model(Kiosk, {'id':'id'}, 'kiosk')
+@load_model(Kiosk, {'id':'kiosk', 'event_id': 'event'}, 'kiosk')
 def export_kiosk(kiosk):
     participants = StringIO()
     fieldnames= ['Name', 'Email','Company', 'Job']
