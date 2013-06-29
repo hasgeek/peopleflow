@@ -127,6 +127,7 @@
           "url": participant.find('span:visible').attr('data-url'),
           "type": "POST"
         };
+        var participant_name = participant.parent().parent().find('td:nth-child(4)').text();
 
         if( !assigned ) {
           if( typeof card == 'undefined' ) return false;
@@ -134,7 +135,6 @@
           ajax.success = function( response ) {
             if( response == "success") {
               $('a.rfid_card[rel=' + id + ']').removeClass('unassigned').addClass('assigned');
-              var participant_name = participant.parent().parent().find('td:nth-child(4)').text();
               toastr.success('The badge has been assigned to ' + participant_name);
             }
             else if( response == "id_used") {
@@ -142,12 +142,17 @@
             }
             stop_listening();
           };
-          $.ajax(ajax);
         }
         else {
-          /*Wanted to use AJAX, but the endpoint seems to be checking the CSRF token.*/
-          window.location = ajax.url;
+          ajax.success = function(response) {
+            if(response.status) {
+              $('a.rfid_card[rel=' + id + ']').removeClass('assigned').addClass('unassigned');
+              toastr.success('The badge for ' + participant_name + ' has been unassigned');
+            }
+            else toastr.error(response.msg);
+          };
         }
+        $.ajax(ajax);
       };
 
       rfid.on('tag_placed', function(data) {

@@ -10,7 +10,7 @@ from ..models import db, Event, Participant
 from ..forms import EventForm, ConfirmSignoutForm
 from pytz import utc, timezone
 from datetime import datetime
-from flask import request, flash, url_for, render_template
+from flask import request, flash, url_for, render_template, jsonify
 from werkzeug import secure_filename
 from baseframe.forms import render_redirect, ConfirmDeleteForm
 from coaster.views import jsonp, load_model, load_models
@@ -162,22 +162,17 @@ def event_signin(event):
             return "id_used"
 
 
-@app.route('/event/<event>/signout/<participant>', methods=['GET', 'POST'])
+@app.route('/event/<event>/signout/<participant>', methods=['POST'])
 @load_models(
     (Event, {'id':'event'}, 'event'),
     (Participant, {'id':'participant'}, 'participant')
     )
 def event_signout(event, participant):
-    form = ConfirmSignoutForm()
-    if form.validate_on_submit():
-        if 'signout' in request.form:
-            participant.attended=False
-            participant.nfc_id= None
-            participant.attend_date = None
-            db.session.commit()
-        return render_redirect(url_for('event', event=event.id), code=303)
-    return render_template('signout.html', form=form, title=u"Confirm card unassignment",
-        message=u"Unassign card for '%s' ?" % (participant.name))
+    participant.attended = False
+    participant.nfc_id = None
+    participant.attend_date = None
+    db.session.commit()
+    return jsonify(status=True)
 
 @app.route('/event/<id>/count', methods=['GET', 'POST'])
 @load_model(Event, {'id': 'id'}, 'event')
