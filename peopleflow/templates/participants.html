@@ -9,7 +9,6 @@
 <h1>{{ event.title }}- Venue Signup. </h1>
 {% endblock %}
 {% block content %}
-<a id="rfid_status" href="javascript:void(0)">&bull;</a>
 <div class="row">
     <form class="well form-search form-horizontal">
     <input autofocus class="input-medium search-query" id="search" type="text" name="key" value=""/>
@@ -45,9 +44,9 @@
                     <a class="btn rfid_card {%- if p.attended %} assigned {%- else %} unassigned {%- endif %}"
                       rel="{{ p.id }}"
                       href="javascript:void(0);">
-                      <span class="assign" rel="{{ url_for('event_signin', eventname=event.name, year=event.year) }}">Assign Card</span>
-                      <span class="unassign" rel="{{ url_for('event_signout', year=event.year, eventname=event.name, pid=p.id) }}">Unassign Card</span>
-                      <span class="tap_card">Tap the card (<span class="timeout"></span>)</span>
+                      <span class="assign" data-url="{{ url_for('event_signin', event=event.id) }}">Assign Card</span>
+                      <span class="unassign" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Unassign Card</span>
+                      <span class="tap_card" data-url="{{ url_for('event_signin', event=event.id) }}">Tap the card (<span class="timeout"></span>)</span>
                     </a>
                   </td>
                   <td>
@@ -65,6 +64,7 @@
 {% endblock %}
 {% block footerscripts %}
   <script src="http://127.0.0.1:8008/assets/js/lib.js"></script>
+  <script src="/static/js/rfid/init.js"></script>
   <script type="text/javascript">
     var timer = null, interval = null;
     var stop_listening = function() {
@@ -124,7 +124,7 @@
         var assigned = participant.hasClass('assigned');
         var id = participant.attr('rel');
         var ajax = {
-          "url": participant.find('span:visible').attr('rel'),
+          "url": participant.find('span:visible').attr('data-url'),
           "type": "POST"
         };
 
@@ -134,8 +134,13 @@
           ajax.success = function( response ) {
             if( response == "success") {
               $('a.rfid_card[rel=' + id + ']').removeClass('unassigned').addClass('assigned');
-              stop_listening();
+              var participant_name = participant.parent().parent().find('td:nth-child(4)').text();
+              toastr.success('The badge has been assigned to ' + participant_name);
             }
+            else if( response == "id_used") {
+              toastr.warning('This badge is already assigned to someone.');
+            }
+            stop_listening();
           };
           $.ajax(ajax);
         }
@@ -143,35 +148,12 @@
           /*Wanted to use AJAX, but the endpoint seems to be checking the CSRF token.*/
           window.location = ajax.url;
         }
-        //$.ajax(ajax);
       };
 
-      var rfid = {
-        'init': function(data) {
-          return;
-        },
-        'tag_placed': function(data) {
-          this.init(data);
-          $('#rfid_status').addClass('tag_placed');
-          var current = $('a.rfid_card.tap.unassigned');
-          if( current.length !== 1 ) return;
-          toggle(current, data.tag_id);
-        },
-        'tag_removed': function(data) {
-          this.init(data);
-          $('#rfid_status').removeClass('tag_placed');
-        }
-      };
-
-      $(window).on('rfid:action', function(e, data) {
-        if( typeof rfid[data.action] == 'function' ) rfid[data.action](data);
-      });
-
-      $(window).on('rfid:server_inactive', function(e, data) {
-        $('#rfid_status').removeClass('server_active');
-      });
-      $(window).on('rfid:server_active', function(e, data) {
-        $('#rfid_status').addClass('server_active');
+      rfid.on('tag_placed', function(data) {
+        var current = $('a.rfid_card.tap.unassigned');
+        if( current.length !== 1 ) return;
+        toggle(current, data.tag_id);
       });
 
     });

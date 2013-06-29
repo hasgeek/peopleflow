@@ -13,7 +13,7 @@ from datetime import datetime
 from flask import request, flash, url_for, render_template
 from werkzeug import secure_filename
 from baseframe.forms import render_redirect, ConfirmDeleteForm
-from coaster.views import jsonp, load_model
+from coaster.views import jsonp, load_model, load_models
 
 hideemail = re.compile('.{1,3}@')
 
@@ -132,37 +132,42 @@ def event_upload(year,eventname):
             return redirect(url_for('index'))
 
 
-@app.route('/<year>/<eventname>/signin', methods=['GET', 'POST'])
+@app.route('/event/<event>', methods=['GET'])
 @lastuser.requires_permission('siteadmin')
-def event_signin(eventname, year):
-    if request.method == 'GET':
-        event = Event.query.filter_by(name=eventname, year=year).first()
-        tz = timezone(app.config['TIMEZONE'])
-        participants = Participant.query.filter_by(event_id=event.id).order_by('name').all()
-        return render_template('participants.html', participants=participants, event=event, hideemail=hideemail, enumerate=enumerate,
-            utc=utc, tz=tz)
-    else:
-        pid = request.form['id']
-        participant = Participant.query.get(pid)
-        if participant.attended:
-            return "Already Signed in"
-        else:
-            nfc_id = unicode(request.form['nfc_id'])
-            participant.nfc_id = nfc_id
-            participant.attended = True
-            participant.attend_date = datetime.utcnow()
-            try:
-                db.session.commit()
-                return "success"
-            except:
-                return "id_used"
+@load_model(Event, {'id': 'event'}, 'event')
+def event(event):
+    tz = timezone(app.config['TIMEZONE'])
+    participants = Participant.query.filter_by(event_id=event.id).order_by('name').all()
+    return render_template('participants.html', participants=participants, event=event, hideemail=hideemail, enumerate=enumerate,
+        utc=utc, tz=tz)
 
 
-@app.route('/<year>/<eventname>/<pid>/signout', methods=['GET', 'POST'])
-# @load_model(Participant, {'id':'id'}, 'participant')
-def event_signout(year, eventname, pid):
-    # pid = request.form['id']
+@app.route('/event/<event>/signin', methods=['POST'])
+@lastuser.requires_permission('siteadmin')
+@load_model(Event, {'id': 'event'}, 'event')
+def event_signin(event):
+    pid = request.form['id']
     participant = Participant.query.get(pid)
+    if participant.attended:
+        return "Already Signed in"
+    else:
+        nfc_id = unicode(request.form['nfc_id'])
+        participant.nfc_id = nfc_id
+        participant.attended = True
+        participant.attend_date = datetime.utcnow()
+        try:
+            db.session.commit()
+            return "success"
+        except:
+            return "id_used"
+
+
+@app.route('/event/<event>/signout/<participant>', methods=['GET', 'POST'])
+@load_models(
+    (Event, {'id':'event'}, 'event'),
+    (Participant, {'id':'participant'}, 'participant')
+    )
+def event_signout(event, participant):
     form = ConfirmSignoutForm()
     if form.validate_on_submit():
         if 'signout' in request.form:
@@ -170,7 +175,7 @@ def event_signout(year, eventname, pid):
             participant.nfc_id= None
             participant.attend_date = None
             db.session.commit()
-        return redirect(url_for('event_signin', year=year, eventname=eventname), code=303)
+        return render_redirect(url_for('event', event=event.id), code=303)
     return render_template('signout.html', form=form, title=u"Confirm card unassignment",
         message=u"Unassign card for '%s' ?" % (participant.name))
 
@@ -207,7 +212,7 @@ def event_delete(event):
         if 'delete' in request.form:
             db.session.delete(event)
             db.session.commit()
-        return redirect(url_for('index'), code=303)
+        return render_redirect(url_for('index'), code=303)
     return render_template('baseframe/delete.html', form=form, title=u"Confirm delete",
         message=u"Delete '%s' ?" % (event.title))
 

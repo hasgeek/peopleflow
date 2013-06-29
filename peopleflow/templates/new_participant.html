@@ -18,7 +18,7 @@
         interval = null;
     };
     $(function(){
-        $('.assign').attr('rel', '/{{year }}/{{ event.name }}/signin');
+        $('.assign').attr('rel', '{{ url_for("event_signin", event=event.id) }}');
         $('a.rfid_card').live('click', function(event){
             var current = $(this);
             if( current.hasClass('disabled') ) return true;
