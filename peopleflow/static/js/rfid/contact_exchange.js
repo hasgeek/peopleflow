@@ -29,7 +29,7 @@ var timer = function() {
     };
 
     timer.init = function(options) {
-        if(options.debug) {
+        if(options.debug && options.ui_test) {
             TOTAL_TIME = DEBUG_TOTAL_TIME;
             ALERT_TIME = DEBUG_ALERT_TIME;
         }

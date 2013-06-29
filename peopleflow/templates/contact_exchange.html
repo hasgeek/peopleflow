@@ -35,7 +35,7 @@
 {{ super() }}
 <script src="/static/js/rfid/contact_exchange.js"></script>
 <script>
-contex({eventid: {{ event.id }}, debug: {{ debug }}});
+contex({eventid: {{ event.id }}, debug: {{ debug }}, ui_test: {{ ui_test }} });
 </script>
 {% endblock %}
 

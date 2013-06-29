@@ -126,7 +126,7 @@ def export_kiosk(kiosk):
 @load_model(Event, {'id':'event'}, 'event')
 def contact_exchange(event):
     if request.method=='GET':
-        return render_template('contact_exchange.html', event = event, debug = str(app.config['DEBUG']).lower())
+        return render_template('contact_exchange.html', event=event, debug=str(app.config['DEBUG']).lower(), ui_test=str(request.args.get('ui_test', False)).lower())
 
     if request.method == 'POST':
         ids = tuple(request.form.getlist('ids[]'))
