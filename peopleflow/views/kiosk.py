@@ -92,7 +92,7 @@ def kiosk_delete(event, kiosk):
         if 'delete' in request.form:
             db.session.delete(kiosk)
             db.session.commit()
-        return render_redirect(url_for('event_kiosks', eventname=event.name), code=303)
+        return render_redirect(url_for('event_kiosks', event=event.id), code=303)
     return render_template('baseframe/delete.html', form=form, title=u"Confirm delete",
         message=u"Delete '%s' ?" % (kiosk.company))
 
