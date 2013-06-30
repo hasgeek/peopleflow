@@ -46,6 +46,7 @@
                       href="javascript:void(0);">
                       <span class="assign" data-url="{{ url_for('event_signin', event=event.id) }}">Assign Card</span>
                       <span class="unassign" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Unassign Card</span>
+                      <span class="unassign_confirm" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Pls confirm (<span class="timeout"></span>)</span>
                       <span class="tap_card" data-url="{{ url_for('event_signin', event=event.id) }}">Tap the card (<span class="timeout"></span>)</span>
                     </a>
                   </td>
@@ -66,9 +67,9 @@
   <script src="http://127.0.0.1:8008/assets/js/lib.js"></script>
   <script src="/static/js/rfid/init.js"></script>
   <script type="text/javascript">
-    var timer = null, interval = null;
-    var stop_listening = function() {
-      $('a.rfid_card').removeClass('disabled').removeClass('tap');
+    var timer = null, interval = null, the_timer = null;
+    var stop_waiting = function() {
+      $('a.rfid_card').removeClass('disabled').removeClass('tap').removeClass('confirm').removeClass('btn-danger');
       window.clearInterval(interval);
       interval = null;
     };
@@ -93,30 +94,29 @@
         if( current.hasClass('disabled') ) return true;
         var assigned = current.hasClass('assigned');
         var listening = current.hasClass('tap');
+        var confirming = current.hasClass('confirm');
         var id = current.attr('rel');
 
-        if( listening ) {
+        if( listening || confirming ) {
           window.clearTimeout(timer);
           timer = null;
-          stop_listening();
+          stop_waiting();
+          if( confirming ) toggle(current);
         }
-        else if( !assigned ) {
+        else{
+          if( assigned ) {
+            the_timer = current.find('span.unassign_confirm .timeout')
+            current.addClass('confirm').addClass('btn-danger');
+          }
+          else {
+            the_timer = current.find('span.tap_card .timeout')
+            current.addClass('tap');
+          }
+          the_timer.text(5);
+          timer = window.setTimeout("stop_waiting();", 5000);
+          interval = window.setInterval(function(){$('a.rfid_card[rel=' + id + '] .timeout').each(function(){$(this).html(Number($(this).text()) - 1);});}, 1000);
           $('a.rfid_card').addClass('disabled');
-          $(this).find('.timeout').text(5);
-          $(this).removeClass('disabled').addClass('tap');
-          timer = window.setTimeout("stop_listening();", 5000);
-          interval = window.setInterval(function(){var tout = $('a.rfid_card[rel=' + id + '] .timeout'); tout.html(Number(tout.text()) - 1);}, 1000);
-        }
-      });
-
-      $('a.rfid_card').live('dblclick', function(event){
-        var current = $(this);
-        if( current.hasClass('disabled') ) return true;
-        var assigned = current.hasClass('assigned');
-        var listening = current.hasClass('tap');
-
-        if( !listening && assigned ) {
-          toggle($(this));
+          current.removeClass('disabled');
         }
       });
 
@@ -140,7 +140,7 @@
             else if( response == "id_used") {
               toastr.warning('This badge is already assigned to someone.');
             }
-            stop_listening();
+            stop_waiting();
           };
         }
         else {

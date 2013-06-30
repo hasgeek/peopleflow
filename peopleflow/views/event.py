@@ -162,7 +162,16 @@ def event_signin(event):
             return "id_used"
 
 
-@app.route('/event/<event>/signout/<participant>', methods=['POST'])
+@app.route('/event/<event>/participant/<participant>/status', methods=['GET'])
+@load_models(
+    (Event, {'id':'event'}, 'event'),
+    (Participant, {'id':'participant'}, 'participant')
+    )
+def participation_status(event, participant):
+    return jsonify(attended=participant.attended, nfc_id=participant.nfc_id)
+
+
+@app.route('/event/<event>/participant/<participant>/signout', methods=['POST'])
 @load_models(
     (Event, {'id':'event'}, 'event'),
     (Participant, {'id':'participant'}, 'participant')
