@@ -19,17 +19,14 @@ footer {position: absolute;bottom:0px;width: 100%;}
 #cooldown.overlay .timer .elem {width: 50%; margin: 0 auto; height: 100%; color: #FFF;font-size: 3em;box-sizing: border-box;}
 
 /*Sponsor Kiosk Styles*/
-#company_logo, #company_info, #bottom {position: absolute;top: 1%;bottom: 51%;}
-#company_logo, #company_tap_msg {text-align: center;}
-#company_logo { left: 1%; right: 61%;padding: 1%;}
-#company_logo img {max-width: 98%; max-height: 98%;}
-#company_info {left: 41%; right: 1%;}
-#company_info .name {font-size: 50px; line-height: 60px;}
-#company_info .tag {font-size: 25px; line-height: 30px;}
-#bottom {left: 1%;top: 51%;bottom: 55px;right: 1%;}
-#company_tap_msg {font-size: 35px; line-height: 40px;}
-#sponsor_privacy {margin: 0px 10%;}
-#sponsor_privacy h3 {color:#000; }
+body.contact_point {background: url(../images/canvas.jpg)}
+#contact_point{position: absolute;top: 1%; bottom: 55px; left: 1%; right: 1%;}
+#contact_point #company{float: left;height: 100%;max-width: 78%;margin: 0 1%;}
+#contact_point #company .logo{max-height: 85%;}
+#contact_point #company .logo img{max-width: 99%;max-height: 99%;}
+#contact_point #company .info .name{font-size: 50px; line-height: 55px;}
+#contact_point #company .info .tag{font-size: 35px; line-height: 40px;}
+#contact_point #company_tap_msg {text-align: center;}
 
 /*Sponsor Kiosk when company name is not specified*/
 #company_logo.nocompany, #company_info.nocompany{left: 1%; right: 1%;}

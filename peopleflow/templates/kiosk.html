@@ -36,18 +36,21 @@
 {% if kiosk.company_tag != None and kiosk.company_tag != '' %}
   {% set company_class = company_class + ' comptag' %}
 {% endif %}
-<div id="company_logo"{% if company_class %} class="{{ company_class }}" {% endif %}>
-  <img src="/static/uploads/sponsors/{{ kiosk.company_logo }}" alt="{{ kiosk.company }} Logo">
-</div>
-<div id="company_info"{% if company_class %} class="{{ company_class }}" {% endif %}>
-  <h1 class="name">{{ kiosk.company }}</h1>
-  <h3 class="tag">{{ kiosk.company_tag }}</h3>
-</div>
-<div id="error"> </div>
-<div id="bottom">
+<div id="contact_point">
+  <div id="company"{% if company_class %} class="{{ company_class }}" {% endif %}>
+    <div class="logo">
+      <img src="/static/uploads/sponsors/{{ kiosk.company_logo }}" alt="{{ kiosk.company }} Logo">
+    </div>
+    <div class="info">
+      <h1 class="name">{{ kiosk.company }}</h1>
+      <h3 class="tag">{{ kiosk.company_tag }}</h3>
+    </div>
+  </div>
+  <div id="error"> </div>
   <h2 id="company_tap_msg">
     Tap your badge to {% if kiosk.tap_msg %} {{ kiosk.tap_msg }} {% else %} share your details {% endif %}
   </h2>
+  <hr>
   <div id="sponsor_privacy">
     <h3>Privacy Policy</h3>
     <p>Privacy Policy Text</p>
@@ -58,6 +61,10 @@
 {% block footerscripts %}
 {{ super() }}
 <script type="text/javascript">
+
+/*Quick hack. Ideal scenario: to have the ability to override the attributes of body tag in baseframe*/
+$('body').addClass('contact_point');
+
 rfid.on( 'tag_placed', function(data) {
   if (data['tag_id']) {
     url = "/event/{{ event.id }}/participant/"+data['tag_id'];
