@@ -17,6 +17,10 @@ class Event(db.Model, BaseMixin):
     year = db.Column(db.Integer, default=date.today().year, nullable=False)
     #: Date of the event
     date = db.Column(db.Date, nullable=False)
+    #: From Date of the event
+    from_date = db.Column(db.Date, nullable=True)
+    #: To Date of the event
+    to_date = db.Column(db.Date, nullable=True)
     #:Venue
     venue = db.Column(db.Unicode(80), nullable=False)
     #: List of participants, event.participants gives access to
