@@ -16,7 +16,7 @@ class Event(db.Model, BaseMixin):
     #: Year of the event
     year = db.Column(db.Integer, default=date.today().year, nullable=False)
     #: Date of the event
-    date = db.Column(db.Date, nullable=False)
+    date = db.Column(db.Date, nullable=True)
     #: From Date of the event
     from_date = db.Column(db.Date, nullable=True)
     #: To Date of the event
