@@ -4,6 +4,8 @@
   <meta name="DC.title" content="{{ kiosk.name }} Kiosk - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
 {%- endblock %}
 
+{% block bodytag %}<body class="contact_point">{% endblock %}
+
 {% block basecontent %}
 
 <div id="info" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="info-label" aria-hidden="true">
@@ -51,10 +53,6 @@
 {% block footerscripts %}
 {{ super() }}
 <script type="text/javascript">
-
-/*Quick hack. Ideal scenario: to have the ability to override the attributes of body tag in baseframe*/
-$('body').addClass('contact_point');
-
 rfid.on( 'tag_placed', function(data) {
   if (data['tag_id']) {
     url = "/event/{{ event.id }}/participant/"+data['tag_id'];
