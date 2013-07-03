@@ -133,7 +133,7 @@ def event_upload(year,eventname):
 
 
 @app.route('/event/<event>', methods=['GET'])
-@lastuser.requires_permission('siteadmin')
+@lastuser.requires_permission('kioskadmin')
 @load_model(Event, {'id': 'event'}, 'event')
 def event(event):
     tz = timezone(app.config['TIMEZONE'])
@@ -143,7 +143,7 @@ def event(event):
 
 
 @app.route('/event/<event>/signin', methods=['POST'])
-@lastuser.requires_permission('siteadmin')
+@lastuser.requires_permission('kioskadmin')
 @load_model(Event, {'id': 'event'}, 'event')
 def event_signin(event):
     pid = request.form['id']
@@ -167,6 +167,7 @@ def event_signin(event):
     (Event, {'id':'event'}, 'event'),
     (Participant, {'id':'participant'}, 'participant')
     )
+@lastuser.requires_permission('kioskadmin')
 def participation_status(event, participant):
     return jsonify(attended=participant.attended, nfc_id=participant.nfc_id)
 
@@ -176,6 +177,7 @@ def participation_status(event, participant):
     (Event, {'id':'event'}, 'event'),
     (Participant, {'id':'participant'}, 'participant')
     )
+@lastuser.requires_permission('kioskadmin')
 def event_signout(event, participant):
     participant.attended = False
     participant.nfc_id = None

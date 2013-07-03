@@ -24,6 +24,7 @@ import hashlib
 
 
 @app.route('/print_card', methods=['POST'])
+@lastuser.requires_permission('kioskadmin')
 def print_card():
     twitter_handle = request.form['twitter']
     name = request.form['name']

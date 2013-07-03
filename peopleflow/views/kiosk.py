@@ -66,6 +66,7 @@ def kiosk(event, kiosk):
     (Event, {'id':'event'}, 'event'),
     (Kiosk, {'id': 'kiosk'}, 'kiosk')
     )
+@lastuser.requires_permission('kioskadmin')
 def share(event, kiosk):
     if request.method=='POST':
         nfc_id = request.form['id']
@@ -97,7 +98,7 @@ def kiosk_delete(event, kiosk):
         message=u"Delete '%s' ?" % (kiosk.company))
 
 @app.route('/event/<event>/kiosks', methods=['GET'])
-@lastuser.requires_permission('siteadmin')
+@lastuser.requires_permission('kioskadmin')
 @load_models(
     (Event, {'id':'event'}, 'event')
     )
@@ -106,6 +107,7 @@ def event_kiosks(event):
 
 @app.route('/event/<event>/kiosk/<kiosk>/export', methods=['GET'])
 @load_model(Kiosk, {'id':'kiosk', 'event_id': 'event'}, 'kiosk')
+@lastuser.requires_permission('siteadmin')
 def export_kiosk(kiosk):
     participants = StringIO()
     fieldnames= ['Name', 'Email','Company', 'Job']
@@ -123,7 +125,7 @@ def export_kiosk(kiosk):
     return response
 
 @app.route('/event/<event>/contact_exchange', methods=['GET','POST'])
-@lastuser.requires_permission('siteadmin')
+@lastuser.requires_permission('kioskadmin')
 @load_model(Event, {'id':'event'}, 'event')
 def contact_exchange(event):
     if request.method=='GET':
