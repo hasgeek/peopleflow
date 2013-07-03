@@ -5,41 +5,38 @@
 {%- endblock %}
 {% block headline %}
 <h1>{{ event.title }} - Kiosks</h1>
-<a class="btn" href="{{ url_for('kiosk_new', id=event.id) }}">Add a new kiosk</a>
+{% if siteadmin %}<a class="btn" href="{{ url_for('kiosk_new', id=event.id) }}"><span class="icon-plus"></span>Add a kiosk</a>{% endif %}
 {% endblock %}
 {% block content %}
-<div id="tabs">
-          <table class="table">
-            <thead>
-              <th>#</th>        
-              <th>Name</th>
-              <th>Company</th>
-              <th>Subscriptions</th>
-              <th>Action</th>  
-              <th></th> 
-            </thead>
-            <tbody>
-              {% for i, k in enumerate(kiosks) %}
-                  <tr class="link">
-                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}">{{ i+1 }}</a></td>
-                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}">{{ k.name }}</a></td>
-                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}"><strong>{{ k.company|e }}</strong></a></td>
-                  <td><a href="{{ url_for('kiosk', event=event.id, kiosk=k.id) }}">{{ k.participants.__len__() }}</a></td>
-                  <td>
-                    <a  href="{{ url_for('kiosk_delete', event=event.id, kiosk=k.id) }}"><i class="icon-remove"></i></a>
-                  </td>
-                  {%- if k.participants.__len__() -%}
-                    <td><a href="{{ url_for('export_kiosk', event=event.id, kiosk=k.id) }}" class= "btn btn-small btn-primary" >Export</a></td>
-                  {%- else -%}
-                    <td></td>
-                   {%- endif -%}   
-                </tr>
-              {% else %}
-                <tr>
-                  <td><em>(No kiosks found)</em></td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+<div class="boxed_list">
+  {% for kiosk in event.kiosks %}
+    <div class="item">
+      <div class="links">
+        {% if siteadmin %}
+        {%- if kiosk.participants.__len__() -%}
+        <a href="{{ url_for('export_kiosk', event=event.id, kiosk=kiosk.id) }}"><span class="icon-trash"></span>Export</a>
+        {% endif %}
+        <a href="{{ url_for('event_delete', id=event.id) }}" title="Delete" class="red"><span class="icon-trash"></span>Delete</a>
+        {% endif %}
+      </div>
+      {% if kioskadmin or siteadmin %}
+      <a class="link" href="{{ url_for('kiosk', event=event.id, kiosk=kiosk.id) }}" title="{{ kiosk.company }} - {{ kiosk.name }}">
+      {% else %}
+      <div class="link">
+      {% endif %}
+        <div class="serial">{{ loop.index }}</div>
+        <div class="l1">{{ kiosk.company }}</div>
+        <div class="l2">{{ kiosk.name }}</div>
+        <div class="l3">Subscribers: {{ kiosk.participants.__len__() }}</div>
+      {% if kioskadmin or siteadmin %}
+      </a>
+      {% else %}
+      </div>
+      {% endif %}
+    </div>
+  {%- else -%}
+    <p></p>
+    <p>There are no kiosks currently.{% if siteadmin %} <a href="{{ url_for('kiosk_new', id=event.id) }}">Add an event</a>{% endif %}</p>
+  {% endfor %}
+</div>
 {% endblock %}

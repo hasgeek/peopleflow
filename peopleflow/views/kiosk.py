@@ -103,7 +103,7 @@ def kiosk_delete(event, kiosk):
     (Event, {'id':'event'}, 'event')
     )
 def event_kiosks(event):
-    return render_template('event_kiosks.html', kiosks=event.kiosks, event=event, enumerate=enumerate)
+    return render_template('event_kiosks.html', event=event, siteadmin=lastuser.has_permission('siteadmin'), kioskadmin=lastuser.has_permission('kioskadmin'))
 
 @app.route('/event/<event>/kiosk/<kiosk>/export', methods=['GET'])
 @load_model(Kiosk, {'id':'kiosk', 'event_id': 'event'}, 'kiosk')
