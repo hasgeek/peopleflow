@@ -18,7 +18,8 @@ class EventForm(Form):
 
     name = TextField('Name', validators=[Required('A name is required')])
     title = TextField('Title', validators=[Required('A title is required')])
-    date = DateField('Date', description="Format: YYYY-MM-DD", validators=[Required('Propose a date')])
+    from_date = DateField('From', description="Format: YYYY-MM-DD", validators=[Required('Propose a from date')])
+    to_date = DateField('To', description="Format: YYYY-MM-DD", validators=[Required('Propose a to date')])
     venue = TextField('Venue', validators=[Required('Venue information is required')])
 
 
