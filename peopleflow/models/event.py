@@ -21,6 +21,8 @@ class Event(db.Model, BaseMixin):
     from_date = db.Column(db.Date, nullable=True)
     #: To Date of the event
     to_date = db.Column(db.Date, nullable=True)
+    #: ID of the event on Doattend
+    doattend_id = db.Column(db.Unicode(10), nullable=True)
     #:Venue
     venue = db.Column(db.Unicode(80), nullable=False)
     #: List of participants, event.participants gives access to
