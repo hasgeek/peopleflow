@@ -10,7 +10,6 @@
   {# Create a macro for boxed_list items #}
   <div class="boxed_list">
     {% for event in events %}
-      {% set e = event %}
       <div class="item">
         <div class="links">
           {% if siteadmin %}<a href="{{ url_for('event_edit', id=event.id) }}" title="Edit"><span class="icon-edit"></span>Edit</a>{% endif %}
