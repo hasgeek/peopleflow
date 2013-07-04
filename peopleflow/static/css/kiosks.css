@@ -20,13 +20,17 @@ footer {position: absolute;bottom:0px;width: 100%;}
 
 /*Sponsor Kiosk Styles*/
 body.contact_point {background: url(../images/canvas.jpg)}
-#contact_point{position: absolute;top: 1%; bottom: 55px; left: 1%; right: 1%;}
-#contact_point #company{float: left;height: 100%;max-width: 78%;margin: 0 1%;}
-#contact_point #company .logo{max-height: 85%;}
-#contact_point #company .logo img{max-width: 99%;max-height: 99%;}
-#contact_point #company .info .name{font-size: 50px; line-height: 55px;}
-#contact_point #company .info .tag{font-size: 35px; line-height: 40px;}
-#contact_point #company_tap_msg {text-align: center;}
+#contact_point{position: absolute;top: 1%; bottom: 60px; left: 1%; right: 1%;}
+#contact_point #company{
+    float: left;height: 100%;width: 78%;margin: 0 1%;text-align: center;padding: 1%;box-sizing: border-box;
+    background: -webkit-radial-gradient(35% 35%, farthest-corner, rgba(255, 255, 255, 0.5), rgba(204, 204, 204, 0.55), rgba(204, 204, 204, 0.8), rgba(204, 204, 204, 0.9));
+    border: 1px solid #666; border-radius: 10px;
+}
+#contact_point #company .logo{height: 85%;}
+#contact_point #company .logo img{max-width: 99%;max-height: 99%;position: relative;}
+#contact_point #company .info .name{font-size: 50px; line-height: 55px;margin: 0;color: #333}
+#contact_point #company .info .tag{font-size: 35px; line-height: 40px;margin: 0; color: #999}
+#contact_point #company_tap_msg {text-align: center;color: #0A0}
 
 /*Sponsor Kiosk when company name is not specified*/
 #company_logo.nocompany, #company_info.nocompany{left: 1%; right: 1%;}

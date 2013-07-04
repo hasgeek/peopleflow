@@ -34,18 +34,20 @@
       <img src="/static/uploads/sponsors/{{ kiosk.company_logo }}" alt="{{ kiosk.company }} Logo">
     </div>
     <div class="info">
-      <h1 class="name">{{ kiosk.company }}</h1>
-      <h3 class="tag">{{ kiosk.company_tag }}</h3>
+      <div class="name">{{ kiosk.company }}</div>
+      <div class="tag">{{ kiosk.company_tag }}</div>
     </div>
   </div>
   <div id="error"> </div>
-  <h2 id="company_tap_msg">
+  <h1 id="company_tap_msg">
     Tap your badge to {% if kiosk.tap_msg %} {{ kiosk.tap_msg }} {% else %} share your details {% endif %}
-  </h2>
+  </h1>
   <hr>
   <div id="sponsor_privacy">
-    <h3>Privacy Policy</h3>
-    <p>Privacy Policy Text</p>
+    <h4>Privacy Policy</h4>
+    <p> </p>
+    <p>HasGeek's Common Policy Statement</p>
+    <p>Sponsor-specific statement</p>
   </div>
 </div>
 
@@ -75,6 +77,10 @@ rfid.on( 'tag_placed', function(data) {
       };
     });
   }
+});
+$(document).ready(function(){
+  var img = $('#contact_point #company .logo img')
+  img.css({'margin-top': -img.height()/2, 'top': '50%'});
 });
 
 </script>
