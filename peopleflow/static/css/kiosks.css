@@ -3,6 +3,7 @@
 #footerlogo img {max-height: 100%;}
 #root {min-height: 0;}
 footer {position: absolute;bottom:0px;width: 100%;}
+footer .footer-inner {background: inherit}
 
 /*toastr customisations*/
 /*.toast-title{font-size: 5.0em;text-transform: uppercase;line-height: 1.5em;}
@@ -40,7 +41,8 @@ body.contact_point {background: url(../images/canvas.jpg)}
 #company_info.nocompany.comptag .name, #company_info.nocompany.nocomptag {display: none;}
 
 /*Contact Exchange Kiosk Styles*/
-#contact_exchange {position: absolute;width: 100%;top: 0px;bottom: 60px;background: url(/static/images/contact-exchange-bg.gif) 50% 15%; background-size: 115%;}
+body.contact_exchange {background: url(/static/images/contact-exchange-bg.gif) 50% 15%; background-size: 115%;}
+#contact_exchange {position: absolute;width: 100%;top: 0px;bottom: 60px;}
 #contact_exchange .top {position: absolute; top: 0%; left: 1%;right: 1%; bottom: 0%; transition: all 1s;}
 #contact_exchange .logo, #contact_exchange .message { position: absolute; left: 1%; right: 1%;transition: all 1s;}
 #contact_exchange .logo { top: 1%; bottom: 41%;text-align: center; z-index: 3001}
