@@ -37,9 +37,8 @@ a.rfid_card.tap .unassign, a.rfid_card.confirm .unassign, a.rfid_card.tap .assig
 .boxed_list .item .link .l2 {font-size: 25px;}
 .boxed_list .item .link .l3 {font-size: 20px;}
 .boxed_list .item .link .l4 {font-size: 10px;}
-.boxed_list .item .links {position: absolute;bottom: 5px;left: 10px;z-index: 5010;display: none;}
-.boxed_list .item:hover .links {display: block}
-.boxed_list .item .links a {color: #00C000;text-decoration: none;font-weight: bold;margin-right: 3px}
+.boxed_list .item .links {position: absolute;bottom: 5px;left: 10px;z-index: 5010;}
+.boxed_list .item .links a {color: #00C000;text-decoration: none;font-weight: bold;margin-right: 3px;}
 .boxed_list .item .links a.red {color: #C00000}
 .boxed_list .item .links a:hover {color: #0A0}
 .boxed_list .item .links a.red:hover {color: #A00}
