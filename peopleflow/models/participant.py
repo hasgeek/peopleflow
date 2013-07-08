@@ -40,7 +40,7 @@ class Participant(db.Model, BaseMixin):
     #: Date of registration
     regdate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     #:NFC ID
-    nfc_id = db.Column(db.Unicode(80), unique=True)
+    nfc_id = db.Column(db.Unicode(80), unique=True, nullable=True, default=None)
     #: Order ID
     order_id = db.Column(db.Integer, nullable=True)
     #: Did the participant attend the event?
