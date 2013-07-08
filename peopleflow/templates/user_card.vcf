@@ -1,6 +1,7 @@
 BEGIN:VCARD
 VERSION:4.0
 PRODID:-//HasGeek LLP.//ContactExchange//EN{% if user.name %}
+N:{{ ' '.join(user.name.split()[1:]) }};{{ ' '.join(user.name.split()[:1]) }};;;
 FN:{{ user.name }}{% endif %}{% if user.email %}
 EMAIL:{{ user.email }}{% endif %}{% if user.city %}
 ADR;TYPE=office:;;;{{ user.city }};;;{% endif %}{% if user.company %}

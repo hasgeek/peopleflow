@@ -11,7 +11,9 @@ from ..models import db, Kiosk, Event, Participant, CXLog
 from ..forms import KioskForm, ConfirmSignoutForm
 from flask import request, flash, url_for, render_template, jsonify
 from baseframe.forms import render_redirect, ConfirmDeleteForm
+from coaster import make_name
 from coaster.views import jsonp, load_model, load_models
+from coaster.gfm import markdown
 from flask.ext.mail import Mail, Message
 
 
@@ -140,16 +142,17 @@ def contact_exchange(event):
         message = Message("You connected with " + str(len(users) - 1) + " people using ContactExchange")
         message.cc = list()
         for user in users:
-            email = (user.name, user.email)
+            email = '"' + user.name + '"<' + user.email + '>'
             if message.reply_to is None:
                 message.reply_to = email
                 message.add_recipient(email)
             else:
                 message.cc.append(email)
-            message.attach(user.name + '.vcf', 'text/vcard', render_template('user_card.vcf', user=user, event=event))
+            message.attach(make_name(user.name) + '.vcf', 'text/vcard', render_template('user_card.vcf', user=user, event=event))
 
-        message.sender = ('HasGeek', 'no-reply@hasgeek.com>')
+        message.sender = '"HasGeek"<no-reply@hasgeek.com>'
         message.body = render_template('connectemail.md', users=users, event=event)
+        message.html = markdown(message.body)
         log = CXLog()
         try:
             mail.send(message)
