@@ -41,6 +41,8 @@ class Participant(db.Model, BaseMixin):
     regdate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     #:NFC ID
     nfc_id = db.Column(db.Unicode(80), unique=True, nullable=True, default=None)
+    #: Source of registration, whether online(True) or offline(False)
+    online_reg = db.Column(db.Boolean, default=True, nullable=True)
     #: Order ID
     order_id = db.Column(db.Integer, nullable=True)
     #: Did the participant attend the event?
