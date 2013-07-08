@@ -17,7 +17,7 @@
           {% if kioskadmin or siteadmin %}<a href="{{ url_for('contact_exchange', event=event.id) }}" title="ContactExchange"><span class="icon-exchange"></span>ContactExchange</a>{% endif %}
           {% if siteadmin %}<a href="{{ url_for('event_delete', id=event.id) }}" title="Delete" class="red"><span class="icon-trash"></span>Delete</a>{% endif %}
         </div>
-        {% if kioskadmin or siteadmin %}
+        {% if registrations or siteadmin %}
         <a class="link" href="{{ url_for('event', event=event.id) }}" title="{{ event.title }}">
         {% else %}
         <div class="link">
@@ -26,7 +26,7 @@
           <div class="l1">{{ event.title }}</div>
           <div class="l2">{% if event.date %}{{ event.date }}{% else %}{{ event.from_date }} - {{ event.to_date }}{% endif %}</div>
           <div class="l3">{{ event.venue }}</div>
-        {% if kioskadmin or siteadmin %}
+        {% if registrations or siteadmin %}
         </a>
         {% else %}
         </div>

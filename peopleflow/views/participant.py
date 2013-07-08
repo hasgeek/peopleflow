@@ -11,7 +11,7 @@ from coaster.views import load_model, jsonp
 
 @app.route('/event/<id>/participant/new', methods=['GET', 'POST'])
 @load_model(Event, {'id': 'id'}, 'event')
-@lastuser.requires_permission('kioskadmin')
+@lastuser.requires_permission('registrations')
 def venue_signup(event, participantform=None):
     if request.method=='GET':
         if participantform is None:
@@ -44,7 +44,7 @@ def venue_signup(event, participantform=None):
 
 
 @app.route('/event/<event>/participant/<nfc_id>', methods=["GET"])
-@lastuser.requires_permission('kioskadmin')
+@lastuser.requires_permission(['kioskadmin', 'registrations'])
 def get_participant(event, nfc_id):
         try:
             participant = Participant.query.filter_by(event_id=event, nfc_id=nfc_id).first()
@@ -56,7 +56,7 @@ def get_participant(event, nfc_id):
 
 @app.route('/<eid>/search', methods=['POST'])
 @load_model(Event,{'id':'eid'},'event')
-@lastuser.requires_permission('kioskadmin')
+@lastuser.requires_permission('registrations')
 def search(event, participants=None):
     query = request.form['key']
     participant = Participant.query.filter_by(event_id=event.id, ticket_number=int(query)).first()

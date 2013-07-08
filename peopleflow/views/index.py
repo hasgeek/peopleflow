@@ -9,4 +9,4 @@ from flask import render_template, g
 @app.route('/', methods=['GET'])
 def index():
     events = Event.query.order_by('from_date desc, to_date desc, date desc').all()
-    return render_template('index.html', events=events, siteadmin=lastuser.has_permission('siteadmin'), kioskadmin=lastuser.has_permission('kioskadmin'))
+    return render_template('index.html', events=events, siteadmin=lastuser.has_permission('siteadmin'), kioskadmin=lastuser.has_permission('kioskadmin'), registrations=lastuser.has_permission('registrations'))

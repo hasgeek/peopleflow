@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import StringIO
 import csv
 import os
 import re
@@ -14,6 +15,7 @@ from flask import request, flash, url_for, render_template, jsonify
 from werkzeug import secure_filename
 from baseframe.forms import render_redirect, ConfirmDeleteForm
 from coaster.views import jsonp, load_model, load_models
+from mechanize import ParseResponse, urlopen, urljoin
 
 hideemail = re.compile('.{1,3}@')
 
@@ -133,7 +135,7 @@ def event_upload(year,eventname):
 
 
 @app.route('/event/<event>', methods=['GET'])
-@lastuser.requires_permission('kioskadmin')
+@lastuser.requires_permission('registrations')
 @load_model(Event, {'id': 'event'}, 'event')
 def event(event):
     tz = timezone(app.config['TIMEZONE'])
@@ -143,7 +145,7 @@ def event(event):
 
 
 @app.route('/event/<event>/signin', methods=['POST'])
-@lastuser.requires_permission('kioskadmin')
+@lastuser.requires_permission('registrations')
 @load_model(Event, {'id': 'event'}, 'event')
 def event_signin(event):
     pid = request.form['id']
@@ -167,7 +169,7 @@ def event_signin(event):
     (Event, {'id':'event'}, 'event'),
     (Participant, {'id':'participant'}, 'participant')
     )
-@lastuser.requires_permission('kioskadmin')
+@lastuser.requires_permission('registrations')
 def participation_status(event, participant):
     return jsonify(attended=participant.attended, nfc_id=participant.nfc_id)
 
@@ -177,7 +179,7 @@ def participation_status(event, participant):
     (Event, {'id':'event'}, 'event'),
     (Participant, {'id':'participant'}, 'participant')
     )
-@lastuser.requires_permission('kioskadmin')
+@lastuser.requires_permission('registrations')
 def event_signout(event, participant):
     participant.attended = False
     participant.nfc_id = None
