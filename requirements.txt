@@ -9,3 +9,7 @@ Flask-RQ
 Flask-Mail
 python-dateutil
 Markdown
+unicodecsv
+mechanize
+gevent
+gunicorn
