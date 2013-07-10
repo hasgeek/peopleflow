@@ -24,7 +24,7 @@ class Participant(db.Model, BaseMixin):
     #: Name of the participant
     name = db.Column(db.Unicode(80), nullable=False)
     #: Email of the participant
-    email = db.Column(db.Unicode(80), nullable=False)
+    email = db.Column(db.Unicode(80), nullable=False, unique=True)
     #: Company name
     company = db.Column(db.Unicode(80), nullable=True)
     #: Job title
