@@ -5,6 +5,7 @@
 Website server for peopleflow
 """
 
+from os import environ
 from __future__ import absolute_import
 from flask import Flask
 from flask.ext.assets import Environment, Bundle
@@ -17,6 +18,8 @@ from ._version import __version__
 
 version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
+if environ.get('PEOPLEFLOW_DEBUG'):
+	app.debug = True
 lastuser = Lastuser()
 
 assets['peopleflow.css'][version] = 'css/app.css'
