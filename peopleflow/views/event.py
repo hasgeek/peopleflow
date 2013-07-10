@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import StringIO
-import csv
+import unicodecsv
 import os
 import re
 from .. import app
 from .. import lastuser
 from ..models import db, Event, Participant
 from ..forms import EventForm, ConfirmSignoutForm
+from ..helpers import levenshtein
 from pytz import utc, timezone
 from datetime import datetime
 from flask import request, flash, url_for, render_template, jsonify
@@ -45,94 +46,97 @@ def event_submit():
             flash("Please check your details and try again.", 'error')
             return event_add(eventform=form)
 
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
-
-
-def csv_populate(file, year, eventname):
-    reader = csv.reader(open(file,'rb'), dialect='excel', quotechar='|')
-    # Skip the header
-    reader.next()
-    # Get the event
-    event = Event.query.filter_by(year=year, name=eventname).first()
-    # Get all the participants of the event
-    participants = Participant.query.filter_by(event_id=event.id).all()
-    duplicates = 0
-    new = 0
-    if participants:
-        for row in reader:
-            for participant in participants:
-                if participant.ticket_number == int(row[0]):
-                    duplicates = duplicates + 1
-                    break
-            else:
-                new_participant = Participant()
-                try:
-                    participant.ticket_number = int(row[0])
-                except ValueError:
-                    participant.ticket_number = None
-                new_participant.name = row[1]
-                new_participant.email = row[2]
-                new_participant.ticket_type = row[3]
-                new_participant.company = row[4]
-                new_participant.job = row[5]
-                new_participant.city = row[6]
-                new_participant.twitter = row[7]
-                new_participant.tshirt_size = row[8]
-                new_participant.regdate = dateparser.parse(row[9])
-                try:
-                    participant.order_id = int(row[10])
-                except ValueError:
-                    participant.order_id = None
-                new_participant.event_id = event.id
-                db.session.add(new_participant)
-                db.session.commit()
-                new = new + 1
-    else:
-        for row in reader:
-            participant = Participant()
-            try:
-                participant.ticket_number = int(row[0])
-            except ValueError:
-                participant.ticket_number = None
-            participant.name = row[1]
-            participant.email = row[2]
-            participant.ticket_type = row[3]
-            participant.company = row[4]
-            participant.job = row[5]
-            participant.city = row[6]
-            participant.twitter = row[7]
-            participant.tshirt_size = row[8]
-            participant.regdate = dateparser.parse(row[9])
-            try:
-                participant.order_id = int(row[10])
-            except ValueError:
-                participant.order_id = None
-            participant.event_id = event.id
-            db.session.add(participant)
-            db.session.commit()
-            new = new + 1
-
-    flash("%d duplicates, %d new records." % (duplicates, new), 'success')
-    return redirect(url_for('index'))
-
-
-@app.route('/<year>/<eventname>/upload', methods=['GET', 'POST'])
+@app.route('/event/<event>/sync', methods=['GET'])
 @lastuser.requires_permission('siteadmin')
-def event_upload(year,eventname):
-    if request.method == 'GET':
-        return render_template('upload.html')
+@load_model(Event, {'id': 'event'}, 'event')
+def sync_event(event):
+    if app.config['DOATTEND_EMAIL'] in [None, ''] or app.config['DOATTEND_PASS'] in [None, ''] or event.doattend_id in [None, '']:
+        return 'Data not available'
+    uri = 'http://doattend.com/'
+    forms = ParseResponse(urlopen(urljoin(uri, 'accounts/sign_in')))
+    form = forms[0]
+    form['account[email]'] = app.config['DOATTEND_EMAIL']
+    form['account[password]'] = app.config['DOATTEND_PASS']
+    urlopen(form.click())
+    csv_data = urlopen(urljoin(uri, 'events/' + event.doattend_id + '/orders/registration_sheet.csv')).read()
+    urlopen(urljoin(uri, 'accounts/sign_out'))
+    f = StringIO.StringIO(csv_data)
+    f.next()
+    users = unicodecsv.reader(f, delimiter=',')
+    columns = dict(
+        ticket_number=1,
+        name=2,
+        email=3,
+        company=4,
+        job=5,
+        city=7,
+        phone=6,
+        twitter=8,
+        regdate=0,
+        order_id=10
+        )
+    others = dict(
+        ticket_type=9,
+        addons=16
+        )
+    added = 0
+    failed = []
+    updated = 0
+    ret = ""
+    for user in users:
+        participant = None
+        ticket_update = False
+        ticket = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id).first()
+        if ticket is not None:
+            ticket_update = True
+            participant = ticket
+        else:
+            participants = Participant.query.filter_by(email=user[columns['email']].strip(), event_id=event.id).all()
+            for p in participants:
+                if levenshtein(p.name, user[columns['name']].strip()) <= 3:
+                    participant = p
+        new = False
+        if participant is None:
+            new = True
+        if new:
+            participant = Participant()
+            participant.event_id = event.id
+            participant.purchases = []
+        if new or ticket_update:
+            for field in columns.keys():
+                setattr(participant, field, user[columns[field]].strip())
+            participant.twitter = participant.twitter.replace('@', '').strip()
+            participant.phone = participant.phone.strip().replace(' ', '').replace('-','')
+        if not new or ticket_update:
+            if participant.purchases is None:
+                participant.purchases = []
+            else:
+                participant.purchases = participant.purchases.split(',')
+        if user[others['ticket_type']]:
+            participant.purchases.append(user[others['ticket_type']].strip())
+        if user[others['addons']]:
+            participant.purchases = participant.purchases + (user[others['addons']] + '*').strip().split(',')
+        for purchase in participant.purchases:
+            purchase = purchase.strip()
+        if u"T-shirt" in participant.purchases:
+            participant.purchased_tee = True
+        participant.purchases = ','.join(list(set(participant.purchases)))
+        try:
+            if new:
+                db.session.add(participant)
+            db.session.commit()
+            if new:
+                added = added + 1
+                ret = ret + "Added " + str(participant) + "\n"
+            else:
+                updated = updated + 1
+                ret = ret +  "Updated " + str(participant) + "\n"
+        except Exception as e:
+            ret = ret +  "Error adding " + str(participant) + ':' + e
+            failed.append(participant.name + ',' + participant.email) + "\n"
+            db.session.rollback()
 
-    if request.method == 'POST':
-        file = request.files['file']
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            flash("Uploaded " + filename)
-            csv_populate(os.path.join(app.config['UPLOAD_FOLDER'], filename), year, eventname)
-            return redirect(url_for('index'))
-
+    return '<pre>' + ret + "Added " + str(added) + ", Updated " + str(updated) + " & Failed " + str(failed) + '</pre>'
 
 @app.route('/event/<event>', methods=['GET'])
 @lastuser.requires_permission('registrations')
