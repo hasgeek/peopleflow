@@ -122,7 +122,7 @@ def sync_event(event):
         if user[others['ticket_type']]:
             participant.purchases.append(user[others['ticket_type']].strip())
         if user[others['addons']]:
-            participant.purchases = participant.purchases + (user[others['addons']] + '*').strip().split(',')
+            participant.purchases = participant.purchases + (user[others['addons']]).strip().split(',')
         for purchase in participant.purchases:
             purchase = purchase.strip()
         if u"T-shirt" in participant.purchases:
