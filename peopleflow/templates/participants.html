@@ -20,26 +20,25 @@
 <div id="tabs">
           <table class="table table-striped">
             <thead>
-              <th>#</th>
               <th>Ticket #</th>
               <th>Date</th>
-              <th>Name</th>
-              <th>Email</th>
+              <th>Name/Email</th>
               <th>Company</th>
-              <th>Tshirt Size</th>
+              <th>Purchases</th>
+              <th>T-shirt?</th>
               <th>Action</th>
               <th>Print </th>
             </thead>
             <tbody>
               {% for i, p in enumerate(participants) %}
                 <tr class="participant" id="participant_{{ p.id }}">
-                  <td>{{ i+1 }}</td>
                   <td>{{ p.ticket_number }}</td>
                   <td>{{ utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M')|e }}</td>
-                  <td><strong>{{ p.name|e }}</strong></td>
-                  <td>{{ hideemail.sub('...@', p.email)|e }}</td>
+                  <td><strong>{{ p.name|e }}</strong><br>
+                  {{ hideemail.sub('...@', p.email)|e }}</td>
                   <td>{{ p.company|e }}</td>
-                  <td>{{ p.tshirt_size }}</td>
+                  <td>{{ p.purchases }}</td>
+                  <td>{{ p.purchased_tee }}</td>
                   <td>
                     <a class="btn rfid_card {%- if p.attended %} assigned {%- else %} unassigned {%- endif %}"
                       rel="{{ p.id }}"

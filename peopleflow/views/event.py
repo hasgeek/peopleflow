@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import StringIO
+import logging
 import unicodecsv
 import os
 import re
@@ -19,6 +20,9 @@ from coaster.views import jsonp, load_model, load_models
 from mechanize import ParseResponse, urlopen, urljoin
 
 hideemail = re.compile('.{1,3}@')
+
+logging.basicConfig(filename='db.log')
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 @app.route('/event/new', methods=['GET'])
 @lastuser.requires_permission('siteadmin')
@@ -82,12 +86,14 @@ def sync_event(event):
     added = 0
     failed = []
     updated = 0
+    deleted = 0
     ret = ""
+    tickets = []
     for user in users:
         append_purchases = False
         participant = None
         ticket_update = False
-        ticket = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id).first()
+        ticket = Participant.query.filter_by(ticket_number=int(user[columns['ticket_number']].strip()), event_id=event.id, online_reg=True).first()
         if ticket is not None:
             ticket_update = True
             participant = ticket
@@ -107,7 +113,10 @@ def sync_event(event):
         if new or ticket_update:
             for field in columns.keys():
                 setattr(participant, field, user[columns[field]].strip())
-            participant.twitter = participant.twitter.replace('@', '').strip()
+            if participant.twitter == "":
+                participant.twitter = None
+            else:
+                participant.twitter = participant.twitter.replace('@', '').strip()
             participant.phone = participant.phone.strip().replace(' ', '').replace('-','')
         if not new or ticket_update:
             if participant.purchases is None or append_purchases == True:
@@ -123,6 +132,9 @@ def sync_event(event):
         if u"T-shirt" in participant.purchases:
             participant.purchased_tee = True
         participant.purchases = ','.join(list(set(participant.purchases)))
+        participant.online_reg = True
+        if participant.ticket_number is not None:
+            tickets.append(int(participant.ticket_number))
         try:
             if new:
                 db.session.add(participant)
@@ -138,7 +150,18 @@ def sync_event(event):
             failed.append(participant.name + ',' + participant.email) + "\n"
             db.session.rollback()
 
-    return '<pre>' + ret + "Added " + str(added) + ", Updated " + str(updated) + " & Failed " + str(failed) + '</pre>'
+    participants = Participant.query.filter(~Participant.ticket_number.in_(tickets), Participant.online_reg==True).all()
+    for participant in participants:
+        try:
+            db.session.delete(participant)
+            db.session.commit()
+            deleted = deleted + 1
+            ret = ret +  "Deleted " + str(participant) + "\n"
+        except Exception as e:
+            ret = ret +  "Error deleting  " + str(participant) + ':' + e
+
+
+    return '<pre>' + ret + "Added " + str(added) + ", Updated " + str(updated) + ", Failed " + str(failed) + " & Deleted " + str(deleted) + '</pre>'
 
 @app.route('/event/<event>', methods=['GET'])
 @lastuser.requires_permission('registrations')
