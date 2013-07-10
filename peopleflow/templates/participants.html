@@ -20,25 +20,25 @@
 <div id="tabs">
           <table class="table table-striped">
             <thead>
-              <th>Ticket #</th>
-              <th>Date</th>
-              <th>Name/Email</th>
-              <th>Company</th>
-              <th>Purchases</th>
-              <th>T-shirt?</th>
-              <th>Action</th>
-              <th>Print </th>
+              <th width="7%">Ticket #</th>
+              <th width="7%">Order ID</th>
+              <th width="21%">Name/Company/Email</th>
+              <th width="18%">Purchases</th>
+              <th width="7%">T-shirt?</th>
+              <th width="20%">Notes</th>
+              <th width="20%">Action</th>
             </thead>
             <tbody>
               {% for i, p in enumerate(participants) %}
                 <tr class="participant" id="participant_{{ p.id }}">
                   <td>{{ p.ticket_number }}</td>
-                  <td>{{ utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M')|e }}</td>
+                  <td>{{ p.order_id }}</td>
                   <td><strong>{{ p.name|e }}</strong><br>
+                  {{ p.company|e }}<br>
                   {{ hideemail.sub('...@', p.email)|e }}</td>
-                  <td>{{ p.company|e }}</td>
                   <td>{{ p.purchases }}</td>
                   <td>{{ p.purchased_tee }}</td>
+                  <td>{{ p.notes|e }}</td>
                   <td>
                     <a class="btn rfid_card {%- if p.attended %} assigned {%- else %} unassigned {%- endif %}"
                       rel="{{ p.id }}"
@@ -48,8 +48,6 @@
                       <span class="unassign_confirm" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Pls confirm (<span class="timeout"></span>)</span>
                       <span class="tap_card" data-url="{{ url_for('event_signin', event=event.id) }}">Tap the card (<span class="timeout"></span>)</span>
                     </a>
-                  </td>
-                  <td>
                     <a class="btn print_card" data-url="{{ url_for('print_card') }}" data-method="POST" data-name='{{ p.name|e }}' data-twitter='{{ p.twitter }}'>Print</a>
                   </td>
                 </tr>
