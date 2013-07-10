@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import StringIO
-import logging
 import unicodecsv
 import os
 import re
@@ -20,9 +19,6 @@ from coaster.views import jsonp, load_model, load_models
 from mechanize import ParseResponse, urlopen, urljoin
 
 hideemail = re.compile('.{1,3}@')
-
-logging.basicConfig(filename='db.log')
-logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 @app.route('/event/new', methods=['GET'])
 @lastuser.requires_permission('siteadmin')
