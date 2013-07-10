@@ -6,7 +6,6 @@ Website server for peopleflow
 """
 
 from os import environ
-from __future__ import absolute_import
 from flask import Flask
 from flask.ext.assets import Environment, Bundle
 from flask.ext.lastuser import Lastuser
