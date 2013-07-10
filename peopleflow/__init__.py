@@ -17,7 +17,7 @@ from ._version import __version__
 
 version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
-if environ.get('PEOPLEFLOW_DEBUG'):
+if app.config.get('GUNICORN_DEBUG'):
 	app.debug = True
 lastuser = Lastuser()
 
