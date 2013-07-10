@@ -20,7 +20,7 @@ class Participant(db.Model, BaseMixin):
     __tablename__ = 'participant'
     
     #: Ticket number
-    ticket_number = db.Column(db.Integer, nullable=True, unique=True)
+    ticket_number = db.Column(db.Unicode(15), nullable=True, unique=True)
     #: Name of the participant
     name = db.Column(db.Unicode(80), nullable=False)
     #: Email of the participant

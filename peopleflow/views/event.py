@@ -89,7 +89,8 @@ def sync_event(event):
         append_purchases = False
         participant = None
         ticket_update = False
-        ticket = Participant.query.filter_by(ticket_number=int(user[columns['ticket_number']].strip()), event_id=event.id, online_reg=True).first()
+        ticket = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
+        ticket_update = True
         if ticket is not None:
             ticket_update = True
             participant = ticket
@@ -130,7 +131,7 @@ def sync_event(event):
         participant.purchases = ','.join(list(set(participant.purchases)))
         participant.online_reg = True
         if participant.ticket_number is not None:
-            tickets.append(int(participant.ticket_number))
+            tickets.append(participant.ticket_number)
         try:
             if new:
                 db.session.add(participant)
