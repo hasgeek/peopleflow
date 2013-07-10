@@ -84,6 +84,7 @@ def sync_event(event):
     updated = 0
     ret = ""
     for user in users:
+        append_purchases = False
         participant = None
         ticket_update = False
         ticket = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id).first()
@@ -95,6 +96,7 @@ def sync_event(event):
             for p in participants:
                 if levenshtein(p.name, user[columns['name']].strip()) <= 3:
                     participant = p
+                    append_purchases = True
         new = False
         if participant is None:
             new = True
@@ -108,7 +110,7 @@ def sync_event(event):
             participant.twitter = participant.twitter.replace('@', '').strip()
             participant.phone = participant.phone.strip().replace(' ', '').replace('-','')
         if not new or ticket_update:
-            if participant.purchases is None:
+            if participant.purchases is None or append_purchases == True:
                 participant.purchases = []
             else:
                 participant.purchases = participant.purchases.split(',')
