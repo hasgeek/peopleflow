@@ -59,6 +59,7 @@ def sync_event(event):
     form['account[password]'] = app.config['DOATTEND_PASS']
     urlopen(form.click())
     csv_data = urlopen(urljoin(uri, 'events/' + event.doattend_id + '/orders/registration_sheet.csv')).read()
+    guests_csv = urlopen(urljoin(uri, 'events/' + event.doattend_id + '/orders/confirmed_guests.csv')).read()
     urlopen(urljoin(uri, 'accounts/sign_out'))
     f = StringIO.StringIO(csv_data)
     f.next()
@@ -83,14 +84,13 @@ def sync_event(event):
     failed = []
     updated = 0
     deleted = 0
-    ret = ""
+    ret = "Starting Participants<br>\n"
     tickets = []
     for user in users:
         append_purchases = False
         participant = None
         ticket_update = False
         ticket = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
-        ticket_update = True
         if ticket is not None:
             ticket_update = True
             participant = ticket
@@ -116,7 +116,7 @@ def sync_event(event):
                 participant.twitter = participant.twitter.replace('@', '').strip()
             participant.phone = participant.phone.strip().replace(' ', '').replace('-','')
         if not new or ticket_update:
-            if participant.purchases is None or append_purchases == True:
+            if participant.purchases is None or append_purchases == False:
                 participant.purchases = []
             else:
                 participant.purchases = participant.purchases.split(',')
@@ -146,8 +146,86 @@ def sync_event(event):
             ret = ret +  "Error adding " + str(participant) + ':' + e
             failed.append(participant.name + ',' + participant.email) + "\n"
             db.session.rollback()
-
-    participants = Participant.query.filter(~Participant.ticket_number.in_(tickets), Participant.online_reg==True).all()
+    ret = ret + "Done with Participants<br>\n"
+    ret = ret + "Starting Guests<br>\n"
+    f = StringIO.StringIO(guests_csv)
+    f.next()
+    users = unicodecsv.reader(f, delimiter=',')
+    columns = dict(
+        ticket_number=0,
+        name=1,
+        email=2,
+        company=3,
+        job=4,
+        city=6,
+        phone=5,
+        twitter=7,
+        regdate=9
+        )
+    others = dict(
+        ticket_type=8
+        )
+    for user in users:
+        append_purchases = False
+        participant = None
+        ticket_update = False
+        ticket = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
+        if ticket is not None:
+            ticket_update = True
+            participant = ticket
+        else:
+            participants = Participant.query.filter_by(email=user[columns['email']].strip(), event_id=event.id).all()
+            for p in participants:
+                if levenshtein(p.name, user[columns['name']].strip()) <= 3:
+                    participant = p
+                    append_purchases = True
+        new = False
+        if participant is None:
+            new = True
+        if new:
+            participant = Participant()
+            participant.event_id = event.id
+            participant.purchases = []
+        if new or ticket_update:
+            for field in columns.keys():
+                setattr(participant, field, user[columns[field]].strip())
+            if participant.twitter == "":
+                participant.twitter = None
+            else:
+                participant.twitter = participant.twitter.replace('@', '').strip()
+            participant.phone = participant.phone.strip().replace(' ', '').replace('-','')
+        if not new or ticket_update:
+            if participant.purchases is None or append_purchases == False:
+                participant.purchases = []
+            else:
+                participant.purchases = participant.purchases.split(',')
+        if user[others['ticket_type']]:
+            participant.purchases.append(user[others['ticket_type']].strip())
+        for purchase in participant.purchases:
+            purchase = purchase.strip()
+        if u"T-shirt" in participant.purchases:
+            participant.purchased_tee = True
+        participant.purchases = ','.join(list(set(participant.purchases)))
+        participant.online_reg = True
+        if participant.ticket_number is not None:
+            tickets.append(participant.ticket_number)
+        try:
+            if new:
+                db.session.add(participant)
+            db.session.commit()
+            if new:
+                added = added + 1
+                ret = ret + "Added " + str(participant) + "\n"
+            else:
+                updated = updated + 1
+                ret = ret +  "Updated " + str(participant) + "\n"
+        except Exception as e:
+            ret = ret +  "Error adding " + str(participant) + ':' + e
+            failed.append(participant.name + ',' + participant.email) + "\n"
+            db.session.rollback()
+    ret = ret + "Done with Guests<br>\n"
+    ret = ret + "Removing deleted tickets<br>\n"
+    participants = Participant.query.filter(~Participant.ticket_number.in_(tickets), Participant.online_reg==True, Participant.event_id==event.id).all()
     for participant in participants:
         try:
             db.session.delete(participant)
@@ -156,7 +234,7 @@ def sync_event(event):
             ret = ret +  "Deleted " + str(participant) + "\n"
         except Exception as e:
             ret = ret +  "Error deleting  " + str(participant) + ':' + e
-
+    ret = ret + "Deleting complete<br>\n"
 
     return '<pre>' + ret + "Added " + str(added) + ", Updated " + str(updated) + ", Failed " + str(failed) + " & Deleted " + str(deleted) + '</pre>'
 
