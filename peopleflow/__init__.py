@@ -17,8 +17,8 @@ from ._version import __version__
 
 version = Version(__version__)
 app = Flask(__name__, instance_relative_config=True)
-if app.config.get('GUNICORN_DEBUG'):
-	app.debug = True
+if app.config.get('GUNICORN_ENV'):
+	init_for(app.config.get('GUNICORN_ENV'))
 lastuser = Lastuser()
 
 assets['peopleflow.css'][version] = 'css/app.css'
