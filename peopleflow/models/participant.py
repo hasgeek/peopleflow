@@ -51,6 +51,8 @@ class Participant(db.Model, BaseMixin):
     attend_date = db.Column(db.DateTime, nullable=True)
     #: Purchases made by the participant
     purchases = db.Column(db.Unicode(200), nullable=True)
+    #: Additional notes for a participant
+    notes = db.Column(db.Unicode, nullable=True)
     #: Event the participant is attending
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
 
