@@ -26,6 +26,9 @@ class Kiosk(db.Model, BaseMixin):
 	#: Tap Message - Tap your badge here to ________
 	tap_msg = db.Column(db.Unicode(200), nullable=True, default=u"share your details")
 
+	#: Company Privacy Policy
+	privacy_policy = db.Column(db.Unicode, nullable=True)
+
 	#: Event at which the kiosk is present. kiosk.event gives access.
 	event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
 	event = db.relationship(Event, primaryjoin=event_id == Event.id, backref=db.backref('kiosks'))
