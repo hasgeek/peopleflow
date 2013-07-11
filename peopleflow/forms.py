@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: iso-8859-15 -*-
 
-from peopleflow.models import Event
+from peopleflow.models import Event, Participant
 from flask.ext.wtf import (
     Form,
     TextField,
@@ -11,6 +11,11 @@ from flask.ext.wtf import (
     SubmitField,
     HiddenField,
     QuerySelectField,
+    ValidationError,
+    Label,
+    Flags,
+    SelectMultipleField,
+    TextAreaField
     )
 
 
@@ -32,17 +37,26 @@ class ConfirmSignoutForm(Form):
     delete = SubmitField(u"Sign out")
     cancel = SubmitField(u"Cancel")
 
-
 class ParticipantForm(Form):
 
-    name = TextField('Name', validators=[Required('A name is required')])
-    email = TextField('Email', validators=[Required('Please enter the email')])
-    company = TextField('Company')
-    job = TextField('Job Title')
-    city = TextField('City')
-    twitter = TextField('Twitter')
-    tshirt_size = TextField('T-Shirt Size')
+    name = TextField(u'Name', description=u"Please enter full name of the Participant", validators=[Required('A name is required')])
+    email = TextField(u'e-mail', validators=[Required('Please enter the email')])
+    phone = TextField(u'Phone')
+    company = TextField(u'Company')
+    job = TextField(u'Job Title')
+    city = TextField(u'City')
+    twitter = TextField(u'twitter handle', description=u"Twitter handle of the participant without the @ symbol")
+    notes = TextAreaField('Notes')
     nfc_id = HiddenField('NFC', validators=[Required('Please check the NFC Reader')])
+
+    def __init__(self, event):
+        self.event = event
+        super(ParticipantForm, self).__init__()
+
+    def validate_email(self, field):
+        if Participant.query.filter_by(email=field.data, event_id=self.event.id).first():
+            raise ValidationError(u'The email address %s already exists' % field.data)
+
 
 def get_events():
     return Event.query.order_by('id').all()
