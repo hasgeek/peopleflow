@@ -18,8 +18,6 @@ def add_new_participant(event):
     day_count = (event.to_date - event.from_date).days + 1
     options = [(u'On the spot - All days', u'On the spot - All days')]
     for single_date in [d for d in (event.from_date + timedelta(n) for n in range(day_count)) if d <= event.to_date]:
-        print single_date
-    for single_date in [d for d in (event.from_date + timedelta(n) for n in range(day_count)) if d <= event.to_date]:
         options.append((u'On the spot - ' + strftime("%Y-%m-%d", single_date.timetuple()), u'On the spot - ' + strftime("%Y-%m-%d", single_date.timetuple())))
     Part.purchases = SelectMultipleField(u'Purchases',
         choices=options,
