@@ -5,7 +5,7 @@
   text-align: right;
 }
 
-#root{margin-bottom: 0px;}
+#root{padding-bottom: 65px;}
 
 @media print {
   /*
