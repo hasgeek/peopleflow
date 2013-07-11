@@ -30,7 +30,7 @@
             </thead>
             <tbody>
               {% for i, p in enumerate(participants) %}
-                <tr class="participant" id="participant_{{ p.id }}">
+                <tr class="participant" id="participant_{{ p.id }}" data-name="{{ p.name }}">
                   <td>{{ p.ticket_number }}</td>
                   <td>{{ p.order_id }}</td>
                   <td><strong>{{ p.name|e }}</strong><br>
@@ -124,7 +124,7 @@
           "url": participant.find('span:visible').attr('data-url'),
           "type": "POST"
         };
-        var participant_name = participant.parent().parent().find('td:nth-child(4)').text();
+        var participant_name = participant.parent().parent().attr('data-name');
 
         if( !assigned ) {
           if( typeof card == 'undefined' ) return false;
