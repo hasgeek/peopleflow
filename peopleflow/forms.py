@@ -17,6 +17,7 @@ from flask.ext.wtf import (
     SelectMultipleField,
     TextAreaField
     )
+from baseframe.forms import RichTextField
 
 
 class EventForm(Form):
@@ -69,4 +70,5 @@ class KioskForm(Form):
     company_tag = TextField('Company Tagline', description="Optional")
     company_logo = TextField('Company Logo', description="Provide the URL for the image of the sponsor's logo.", validators=[Required('The logo is required'), URL(message="Please provide a valid URL")])
     tap_msg = TextField('Tapping message', description='Optional. Please tap your badge to ____? Leave blank to use default message.')
+    privacy_policy = RichTextField('Privacy Policy')
     event = QuerySelectField('Select an event', query_factory= get_events, get_label='title', allow_blank=False)
