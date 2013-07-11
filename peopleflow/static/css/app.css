@@ -5,6 +5,8 @@
   text-align: right;
 }
 
+#root{margin-bottom: 0px;}
+
 @media print {
   /*
   .container {
