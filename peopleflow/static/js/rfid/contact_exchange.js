@@ -1,8 +1,8 @@
 var timer = function() {
     var timer = {};
     var handler = null;
-    var TOTAL_TIME = 30; //Time before the automatic submission happens
-    var ALERT_TIME = 15; //Time before the automatic submission, when the timer needs to be shown
+    var TOTAL_TIME = 20; //Time before the automatic submission happens
+    var ALERT_TIME = 10; //Time before the automatic submission, when the timer needs to be shown
     var cooldown = null, timer_content;
     var DEBUG_TOTAL_TIME = 6;
     var DEBUG_ALERT_TIME = 5;
@@ -37,8 +37,8 @@ var timer = function() {
         timer_content = $('#cooldown');
         timer_content.append('<div class="timer"><div class="elem"></div></div>');
         timer_content.find('.timer').append('<div class="seconds">seconds</div>');
-        timer_content.find('.timer').append('<div class="message">for automatic submission</div>');
-        timer_content.append('<div class="instructions">The following people will be connected.<br>You can: Add/remove people &bull; Exchange Contacts Now &bull; Cancel</div>');
+        timer_content.find('.timer').append('<div class="message">for automatic <span class="auto_action">cancellation</span></div>');
+        timer_content.append('<div class="instructions">The following people will be connected.<br>You can: Add/remove people or wait for the timer to end.</div>');
         cooldown = $('#cooldown .timer .elem').cooldown({
             tickFrequency: 1000,
             arcWidth: 40,
@@ -51,9 +51,17 @@ var timer = function() {
             },
             completeFn: function() {
                 userui.exchange();
-                // Share the request to connect.
             }
         });
+    };
+
+    timer.update = function() {
+        if(userui.len() == 1) {
+            timer_content.find('.timer .message .auto_action').html('cancellation');
+        }
+        else {
+            timer_content.find('.timer .message .auto_action').html('submission');
+        }
     };
 
     return timer;
@@ -64,7 +72,13 @@ var exchange = function() {
     
     exchange.now = function(users) {
         $.post('contact_exchange', users, function(response) {
-            console.log('Response', response);
+            if(response.success) {
+                toastr.success('Your contacts have been exchanged');
+            }
+            else {
+                toastr.error('There was an issue submitting your contacts. Please try again.');
+            }
+            userui.reset();
         }, 'json');
     };
 
@@ -288,12 +302,21 @@ var userui = function() {
                 remove(user.id);
                 toastr.success("", "Removed " + user.name + ".");
             }
+            timer.update();
         }
     }
 
     ui.reset = function() {
+        if(typeof user_matrix != 'undefined') {
+            for(i = 0; i < user_matrix.length; i++) {
+                for(j = 0; j< user_matrix[i].length; j++) {
+                    remove(user_matrix[i][j].id);
+                }
+            }
+        }
         users = {};
         user_matrix = [[],[],[],[],[]];
+        timer.reset();
     }
 
     ui.init = function(opts) {
@@ -307,14 +330,23 @@ var userui = function() {
     };
 
     ui.exchange = function() {
-        disabled = true;
-        var user_list = {'ids': []};
-        for(i = 0; i < user_matrix.length; i++) {
-            for(j = 0; j < user_matrix[i].length; j++) {
-                user_list.ids.push(user_matrix[i][j].nfc_id);
-            }
+        if(len == 1) {
+            ui.reset()
         }
-        exchange.now(user_list);
+        else {
+            disabled = true;
+            var user_list = {'ids': []};
+            for(i = 0; i < user_matrix.length; i++) {
+                for(j = 0; j < user_matrix[i].length; j++) {
+                    user_list.ids.push(user_matrix[i][j].nfc_id);
+                }
+            }
+            exchange.now(user_list);
+        }
+    };
+
+    ui.len = function() {
+        return len;
     };
 
     return ui;
