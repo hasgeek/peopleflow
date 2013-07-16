@@ -5,11 +5,12 @@ import os
 import csv
 import urllib
 import hashlib
+from StringIO import StringIO
 from .. import app
 from .. import lastuser
 from ..models import db, Kiosk, Event, Participant, CXLog
 from ..forms import KioskForm, ConfirmSignoutForm
-from flask import request, flash, url_for, render_template, jsonify
+from flask import request, flash, url_for, render_template, jsonify, make_response
 from baseframe.forms import render_redirect, ConfirmDeleteForm
 from coaster import make_name
 from coaster.views import jsonp, load_model, load_models
