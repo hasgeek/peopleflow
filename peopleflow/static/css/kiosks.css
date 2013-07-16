@@ -1,0 +1,97 @@
+html {overflow: hidden}
+.container {width: auto;}
+#footerlogo {position: absolute;top: 10px; bottom: 10px; right: 5px;width: 300px;text-align: right;}
+#footerlogo img {max-height: 100%;}
+#root {min-height: 0;}
+footer {position: absolute;bottom:0px;width: 100%;}
+footer .footer-inner {background: inherit}
+
+/*toastr customisations*/
+/*.toast-title{font-size: 5.0em;text-transform: uppercase;line-height: 1.5em;}
+.toast-message{font-size: 3.0em;line-height: 1.5em;}
+#toast-container > div {background-position: 15px 4.25em;opacity: 0.9}*/
+
+/*Cooldown.js*/
+/*Cooldown Overlay*/
+#cooldown.overlay {position: absolute;top: 0; left: 0;width: 100%;height: 100%;
+    background: -webkit-radial-gradient(10% 20%, farthest-corner, rgba(0, 0, 0, 0.8), rgba(15, 15, 15, 0.8), rgba(31, 31, 31, 0.7), rgba(63, 63, 63, 0.6));
+    transition: opacity 1s; opacity: 0;
+}
+#cooldown.overlay .timer {width: 100%;height: 98%;margin: 1%;box-sizing: border-box;}
+#cooldown.overlay .timer .elem {width: 50%; margin: 0 auto; height: 100%; color: #FFF;font-size: 3em;box-sizing: border-box;}
+
+/*Sponsor Kiosk Styles*/
+body.contact_point {background: url(../images/canvas.jpg)}
+#contact_point{position: absolute;top: 1%; bottom: 60px; left: 1%; right: 1%;}
+#contact_point #company{
+    float: left;height: 100%;width: 78%;margin: 0 1%;text-align: center;padding: 1%;box-sizing: border-box;
+    background: -webkit-radial-gradient(35% 35%, farthest-corner, rgba(255, 255, 255, 0.5), rgba(204, 204, 204, 0.55), rgba(204, 204, 204, 0.8), rgba(204, 204, 204, 0.9));
+    border: 1px solid #666; border-radius: 10px;
+}
+#contact_point #company .logo{height: 85%;}
+#contact_point #company .logo img{max-width: 99%;max-height: 99%;position: relative;}
+#contact_point #company .info .name{font-size: 50px; line-height: 55px;margin: 0;color: #333}
+#contact_point #company .info .tag{font-size: 35px; line-height: 40px;margin: 0; color: #999}
+#contact_point #company_tap_msg {text-align: center;color: #0A0}
+
+/*Sponsor Kiosk when company name is not specified*/
+#company_logo.nocompany, #company_info.nocompany{left: 1%; right: 1%;}
+#company_logo.nocompany.comptag{bottom: 61%;}
+#company_info.nocompany.comptag{top: 41%;}
+#company_info.nocompany.comptag .tag {text-align: center;}
+#company_info.nocompany.comptag .name, #company_info.nocompany.nocomptag {display: none;}
+
+/*Contact Exchange Kiosk Styles*/
+body.contact_exchange {background: url(/static/images/contact-exchange-bg.gif) 50% 15%; background-size: 115%;}
+#contact_exchange {position: absolute;width: 100%;top: 0px;bottom: 60px;}
+#contact_exchange .top {position: absolute; top: 0%; left: 1%;right: 1%; bottom: 0%; transition: all 1s;}
+#contact_exchange .logo, #contact_exchange .message { position: absolute; left: 1%; right: 1%;transition: all 1s;}
+#contact_exchange .logo { top: 1%; bottom: 41%;text-align: center; z-index: 3001}
+#contact_exchange .logo img {max-width: 98%;max-height: 98%;}
+#contact_exchange .message { top: 61%; bottom: 1%; font-size: 4em;line-height: 1.25em;z-index: 3003;}
+#contact_exchange .message * {transition: all 1s;}
+
+#contact_exchange.users .top { top: 3%; bottom: 45%;}
+#contact_exchange.users .logo {bottom: 1%; right: 37%}
+#contact_exchange.users .message { top: 5%; left: 63%}
+
+#contact_exchange .message .step {margin: 0px 0px 10px; clear: left;}
+#contact_exchange .message .step .icon {
+    padding: 0.2em; width: 1em; height: 1em; margin: 0px 10px; font-size: 1.25em; color: white;
+    float: left; line-height: 1em; text-align: center; clear: left;border-radius: 1em; font-weight: bolder;
+}
+#contact_exchange .message .step.plus .icon {background: #393}
+#contact_exchange .message .step.minus .icon {background: #C33}
+#contact_exchange .message .step.plus .info {color: #393}
+#contact_exchange .message .step.minus .info {color: #C33}
+
+#contact_exchange.users .message .step {margin: 0 0 25px;}
+#contact_exchange.users .message .step .info {font-size: 0.6em; line-height: 1.2em;text-align: right}
+#contact_exchange.users .message .step .icon {float: right;}
+
+/*Contact Exchange Kiosk: Timer Styling*/
+#cooldown.contact_exchange {z-index: 3002; color: #FFF;}
+#cooldown.contact_exchange .timer {position: absolute; top: 1%;left: 1%; right: 41%; bottom: 61%;width: auto;height: auto}
+#cooldown.contact_exchange .timer .elem {width: 35%;margin: 0;float: left}
+#cooldown.contact_exchange .timer .message {margin-left: 37%; font-size: 1.5em; line-height: 1em; text-align: right; font-weight: bold;}
+#cooldown.contact_exchange .timer .seconds {margin-left: 37%; margin-top: 7%;font-size: 9em; line-height: 1em; font-weight: bolder}
+#cooldown.contact_exchange .instructions {position: absolute; top: 35%; bottom: 51%; left: 1%; right: 1%; text-align: center;font-size: 2.8em; line-height: 1.5em;}
+
+/*Contact Exchange Kiosk: User cards styling starts*/
+#contact_exchange .contex_users {transition: all 1s;position: absolute; top: 0%; bottom: -50%; z-index: 3004;}
+#contact_exchange .user {
+    box-sizing: border-box;border-radius: 1em;padding: 1%;position: absolute;opacity: 0;overflow: hidden; transition: padding 0.8s;
+    background: -webkit-radial-gradient(10% 20%, farthest-side, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.8), rgba(204, 204, 204, 0.7));
+    border: 1px solid rgba(0,0,0, 0.5); -webkit-box-shadow: 0.5em 0.35em 1.65em rgba(128, 128, 128, 0.7);
+}
+
+#contact_exchange.users .contex_users {bottom: 0%;left: 5%;right: 5%;top: 57%}
+
+#contact_exchange.users .user .name, #contact_exchange.users .user .twitter {line-height: 1.1em; transition: all 0.8s;}
+#contact_exchange.users .user .name {font-weight: bold;white-space: nowrap;color: #666}
+#contact_exchange.users .user .twitter {color: #999;}
+
+#contact_exchange.users.rows3 .user, #contact_exchange.users.rows4 .user {padding: 1% 0.75%}
+#contact_exchange.users.rows3 .user .name, #contact_exchange.users.rows3 .user .twitter,
+#contact_exchange.users.rows4 .user .name, #contact_exchange.users.rows4 .user .twitter
+{line-height: 1em}

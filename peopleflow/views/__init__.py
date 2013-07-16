@@ -1,4 +1,3 @@
 # -*- coding: utf-8 -*-
 
-import peopleflow.views.user
-import peopleflow.views.login
+from . import index, user, login, event, participant, kiosk

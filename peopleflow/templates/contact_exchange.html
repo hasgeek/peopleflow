@@ -1,0 +1,44 @@
+{% extends "kiosks_layout.html" %}
+{% block titletags -%}
+  <title>{% block title %}Contact Exchange - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="Contact Exchange - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
+
+{% block bodytag %}<body class="contact_exchange">{% endblock %}
+
+{% block basecontent %}
+<div id="contact_exchange">
+  <div class="top">
+    <div class="logo"><img src="/static/images/contact-exchange.png"></div>
+    <div class="message">
+      <div class="step plus">
+        <div class="icon">+</div>
+        <div class="info">Tap two or more badges to exchange contacts.</div>
+        <div class="clearfix"></div>
+      </div>
+      <div class="step minus">
+        <div class="icon">-</div>
+        <div class="info">Tap badge again to remove yourself.</div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+  <div class="contex_users"></div>
+  <div id="contex_user_sample">
+    <div class="user">
+      <div class="name"></div>
+      <div class="twitter"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block footerscripts %}
+{{ super() }}
+<script src="/static/js/rfid/contact_exchange.js"></script>
+<script>
+contex({eventid: {{ event.id }}, debug: {{ debug }}, ui_test: {{ ui_test }} });
+</script>
+{% endblock %}
+
+{% block footer_logo %}{% endblock %}

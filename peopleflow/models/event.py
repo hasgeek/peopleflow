@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from peopleflow.models import db, BaseMixin
+from . import db, BaseMixin
 from datetime import date
 
 
@@ -16,7 +16,13 @@ class Event(db.Model, BaseMixin):
     #: Year of the event
     year = db.Column(db.Integer, default=date.today().year, nullable=False)
     #: Date of the event
-    date = db.Column(db.Date, nullable=False)
+    date = db.Column(db.Date, nullable=True)
+    #: From Date of the event
+    from_date = db.Column(db.Date, nullable=True)
+    #: To Date of the event
+    to_date = db.Column(db.Date, nullable=True)
+    #: ID of the event on Doattend
+    doattend_id = db.Column(db.Unicode(10), nullable=True)
     #:Venue
     venue = db.Column(db.Unicode(80), nullable=False)
     #: List of participants, event.participants gives access to

@@ -1,10 +1,11 @@
 from flask.ext.sqlalchemy import SQLAlchemy
-from peopleflow import app
-from coaster.sqlalchemy import BaseMixin, BaseNameMixin
+from .. import app
+from coaster.sqlalchemy import IdMixin, TimestampMixin, BaseMixin, BaseNameMixin
 
 db = SQLAlchemy(app)
 
-from peopleflow.models.participant import *
-from peopleflow.models.event import *
-from peopleflow.models.user import *
-from peopleflow.models.kiosk import *
+from .participant import *
+from .event import *
+from .user import *
+from .kiosk import *
+from .cxlogs import *

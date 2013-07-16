@@ -1,11 +1,14 @@
 {% extends "layout.html" %}
 {% block networkbar %}{% endblock %}
 {% block baseheadline %}Peopleflow -  HasGeek{% endblock %}
+{% block titletags -%}
+  <title>{% block title %}Venue Signup - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="Venue Signup - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
 {% block headline %}
 <h1>{{ event.title }}- Venue Signup. </h1>
 {% endblock %}
 {% block content %}
-<a id="rfid_status" href="javascript:void(0)">&bull;</a>
 <div class="row">
     <form class="well form-search form-horizontal">
     <input autofocus class="input-medium search-query" id="search" type="text" name="key" value=""/>
@@ -17,36 +20,34 @@
 <div id="tabs">
           <table class="table table-striped">
             <thead>
-              <th>#</th>
-              <th>Ticket #</th>
-              <th>Date</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Company</th>
-              <th>Tshirt Size</th>
-              <th>Action</th>
-              <th>Print </th>
+              <th width="7%">Ticket #</th>
+              <th width="7%">Order ID</th>
+              <th width="21%">Name/Company/Email</th>
+              <th width="18%">Purchases</th>
+              <th width="7%">T-shirt?</th>
+              <th width="20%">Notes</th>
+              <th width="20%">Action</th>
             </thead>
             <tbody>
               {% for i, p in enumerate(participants) %}
-                <tr class="participant hidden" id="participant_{{ p.id }}">
-                  <td>{{ i+1 }}</td>
+                <tr class="participant" id="participant_{{ p.id }}" data-name="{{ p.name }}">
                   <td>{{ p.ticket_number }}</td>
-                  <td>{{ utc.localize(p.regdate).astimezone(tz).strftime('%Y-%m-%d %H:%M')|e }}</td>
-                  <td><strong>{{ p.name|e }}</strong></td>
-                  <td>{{ hideemail.sub('...@', p.email)|e }}</td>
-                  <td>{{ p.company|e }}</td>
-                  <td>{{ p.tshirt_size }}</td>
+                  <td>{{ p.order_id }}</td>
+                  <td><strong>{{ p.name|e }}</strong><br>
+                  {{ p.company|e }}<br>
+                  {{ hideemail.sub('...@', p.email)|e }}</td>
+                  <td>{{ p.purchases }}</td>
+                  <td>{{ p.purchased_tee }}</td>
+                  <td>{{ p.notes|e }}</td>
                   <td>
                     <a class="btn rfid_card {%- if p.attended %} assigned {%- else %} unassigned {%- endif %}"
                       rel="{{ p.id }}"
                       href="javascript:void(0);">
-                      <span class="assign" rel="{{ url_for('event_signin', eventname=event.name, year=event.year) }}">Assign Card</span>
-                      <span class="unassign" rel="{{ url_for('event_signout', year=event.year, eventname=event.name, pid=p.id) }}">Unassign Card</span>
-                      <span class="tap_card">Tap the card (<span class="timeout"></span>)</span>
+                      <span class="assign" data-url="{{ url_for('event_signin', event=event.id) }}">Assign Card</span>
+                      <span class="unassign" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Unassign Card</span>
+                      <span class="unassign_confirm" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Pls confirm (<span class="timeout"></span>)</span>
+                      <span class="tap_card" data-url="{{ url_for('event_signin', event=event.id) }}">Tap the card (<span class="timeout"></span>)</span>
                     </a>
-                  </td>
-                  <td>
                     <a class="btn print_card" data-url="{{ url_for('print_card') }}" data-method="POST" data-name='{{ p.name|e }}' data-twitter='{{ p.twitter }}'>Print</a>
                   </td>
                 </tr>
@@ -61,10 +62,11 @@
 {% endblock %}
 {% block footerscripts %}
   <script src="http://127.0.0.1:8008/assets/js/lib.js"></script>
+  <script src="/static/js/rfid/init.js"></script>
   <script type="text/javascript">
-    var timer = null, interval = null;
-    var stop_listening = function() {
-      $('a.rfid_card').removeClass('disabled').removeClass('tap');
+    var timer = null, interval = null, the_timer = null;
+    var stop_waiting = function() {
+      $('a.rfid_card').removeClass('disabled').removeClass('tap').removeClass('confirm').removeClass('btn-danger');
       window.clearInterval(interval);
       interval = null;
     };
@@ -89,30 +91,29 @@
         if( current.hasClass('disabled') ) return true;
         var assigned = current.hasClass('assigned');
         var listening = current.hasClass('tap');
+        var confirming = current.hasClass('confirm');
         var id = current.attr('rel');
 
-        if( listening ) {
+        if( listening || confirming ) {
           window.clearTimeout(timer);
           timer = null;
-          stop_listening();
+          stop_waiting();
+          if( confirming ) toggle(current);
         }
-        else if( !assigned ) {
+        else{
+          if( assigned ) {
+            the_timer = current.find('span.unassign_confirm .timeout')
+            current.addClass('confirm').addClass('btn-danger');
+          }
+          else {
+            the_timer = current.find('span.tap_card .timeout')
+            current.addClass('tap');
+          }
+          the_timer.text(5);
+          timer = window.setTimeout("stop_waiting();", 5000);
+          interval = window.setInterval(function(){$('a.rfid_card[rel=' + id + '] .timeout').each(function(){$(this).html(Number($(this).text()) - 1);});}, 1000);
           $('a.rfid_card').addClass('disabled');
-          $(this).find('.timeout').text(5);
-          $(this).removeClass('disabled').addClass('tap');
-          timer = window.setTimeout("stop_listening();", 5000);
-          interval = window.setInterval(function(){var tout = $('a.rfid_card[rel=' + id + '] .timeout'); tout.html(Number(tout.text()) - 1);}, 1000);
-        }
-      });
-
-      $('a.rfid_card').live('dblclick', function(event){
-        var current = $(this);
-        if( current.hasClass('disabled') ) return true;
-        var assigned = current.hasClass('assigned');
-        var listening = current.hasClass('tap');
-
-        if( !listening && assigned ) {
-          toggle($(this));
+          current.removeClass('disabled');
         }
       });
 
@@ -120,9 +121,10 @@
         var assigned = participant.hasClass('assigned');
         var id = participant.attr('rel');
         var ajax = {
-          "url": participant.find('span:visible').attr('rel'),
+          "url": participant.find('span:visible').attr('data-url'),
           "type": "POST"
         };
+        var participant_name = participant.parent().parent().attr('data-name');
 
         if( !assigned ) {
           if( typeof card == 'undefined' ) return false;
@@ -130,47 +132,61 @@
           ajax.success = function( response ) {
             if( response == "success") {
               $('a.rfid_card[rel=' + id + ']').removeClass('unassigned').addClass('assigned');
-              stop_listening();
+              toastr.success('The badge has been assigned to ' + participant_name);
             }
+            else if( response == "id_used") {
+              toastr.warning('This badge is already assigned to someone.');
+            }
+            stop_waiting();
           };
-          $.ajax(ajax);
         }
         else {
-          /*Wanted to use AJAX, but the endpoint seems to be checking the CSRF token.*/
-          window.location = ajax.url;
+          ajax.success = function(response) {
+            if(response.status) {
+              $('a.rfid_card[rel=' + id + ']').removeClass('assigned').addClass('unassigned');
+              toastr.success('The badge for ' + participant_name + ' has been unassigned');
+            }
+            else toastr.error(response.msg);
+          };
         }
-        //$.ajax(ajax);
+        $.ajax(ajax);
       };
 
-      var rfid = {
-        'init': function(data) {
-          return;
-        },
-        'tag_placed': function(data) {
-          this.init(data);
-          $('#rfid_status').addClass('tag_placed');
-          var current = $('a.rfid_card.tap.unassigned');
-          if( current.length !== 1 ) return;
-          toggle(current, data.tag_id);
-        },
-        'tag_removed': function(data) {
-          this.init(data);
-          $('#rfid_status').removeClass('tag_placed');
+      rfid.on('tag_placed', function(data) {
+        var tapped = $('a.rfid_card.tap');
+        if( tapped.length === 1 ) {
+          if( tapped.hasClass('unassigned') ) {
+            toggle(tapped, data.tag_id);
+          }
         }
+        else {
+          url = "/event/{{ event.id }}/participant/"+data.tag_id;
+          $.getJSON(url, function(data) {
+            if(!data["error"]) {
+              $('.participant').addClass('hidden');
+              $('#participant_' + data.id).removeClass('hidden');
+            }
+          });
+        }
+      });
+
+      jQuery.expr[':'].Contains = function(a, i, m) {
+        return jQuery(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0;
       };
-
-      $(window).on('rfid:action', function(e, data) {
-        if( typeof rfid[data.action] == 'function' ) rfid[data.action](data);
+      rfid.on('tag_removed', function(data) {
+        var tapped = $('a.rfid_card.tap');
+        if( tapped.length !== 1 ) {
+          var query = $('input#search').val();
+          old_search_value = query;
+          if(query == '') {
+            $('tr').removeClass("hidden");
+          }
+          else {
+            $('tr').addClass("hidden");
+            $('tr:Contains("'+query+'")').removeClass("hidden");
+          }
+        }
       });
-
-      $(window).on('rfid:server_inactive', function(e, data) {
-        $('#rfid_status').removeClass('server_active');
-      });
-      $(window).on('rfid:server_active', function(e, data) {
-        $('#rfid_status').addClass('server_active');
-      });
-
-    });
 
     var list = [];
     {% for p in participants %}
@@ -193,6 +209,26 @@
         $('tr').addClass("hidden");
         $('tr:contains("'+query+'")').removeClass("hidden");
        }
+    });
+
+    var list = [];
+    {% for p in participants %}
+    list.push("{{ p.name }}");
+    {%- endfor %}
+
+    var old_search_value = '';
+    $('input#search').keyup(function(event, ui){
+      var query = this.value;
+      if(old_search_value != query) {
+        old_search_value = query;
+        if(query == '') {
+          $('tr').removeClass("hidden");
+        }
+        else {
+          $('tr').addClass("hidden");
+          $('tr:Contains("'+query+'")').removeClass("hidden");
+        }
+      }
     });
 
     (function poll(){

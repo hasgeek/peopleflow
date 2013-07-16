@@ -1,11 +1,24 @@
 {% extends "layout.html" %}
-{% from 'macros.html' import ajaxform%}
-{% block title %}New Participant{% endblock %}
+{% from "baseframe/forms.html" import renderform_inner, rendersubmit %}
+{% block titletags -%}
+  <title>{% block title %}Add Participant - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
+  <meta name="DC.title" content="Add Participant - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
+{%- endblock %}
 {% block content %}
-        {% include 'participantform.html' %}
+<form id="new_participant" method="POST" action="{{ url_for("venue_signup", id=event.id) }}" accept-charset="UTF-8" class="form-horizontal">
+    {{ renderform_inner(form, 'new_participant') }}
+    <div class="field">
+        <a class="btn rfid_card unassigned"
+        href="javascript:void(0);">
+            <span class="assign" rel="">Assign Card And Submit</span>
+            <span class="tap_card">Tap the card (<span class="timeout"></span>)</span>
+        </a>
+    </div>
+</form>
 {% endblock %}
 {% block footerscripts %}
 <script src="http://127.0.0.1:8008/assets/js/lib.js"></script>
+<script src="/static/js/rfid/init.js"></script>
 <script type="text/javascript">
     var timer = null, interval = null;
     var stop_listening = function() {
@@ -14,7 +27,6 @@
         interval = null;
     };
     $(function(){
-        $('.assign').attr('rel', '/{{year }}/{{ eventname }}/signin');
         $('a.rfid_card').live('click', function(event){
             var current = $(this);
             if( current.hasClass('disabled') ) return true;
@@ -35,38 +47,12 @@
             }
         });
 
-        var toggle = function(participant, card) {
-            var assigned = participant.hasClass('assigned');
-            var ajax = {
-                "url": participant.find('span.assign').attr('rel'),
-                "type": "POST"
-            };
-            if( !assigned ){
-                if( typeof card == 'undefined' ) return false;
-                ajax.data = {nfc_id: card};
-                console.log(ajax);
-                ajax.success = function( response ) {
-                    console.log(response);
-                    if( response == "success") {
-                      $('a.rfid_card[rel=' + id + ']').removeClass('unassigned').addClass('assigned');
-                      stop_listening();
-                    }
-                };
-                $.ajax(ajax);
-            }
-        };
-
-        $(window).on('tap:received', function(e, data) {
+        rfid.on('tag_placed', function(data) {
             var current = $('a.rfid_card.tap.unassigned');
             if( current.length !== 1 ) return;
-            $('input#nfc_id').attr("value", data['card_id']);
-            $("#participantform").submit();
+            $('input#nfc_id').attr("value", data.tag_id);
+            $("#new_participant").submit();
         });
     });
 </script>
-<!-- Ajax form -->
-{% from "macros.html" import ajaxform -%}
-{{ ajaxform('participantform', request, True) }}
-
-
 {% endblock %}
