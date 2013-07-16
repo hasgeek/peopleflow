@@ -112,14 +112,16 @@ def event_kiosks(event):
 @lastuser.requires_permission('siteadmin')
 def export_kiosk(kiosk):
     participants = StringIO()
-    fieldnames= ['Name', 'Email','Company', 'Job']
+    fieldnames= ['Name', 'Email','Company', 'Job', 'Phone', 'City']
     writer = csv.DictWriter(participants, fieldnames=fieldnames, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
     writer.writeheader()
     for participant in kiosk.participants:
         writer.writerow({"Name":participant.name,
                         "Email": participant.email,
-                        "Company":participant.company,
-                        "Job":participant.job
+                        "Company": participant.company,
+                        "Job": participant.job,
+                        "Phone": participant.phone,
+                        "City": participant.city
                             })
     response = make_response(participants.getvalue())
     response.headers['Content-Type']='text/csv';'charset=utf-8'
