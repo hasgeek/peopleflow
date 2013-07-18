@@ -37,24 +37,6 @@ def event_new():
             pass
     return render_form(form=form, title=u"New Event", submit=u"Add", cancel_url=url_for('index'))
 
-@app.route('/event/new', methods=['POST'])
-@lastuser.requires_permission('siteadmin')
-def event_submit():
-    form = EventForm()
-    if form.validate_on_submit():
-        event = Event()
-        form.populate_obj(event)
-        db.session.add(event)
-        db.session.commit()
-        flash("Event added")
-        return render_redirect(url_for('index'), code=303)
-    else:
-        if request.is_xhr:
-            return render_template('eventform.html', eventform=form, ajax_re_register=True)
-        else:
-            flash("Please check your details and try again.", 'error')
-            return event_add(eventform=form)
-
 @app.route('/event/<event>/sync', methods=['GET'])
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id': 'event'}, 'event')
