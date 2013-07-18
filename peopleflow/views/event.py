@@ -14,19 +14,28 @@ from pytz import utc, timezone
 from datetime import datetime
 from flask import request, flash, url_for, render_template, jsonify
 from werkzeug import secure_filename
-from baseframe.forms import render_redirect, ConfirmDeleteForm
+from baseframe.forms import render_redirect, ConfirmDeleteForm, render_form
 from coaster.views import jsonp, load_model, load_models
 from mechanize import ParseResponse, urlopen, urljoin
 
 hideemail = re.compile('.{1,3}@')
 
-@app.route('/event/new', methods=['GET'])
+@app.route('/event/new', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
-def event_new(eventform=None):
-    if eventform is None:
-        eventform = EventForm()
-    context = {'eventform':eventform}
-    return render_template('new_event.html', **context)
+def event_new():
+    form = EventForm()
+    if form.validate_on_submit():
+        event = Event()
+        form.populate_obj(event)
+        db.session.add(event)
+        try:
+            db.session.commit()
+            flash('Event added')
+            return render_redirect(url_for('index'))
+        except:
+            flash('There was an issue in adding the event')
+            pass
+    return render_form(form=form, title=u"New Event", submit=u"Add", cancel_url=url_for('index'))
 
 @app.route('/event/new', methods=['POST'])
 @lastuser.requires_permission('siteadmin')
