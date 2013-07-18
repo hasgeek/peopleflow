@@ -16,7 +16,7 @@
         {%- if kiosk.participants.__len__() -%}
         <a href="{{ url_for('export_kiosk', event=event.id, kiosk=kiosk.id) }}"><span class="icon-download-alt"></span>Download Subscribers' List</a>
         {% endif %}
-        <a href="{{ url_for('event_delete', id=event.id) }}" title="Delete" class="red"><span class="icon-trash"></span>Delete</a>
+        <a href="{{ url_for('kiosk_delete', event=event.id, kiosk=kiosk.id) }}" title="Delete" class="red"><span class="icon-trash"></span>Delete</a>
         {% endif %}
       </div>
       {% if kioskadmin or siteadmin %}
