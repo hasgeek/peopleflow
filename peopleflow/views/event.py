@@ -293,17 +293,16 @@ def get_count(event):
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id': 'id'}, 'event')
 def event_edit(event):
-    if request.method=='GET':
-        form = EventForm(obj=event)
-        return event_new(eventform=form)
-    if request.method=='POST':
-        form = EventForm(obj=event)
-        if form.validate_on_submit():
-            form.populate_obj(event)
+    form = EventForm(obj=event)
+    if form.validate_on_submit():
+        form.populate_obj(event)
+        try:
             db.session.commit()
             flash("Edited event '%s'." % event.title, 'success')
             return render_redirect(url_for('index'), code=303)
-    return event_add(eventform=form)
+        except:
+            flash("Could not save event '%s'." % event.title, 'error')
+    return render_form(form=form, title=u"Edit Event: " + event.title, submit=u"Save", cancel_url=url_for('index'))
 
 
 @app.route('/event/<id>/delete', methods=['GET','POST'])
