@@ -22,7 +22,7 @@ from flask.ext.mail import Mail, Message
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id':'id'}, 'event')
 def kiosk_new(event):
-    form = KioskForm()
+    form = KioskForm(event)
     if form.validate_on_submit():
         kiosk = Kiosk()
         form.populate_obj(kiosk)
