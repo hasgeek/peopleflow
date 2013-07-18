@@ -12,5 +12,8 @@ class KioskEditForm(Form):
     tap_msg = wtf.TextField('Tapping message', description='Optional. Please tap your badge to ____? Leave blank to use default message.')
     privacy_policy = RichTextField('Privacy Policy')
 
-class KioskForm(KioskEditForm):
+class KioskLogoForm(Form):
     company_logo = wtf.TextField('Company Logo', description="Provide the URL for the image of the sponsor's logo.", validators=[wtf.Required('The logo is required'), wtf.URL(message="Please provide a valid URL")])
+
+class KioskForm(KioskEditForm, KioskLogoForm):
+    pass

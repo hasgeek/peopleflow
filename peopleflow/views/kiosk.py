@@ -9,7 +9,7 @@ from StringIO import StringIO
 from .. import app
 from .. import lastuser
 from ..models import db, Kiosk, Event, Participant, CXLog
-from ..forms import KioskForm, KioskEditForm, ConfirmSignoutForm
+from ..forms import KioskForm, KioskEditForm, KioskLogoForm, ConfirmSignoutForm
 from flask import request, flash, url_for, render_template, jsonify, make_response
 from baseframe.forms import render_redirect, ConfirmDeleteForm, render_form
 from coaster import make_name
@@ -17,6 +17,17 @@ from coaster.views import jsonp, load_model, load_models
 from coaster.gfm import markdown
 from flask.ext.mail import Mail, Message
 
+def save_logo(url):
+    file = urllib.urlopen(url).read()
+    filename = hashlib.md5(file).hexdigest()
+    filepath = os.path.join(app.config['STATIC_UPLOAD_FOLDER'], 'sponsors', filename)
+    with open(filepath, 'wb') as f:
+        f.write(file)
+        f.close()
+    return filename
+
+def delete_logo(filename):
+    os.remove(os.path.join(app.config['STATIC_UPLOAD_FOLDER'], 'sponsors', filename))
 
 @app.route('/event/<id>/kiosk/new', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
@@ -26,13 +37,7 @@ def kiosk_new(event):
     if form.validate_on_submit():
         kiosk = Kiosk()
         form.populate_obj(kiosk)
-        file = urllib.urlopen(kiosk.company_logo).read()
-        filename = hashlib.md5(file).hexdigest()
-        filepath = os.path.join(app.config['STATIC_UPLOAD_FOLDER'], 'sponsors', filename)
-        with open(filepath, 'wb') as f:
-            f.write(file)
-            f.close()
-        kiosk.company_logo = filename
+        kiosk.company_logo = save_logo(kiosk.company_logo)
         kiosk.event_id = event.id
         db.session.add(kiosk)
         try:
@@ -60,6 +65,29 @@ def kiosk_edit(event, kiosk):
         except:
             flash("Could not save kiosk '%s'." % kiosk.name, 'error')
     return render_form(form=form, title=u"Edit Kiosk: " + kiosk.name + u" - " + event.title, submit=u"Save", cancel_url=url_for('event_kiosks', event=event.id))
+
+@app.route('/event/<event>/kiosk/<kiosk>/editlogo', methods=['GET','POST'])
+@lastuser.requires_permission('siteadmin')
+@load_models(
+    (Event, {'id': 'event'}, 'event'),
+    (Kiosk, {'id': 'kiosk'}, 'kiosk'),
+    )
+def kiosk_editlogo(event, kiosk):
+    form = KioskLogoForm()
+    if form.validate_on_submit():
+        old_logo = kiosk.company_logo
+        form.populate_obj(kiosk)
+        kiosk.company_logo = save_logo(kiosk.company_logo)
+        try:
+            db.session.commit()
+            flash("Updated logo for kiosk '%s'." % kiosk.name, 'success')
+            kiosk_with_old_logo = Kiosk.query.filter_by(company_logo=old_logo).first()
+            if kiosk_with_old_logo is None:
+                delete_logo(old_logo)
+            return render_redirect(url_for('event_kiosks', event=event.id), code=303)
+        except:
+            flash("Could not update logo for kiosk '%s'." % kiosk.name, 'error')
+    return render_form(form=form, title=u"Update Kiosk Logo: " + kiosk.name + u" - " + event.title, submit=u"Save", cancel_url=url_for('event_kiosks', event=event.id))
 
 #TODO: Check for kiosk-event releationship when fetching kiosk
 @app.route('/event/<event>/kiosk/<kiosk>', methods=['GET','POST'])
