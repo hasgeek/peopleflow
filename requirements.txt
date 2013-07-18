@@ -13,3 +13,5 @@ unicodecsv
 mechanize
 gevent
 gunicorn
+reportlab
+psycopg2
