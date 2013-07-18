@@ -13,6 +13,7 @@
     <div class="item">
       <div class="links">
         {% if siteadmin %}
+        <a href="{{ url_for('kiosk_edit', event=event.id, kiosk=kiosk.id) }}" title="Edit"><span class="icon-edit"></span>Edit</a>
         {%- if kiosk.participants.__len__() -%}
         <a href="{{ url_for('export_kiosk', event=event.id, kiosk=kiosk.id) }}"><span class="icon-download-alt"></span>Download Subscribers' List</a>
         {% endif %}

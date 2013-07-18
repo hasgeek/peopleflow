@@ -9,7 +9,7 @@ from StringIO import StringIO
 from .. import app
 from .. import lastuser
 from ..models import db, Kiosk, Event, Participant, CXLog
-from ..forms import KioskForm, ConfirmSignoutForm
+from ..forms import KioskForm, KioskEditForm, ConfirmSignoutForm
 from flask import request, flash, url_for, render_template, jsonify, make_response
 from baseframe.forms import render_redirect, ConfirmDeleteForm, render_form
 from coaster import make_name
@@ -22,7 +22,7 @@ from flask.ext.mail import Mail, Message
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id':'id'}, 'event')
 def kiosk_new(event):
-    form = KioskForm(event)
+    form = KioskForm()
     if form.validate_on_submit():
         kiosk = Kiosk()
         form.populate_obj(kiosk)
@@ -42,6 +42,24 @@ def kiosk_new(event):
         except:
             pass
     return render_form(form=form, title=u"New Kiosk - " + event.title, submit=u"Add", cancel_url=url_for('event_kiosks', event=event.id))
+
+@app.route('/event/<event>/kiosk/<kiosk>/edit', methods=['GET','POST'])
+@lastuser.requires_permission('siteadmin')
+@load_models(
+    (Event, {'id': 'event'}, 'event'),
+    (Kiosk, {'id': 'kiosk'}, 'kiosk'),
+    )
+def kiosk_edit(event, kiosk):
+    form = KioskEditForm(obj=kiosk)
+    if form.validate_on_submit():
+        form.populate_obj(kiosk)
+        try:
+            db.session.commit()
+            flash("Edited kiosk '%s'." % kiosk.name, 'success')
+            return render_redirect(url_for('event_kiosks', event=event.id), code=303)
+        except:
+            flash("Could not save kiosk '%s'." % kiosk.name, 'error')
+    return render_form(form=form, title=u"Edit Kiosk: " + kiosk.name + u" - " + event.title, submit=u"Save", cancel_url=url_for('event_kiosks', event=event.id))
 
 #TODO: Check for kiosk-event releationship when fetching kiosk
 @app.route('/event/<event>/kiosk/<kiosk>', methods=['GET','POST'])
