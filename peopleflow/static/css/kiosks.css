@@ -32,6 +32,7 @@ body.contact_point {background: url(../images/canvas.jpg)}
 #contact_point #company .logo img{max-width: 99%;max-height: 99%;position: relative;}
 #contact_point #company .info .name{font-size: 50px; line-height: 55px;margin: 0;color: #333}
 #contact_point #company .info .tag{font-size: 35px; line-height: 40px;margin: 0; color: #999}
+#contact_point #sponsor_privacy, #contact_point #company_tap_msg{margin-left: 80%}
 #contact_point #company_tap_msg {text-align: center;color: #0A0}
 
 /*Sponsor Kiosk when company name is not specified*/

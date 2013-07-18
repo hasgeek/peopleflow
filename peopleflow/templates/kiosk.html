@@ -48,7 +48,7 @@
     <h5>HasGeek</h5>
     <p>Tap your badge to share your contact information. We'll pass on whatever you provided to us when registering for the event.</p>
     <h5>{{ kiosk.company }}</h5>
-    <p>{{ kiosk.privacy_policy or "" }}</p>
+    {{ kiosk.privacy_policy|safe or "" }}
   </div>
 </div>
 
