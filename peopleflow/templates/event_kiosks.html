@@ -36,7 +36,7 @@
     </div>
   {%- else -%}
     <p></p>
-    <p>There are no kiosks currently.{% if siteadmin %} <a href="{{ url_for('kiosk_new', id=event.id) }}">Add an event</a>{% endif %}</p>
+    <p>There are no kiosks currently.{% if siteadmin %} <a href="{{ url_for('kiosk_new', id=event.id) }}">Add a kiosk</a>{% endif %}</p>
   {% endfor %}
 </div>
 {% endblock %}
