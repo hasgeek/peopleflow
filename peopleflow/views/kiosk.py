@@ -12,6 +12,7 @@ from ..models import db, Kiosk, Event, Participant, CXLog
 from ..forms import KioskForm, KioskEditForm, KioskLogoForm, ConfirmSignoutForm
 from flask import request, flash, url_for, render_template, jsonify, make_response
 from baseframe.forms import render_redirect, ConfirmDeleteForm, render_form
+from jinja2 import Markup
 from coaster import make_name
 from coaster.views import jsonp, load_model, load_models
 from coaster.gfm import markdown
@@ -98,6 +99,7 @@ def kiosk_editlogo(event, kiosk):
 @lastuser.requires_permission('kioskadmin')
 def kiosk(event, kiosk):
     if request.method=='GET':
+        kiosk.privacy_policy = Markup(kiosk.privacy_policy)
         return render_template('kiosk.html', kiosk=kiosk, event=event)
 
 
