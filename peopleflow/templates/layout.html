@@ -5,8 +5,8 @@
 {% block baseheadline %}{# Don't use baseframe's headline #}{% endblock %}
 {%- block titletags %}
 	<title>{% block title %}{{ title }}{% endblock %}{% if config['SITE_TITLE'] %} {% if self.title() %}— {% endif %}{{ config['SITE_TITLE'] }}{% endif %}</title>
-	<meta name="DC.title" content="{{ self.title()|e }}{% if config['SITE_TITLE'] %} {% if title %}— {% endif %}{{ config['SITE_TITLE'] }}{% endif %}" />
-	<meta property="og:title" content="{{ self.title()|e }}{% if config['SITE_TITLE'] %} {% if title %}— {% endif %}{{ config['SITE_TITLE'] }}{% endif %}" />
+	<meta name="DC.title" content="{{ self.title()|e }}{% if config['SITE_TITLE'] %} {% if self.title() %}— {% endif %}{{ config['SITE_TITLE'] }}{% endif %}" />
+	<meta property="og:title" content="{{ self.title()|e }}{% if config['SITE_TITLE'] %} {% if self.title() %}— {% endif %}{{ config['SITE_TITLE'] }}{% endif %}" />
 {%- endblock %}
 {% block basecontent %}
       {{ flash_messages() }}
