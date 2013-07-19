@@ -14,7 +14,7 @@ from pytz import utc, timezone
 from datetime import datetime
 from flask import request, flash, url_for, render_template, jsonify
 from werkzeug import secure_filename
-from baseframe.forms import render_redirect, ConfirmDeleteForm, render_form
+from baseframe.forms import render_redirect, ConfirmDeleteForm
 from coaster.views import jsonp, load_model, load_models
 from mechanize import ParseResponse, urlopen, urljoin
 
@@ -35,7 +35,7 @@ def event_new():
         except:
             flash('There was an issue in adding the event')
             pass
-    return render_form(form=form, title=u"New Event", submit=u"Add", cancel_url=url_for('index'))
+    return render_template('form.html', form=form, title=u"New Event", submit=u"Add", cancel_url=url_for('index'))
 
 @app.route('/event/<event>/sync', methods=['GET'])
 @lastuser.requires_permission('siteadmin')
@@ -302,7 +302,7 @@ def event_edit(event):
             return render_redirect(url_for('index'), code=303)
         except:
             flash("Could not save event '%s'." % event.title, 'error')
-    return render_form(form=form, title=u"Edit — " + event.title, submit=u"Save", cancel_url=url_for('index'))
+    return render_template('form.html', form=form, title=u"Edit — " + event.title, submit=u"Save", cancel_url=url_for('index'))
 
 
 @app.route('/event/<id>/delete', methods=['GET','POST'])

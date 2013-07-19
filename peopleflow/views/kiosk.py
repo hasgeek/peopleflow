@@ -11,7 +11,7 @@ from .. import lastuser
 from ..models import db, Kiosk, Event, Participant, CXLog
 from ..forms import KioskForm, KioskEditForm, KioskLogoForm, ConfirmSignoutForm
 from flask import request, flash, url_for, render_template, jsonify, make_response
-from baseframe.forms import render_redirect, ConfirmDeleteForm, render_form
+from baseframe.forms import render_redirect, ConfirmDeleteForm
 from jinja2 import Markup
 from coaster import make_name
 from coaster.views import jsonp, load_model, load_models
@@ -47,7 +47,7 @@ def kiosk_new(event):
             return render_redirect(url_for('event_kiosks', event=event.id))
         except:
             pass
-    return render_form(form=form, title=u"New Kiosk — " + event.title, submit=u"Add", cancel_url=url_for('event_kiosks', event=event.id))
+    return render_template('form.html', form=form, title=u"New Kiosk — " + event.title, submit=u"Add", cancel_url=url_for('event_kiosks', event=event.id))
 
 @app.route('/event/<event>/kiosk/<kiosk>/edit', methods=['GET','POST'])
 @lastuser.requires_permission('siteadmin')
@@ -65,7 +65,7 @@ def kiosk_edit(event, kiosk):
             return render_redirect(url_for('event_kiosks', event=event.id), code=303)
         except:
             flash("Could not save kiosk '%s'." % kiosk.name, 'error')
-    return render_form(form=form, title=u"Edit — " + kiosk.name + u" —" + event.title, submit=u"Save", cancel_url=url_for('event_kiosks', event=event.id))
+    return render_template('form.html', form=form, title=u"Edit — " + kiosk.name + u" —" + event.title, submit=u"Save", cancel_url=url_for('event_kiosks', event=event.id))
 
 @app.route('/event/<event>/kiosk/<kiosk>/editlogo', methods=['GET','POST'])
 @lastuser.requires_permission('siteadmin')
@@ -88,7 +88,7 @@ def kiosk_editlogo(event, kiosk):
             return render_redirect(url_for('event_kiosks', event=event.id), code=303)
         except:
             flash("Could not update logo for kiosk '%s'." % kiosk.name, 'error')
-    return render_form(form=form, title=u"Update Logo — " + kiosk.name + u" — " + event.title, submit=u"Save", cancel_url=url_for('event_kiosks', event=event.id))
+    return render_template('form.html', form=form, title=u"Update Logo — " + kiosk.name + u" — " + event.title, submit=u"Save", cancel_url=url_for('event_kiosks', event=event.id))
 
 #TODO: Check for kiosk-event releationship when fetching kiosk
 @app.route('/event/<event>/kiosk/<kiosk>', methods=['GET','POST'])
