@@ -1,8 +1,5 @@
 {% extends "layout.html" %}
-{% block titletags -%}
-  <title>{% block title %}Kiosks - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
-  <meta name="DC.title" content="Kiosks - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
-{%- endblock %}
+{% block title %}Kiosks — {{ event.title }}{% endblock %}
 {% block headline %}
 <h1>{{ event.title }} - Kiosks</h1>
 {% if siteadmin %}<a class="btn" href="{{ url_for('kiosk_new', id=event.id) }}"><span class="icon-plus"></span>Add a kiosk</a>{% endif %}

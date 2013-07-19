@@ -302,7 +302,7 @@ def event_edit(event):
             return render_redirect(url_for('index'), code=303)
         except:
             flash("Could not save event '%s'." % event.title, 'error')
-    return render_form(form=form, title=u"Edit Event: " + event.title, submit=u"Save", cancel_url=url_for('index'))
+    return render_form(form=form, title=u"Edit — " + event.title, submit=u"Save", cancel_url=url_for('index'))
 
 
 @app.route('/event/<id>/delete', methods=['GET','POST'])
@@ -315,6 +315,6 @@ def event_delete(event):
             db.session.delete(event)
             db.session.commit()
         return render_redirect(url_for('index'), code=303)
-    return render_template('baseframe/delete.html', form=form, title=u"Confirm delete",
-        message=u"Delete '%s' ?" % (event.title))
+    return render_template('baseframe/delete.html', form=form, title=u"Delete '%s' ?" % (event.title),
+        message=u"Do you really want to delete the event '%s'?" % (event.title))
 
