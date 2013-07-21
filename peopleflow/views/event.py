@@ -5,6 +5,7 @@ import StringIO
 import unicodecsv
 import os
 import re
+from . import nav
 from .. import app
 from .. import lastuser
 from ..models import db, Event, Participant
@@ -21,6 +22,10 @@ from mechanize import ParseResponse, urlopen, urljoin
 hideemail = re.compile('.{1,3}@')
 
 @app.route('/event/new', methods=['GET', 'POST'])
+@nav.init(
+    parent='index',
+    title="New Event"
+    )
 @lastuser.requires_permission('siteadmin')
 def event_new():
     form = EventForm()
@@ -232,6 +237,12 @@ def sync_event(event):
 @app.route('/event/<event>', methods=['GET'])
 @lastuser.requires_permission('registrations')
 @load_model(Event, {'id': 'event'}, 'event')
+@nav.init(
+    parent='index',
+    title=lambda objects: objects['event'].name,
+    objects=['event'],
+    urlvars=lambda objects: {'event': objects['event'].id}
+    )
 def event(event):
     tz = timezone(app.config['TIMEZONE'])
     participants = Participant.query.filter_by(event_id=event.id).order_by('name').all()
@@ -292,6 +303,12 @@ def get_count(event):
 @app.route('/event/<id>/edit', methods=['GET','POST'])
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id': 'id'}, 'event')
+@nav.init(
+    parent='event',
+    title="Edit",
+    objects=['event'],
+    urlvars=lambda objects: {'id': objects['event'].id}
+    )
 def event_edit(event):
     form = EventForm(obj=event)
     if form.validate_on_submit():
@@ -308,6 +325,12 @@ def event_edit(event):
 @app.route('/event/<id>/delete', methods=['GET','POST'])
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id':'id'}, 'event')
+@nav.init(
+    parent='event',
+    title="Confirm Delete",
+    objects=['event'],
+    urlvars=lambda objects: {'id': objects['event'].id}
+    )
 def event_delete(event):
     form = ConfirmDeleteForm()
     if form.validate_on_submit():

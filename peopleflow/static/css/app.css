@@ -7,6 +7,8 @@
 
 #root{padding-bottom: 65px;}
 
+#page-header {border-bottom: 0px;}
+
 @media print {
   /*
   .container {
@@ -44,3 +46,29 @@ a.rfid_card.tap .unassign, a.rfid_card.confirm .unassign, a.rfid_card.tap .assig
 .boxed_list .item .links a.red {color: #C00000}
 .boxed_list .item .links a:hover {color: #0A0}
 .boxed_list .item .links a.red:hover {color: #A00}
+
+/*Picked up from bootstrap.css components*/
+.breadcrumb {
+  padding: 8px 15px;
+  margin: 0 0 20px;
+  list-style: none;
+  background-color: #f5f5f5;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+.breadcrumb > li {
+  display: inline-block;
+  *display: inline;
+  /* IE7 inline-block hack */
+
+  *zoom: 1;
+  text-shadow: 0 1px 0 #ffffff;
+}
+.breadcrumb > li > .divider {
+  padding: 0 5px;
+  color: #ccc;
+}
+.breadcrumb > .active {
+  color: #999999;
+}
