@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 {% block title %}Kiosks — {{ event.title }}{% endblock %}
 {% block headline %}
-<h1>{{ event.title }} - Kiosks</h1>
 {% if siteadmin %}<a class="btn" href="{{ url_for('kiosk_new', id=event.id) }}"><span class="icon-plus"></span>Add a kiosk</a>{% endif %}
 {% endblock %}
 {% block content %}
