@@ -239,24 +239,30 @@ def event(event):
         utc=utc, tz=tz)
 
 
-@app.route('/event/<event>/signin', methods=['POST'])
+@app.route('/event/<event>/participant/<participant>/signin', methods=['POST'])
 @lastuser.requires_permission('registrations')
-@load_model(Event, {'id': 'event'}, 'event')
-def event_signin(event):
-    pid = request.form['id']
-    participant = Participant.query.get(pid)
-    if participant.attended:
-        return "Already Signed in"
+@load_models(
+    (Event, {'id': 'event'}, 'event'),
+    (Participant, {'id': 'participant'}, 'participant')
+    )
+def event_signin(event, participant):
+    if participant.nfc_id is not None:
+        return jsonify(status=False, message=u"This participant has already been assigned a badge.")
     else:
         nfc_id = unicode(request.form['nfc_id'])
-        participant.nfc_id = nfc_id
-        participant.attended = True
-        participant.attend_date = datetime.utcnow()
-        try:
-            db.session.commit()
-            return "success"
-        except:
-            return "id_used"
+        someone = Participant.query.filter_by(nfc_id=nfc_id, event_id=event.id).first()
+        if someone:
+            return jsonify(status=False, message=u"This badge is already assigned to %s" % someone.name)
+        else:
+            participant.nfc_id = nfc_id
+            participant.attended = True
+            participant.attend_date = datetime.utcnow()
+            try:
+                db.session.commit()
+                return jsonify(status=True, message=u"The badge has been successfully assigned to %s" % participant.name)
+            except:
+                db.session.rollback()
+                return jsonify(status=False, message=u"There was an error assigning this badge to %s" % participant.name)
 
 
 @app.route('/event/<event>/participant/<participant>/status', methods=['GET'])

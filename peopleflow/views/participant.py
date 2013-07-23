@@ -29,8 +29,9 @@ def add_new_participant(event):
     if form.validate_on_submit():
         participant = Participant()
         form.populate_obj(participant)
-        if Participant.query.filter_by(nfc_id=participant.nfc_id, event_id=event.id).first():
-            flash(u'This badge is already assigned to someone', 'error')
+        someone = Participant.query.filter_by(nfc_id=participant.nfc_id, event_id=event.id).first()
+        if someone:
+            flash(u'This badge is already assigned to %s' % someone.name, 'error')
             return render_template('new_participant.html', form=form, event=event)
         participant.phone = participant.phone.replace(' ','').replace('-','').strip()
         participant.twitter = participant.twitter.replace('@','').strip()
