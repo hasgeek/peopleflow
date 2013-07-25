@@ -1,9 +1,5 @@
 {% extends "kiosks_layout.html" %}
-{% block titletags -%}
-  <title>{% block title %}{{ kiosk.name }} Kiosk - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
-  <meta name="DC.title" content="{{ kiosk.name }} Kiosk - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
-{%- endblock %}
-
+{% block title %}{{ kiosk.name }} Kiosk — {{ event.title }}{% endblock %}
 {% block bodytag %}<body class="contact_point">{% endblock %}
 
 {% block basecontent %}
@@ -48,7 +44,7 @@
     <h5>HasGeek</h5>
     <p>Tap your badge to share your contact information. We'll pass on whatever you provided to us when registering for the event.</p>
     <h5>{{ kiosk.company }}</h5>
-    <p>{{ kiosk.privacy_policy or "" }}</p>
+    {{ kiosk.privacy_policy or "" }}
   </div>
 </div>
 

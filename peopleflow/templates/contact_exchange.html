@@ -1,9 +1,5 @@
 {% extends "kiosks_layout.html" %}
-{% block titletags -%}
-  <title>{% block title %}Contact Exchange - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
-  <meta name="DC.title" content="Contact Exchange - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
-{%- endblock %}
-
+{% block title %}Contact Exchange — {{ event.title }}{% endblock %}
 {% block bodytag %}<body class="contact_exchange">{% endblock %}
 
 {% block basecontent %}

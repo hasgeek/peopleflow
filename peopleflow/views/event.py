@@ -20,31 +20,22 @@ from mechanize import ParseResponse, urlopen, urljoin
 
 hideemail = re.compile('.{1,3}@')
 
-@app.route('/event/new', methods=['GET'])
+@app.route('/event/new', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
-def event_new(eventform=None):
-    if eventform is None:
-        eventform = EventForm()
-    context = {'eventform':eventform}
-    return render_template('new_event.html', **context)
-
-@app.route('/event/new', methods=['POST'])
-@lastuser.requires_permission('siteadmin')
-def event_submit():
+def event_new():
     form = EventForm()
     if form.validate_on_submit():
         event = Event()
         form.populate_obj(event)
         db.session.add(event)
-        db.session.commit()
-        flash("Event added")
-        return render_redirect(url_for('index'), code=303)
-    else:
-        if request.is_xhr:
-            return render_template('eventform.html', eventform=form, ajax_re_register=True)
-        else:
-            flash("Please check your details and try again.", 'error')
-            return event_add(eventform=form)
+        try:
+            db.session.commit()
+            flash('Event added')
+            return render_redirect(url_for('index'))
+        except:
+            flash('There was an issue in adding the event')
+            pass
+    return render_template('form.html', form=form, title=u"New Event", submit=u"Add", cancel_url=url_for('index'))
 
 @app.route('/event/<event>/sync', methods=['GET'])
 @lastuser.requires_permission('siteadmin')
@@ -248,24 +239,30 @@ def event(event):
         utc=utc, tz=tz)
 
 
-@app.route('/event/<event>/signin', methods=['POST'])
+@app.route('/event/<event>/participant/<participant>/signin', methods=['POST'])
 @lastuser.requires_permission('registrations')
-@load_model(Event, {'id': 'event'}, 'event')
-def event_signin(event):
-    pid = request.form['id']
-    participant = Participant.query.get(pid)
-    if participant.attended:
-        return "Already Signed in"
+@load_models(
+    (Event, {'id': 'event'}, 'event'),
+    (Participant, {'id': 'participant'}, 'participant')
+    )
+def event_signin(event, participant):
+    if participant.nfc_id is not None:
+        return jsonify(status=False, message=u"This participant has already been assigned a badge.")
     else:
         nfc_id = unicode(request.form['nfc_id'])
-        participant.nfc_id = nfc_id
-        participant.attended = True
-        participant.attend_date = datetime.utcnow()
-        try:
-            db.session.commit()
-            return "success"
-        except:
-            return "id_used"
+        someone = Participant.query.filter_by(nfc_id=nfc_id, event_id=event.id).first()
+        if someone:
+            return jsonify(status=False, message=u"This badge is already assigned to %s" % someone.name)
+        else:
+            participant.nfc_id = nfc_id
+            participant.attended = True
+            participant.attend_date = datetime.utcnow()
+            try:
+                db.session.commit()
+                return jsonify(status=True, message=u"The badge has been successfully assigned to %s" % participant.name)
+            except:
+                db.session.rollback()
+                return jsonify(status=False, message=u"There was an error assigning this badge to %s" % participant.name)
 
 
 @app.route('/event/<event>/participant/<participant>/status', methods=['GET'])
@@ -302,17 +299,16 @@ def get_count(event):
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id': 'id'}, 'event')
 def event_edit(event):
-    if request.method=='GET':
-        form = EventForm(obj=event)
-        return event_new(eventform=form)
-    if request.method=='POST':
-        form = EventForm(obj=event)
-        if form.validate_on_submit():
-            form.populate_obj(event)
+    form = EventForm(obj=event)
+    if form.validate_on_submit():
+        form.populate_obj(event)
+        try:
             db.session.commit()
             flash("Edited event '%s'." % event.title, 'success')
             return render_redirect(url_for('index'), code=303)
-    return event_add(eventform=form)
+        except:
+            flash("Could not save event '%s'." % event.title, 'error')
+    return render_template('form.html', form=form, title=u"Edit — " + event.title, submit=u"Save", cancel_url=url_for('index'))
 
 
 @app.route('/event/<id>/delete', methods=['GET','POST'])
@@ -325,6 +321,6 @@ def event_delete(event):
             db.session.delete(event)
             db.session.commit()
         return render_redirect(url_for('index'), code=303)
-    return render_template('baseframe/delete.html', form=form, title=u"Confirm delete",
-        message=u"Delete '%s' ?" % (event.title))
+    return render_template('baseframe/delete.html', form=form, title=u"Delete '%s' ?" % (event.title),
+        message=u"Do you really want to delete the event '%s'?" % (event.title))
 

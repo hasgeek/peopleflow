@@ -40,7 +40,7 @@ class Participant(db.Model, BaseMixin):
     #: Date of registration
     regdate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     #:NFC ID
-    nfc_id = db.Column(db.Unicode(80), unique=True, nullable=True, default=None)
+    nfc_id = db.Column(db.Unicode(80), nullable=True, default=None)
     #: Source of registration, whether online(True) or offline(False)
     online_reg = db.Column(db.Boolean, default=True, nullable=True)
     #: Order ID
@@ -56,6 +56,7 @@ class Participant(db.Model, BaseMixin):
     #: Event the participant is attending
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
 
+    __table_args__ = (db.UniqueConstraint('event_id', 'nfc_id'),)
 
     def __repr__(self):
         return self.name

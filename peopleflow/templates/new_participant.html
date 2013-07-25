@@ -1,9 +1,6 @@
 {% extends "layout.html" %}
 {% from "baseframe/forms.html" import renderform_inner, rendersubmit %}
-{% block titletags -%}
-  <title>{% block title %}Add Participant - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
-  <meta name="DC.title" content="Add Participant - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
-{%- endblock %}
+{% block title %}New Participant — {{ event.title }}{% endblock %}
 {% block content %}
 <form id="new_participant" method="POST" action="{{ url_for("venue_signup", id=event.id) }}" accept-charset="UTF-8" class="form-horizontal">
     {{ renderform_inner(form, 'new_participant') }}

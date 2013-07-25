@@ -1,13 +1,13 @@
 """init
 
-Revision ID: 46b28d849889
+Revision ID: 30be99b7ae7
 Revises: None
-Create Date: 2013-06-07 10:34:11.626198
+Create Date: 2013-07-25 17:39:03.922325
 
 """
 
 # revision identifiers, used by Alembic.
-revision = '46b28d849889'
+revision = '30be99b7ae7'
 down_revision = None
 
 from alembic import op
@@ -22,9 +22,19 @@ def upgrade():
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.Column('name', sa.Unicode(length=80), nullable=False),
     sa.Column('title', sa.Unicode(length=80), nullable=False),
-    sa.Column('year', sa.Integer(), nullable=False),
-    sa.Column('date', sa.Date(), nullable=False),
+    sa.Column('from_date', sa.Date(), nullable=True),
+    sa.Column('to_date', sa.Date(), nullable=True),
+    sa.Column('doattend_id', sa.Unicode(length=10), nullable=True),
     sa.Column('venue', sa.Unicode(length=80), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('cxlog',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('users', sa.Unicode(length=200), nullable=False),
+    sa.Column('sent', sa.Boolean(), nullable=False),
+    sa.Column('log_message', sa.Unicode(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('user',
@@ -45,39 +55,47 @@ def upgrade():
     sa.UniqueConstraint('userid'),
     sa.UniqueConstraint('username')
     )
-    op.create_table('participant',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.Column('ticket_number', sa.Integer(), nullable=True),
-    sa.Column('name', sa.Unicode(length=80), nullable=False),
-    sa.Column('email', sa.Unicode(length=80), nullable=False),
-    sa.Column('ticket_type', sa.Unicode(length=80), nullable=True),
-    sa.Column('company', sa.Unicode(length=80), nullable=True),
-    sa.Column('job', sa.Unicode(length=80), nullable=True),
-    sa.Column('city', sa.Unicode(length=80), nullable=True),
-    sa.Column('twitter', sa.Unicode(length=80), nullable=True),
-    sa.Column('tshirt_size', sa.Integer(), nullable=False),
-    sa.Column('regdate', sa.DateTime(), nullable=False),
-    sa.Column('nfc_id', sa.Unicode(length=80), nullable=True),
-    sa.Column('order_id', sa.Integer(), nullable=True),
-    sa.Column('attended', sa.Boolean(), nullable=False),
-    sa.Column('attend_date', sa.DateTime(), nullable=True),
-    sa.Column('event_id', sa.Integer(), nullable=True),
-    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('nfc_id'),
-    sa.UniqueConstraint('ticket_number')
-    )
     op.create_table('kiosk',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
     sa.Column('name', sa.Unicode(length=80), nullable=False),
     sa.Column('company', sa.Unicode(length=80), nullable=True),
+    sa.Column('company_tag', sa.Unicode(length=150), nullable=True),
+    sa.Column('company_logo', sa.Unicode(length=120), nullable=True),
+    sa.Column('tap_msg', sa.Unicode(length=200), nullable=True),
+    sa.Column('privacy_policy', sa.Unicode(), nullable=True),
     sa.Column('event_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
     sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('participant',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('ticket_number', sa.Unicode(length=15), nullable=True),
+    sa.Column('name', sa.Unicode(length=80), nullable=False),
+    sa.Column('email', sa.Unicode(length=80), nullable=False),
+    sa.Column('company', sa.Unicode(length=80), nullable=True),
+    sa.Column('job', sa.Unicode(length=80), nullable=True),
+    sa.Column('city', sa.Unicode(length=80), nullable=True),
+    sa.Column('phone', sa.Unicode(length=15), nullable=True),
+    sa.Column('twitter', sa.Unicode(length=80), nullable=True),
+    sa.Column('purchased_tee', sa.Boolean(), nullable=True),
+    sa.Column('regdate', sa.DateTime(), nullable=False),
+    sa.Column('nfc_id', sa.Unicode(length=80), nullable=True),
+    sa.Column('online_reg', sa.Boolean(), nullable=True),
+    sa.Column('order_id', sa.Integer(), nullable=True),
+    sa.Column('attended', sa.Boolean(), nullable=False),
+    sa.Column('attend_date', sa.DateTime(), nullable=True),
+    sa.Column('purchases', sa.Unicode(length=200), nullable=True),
+    sa.Column('notes', sa.Unicode(), nullable=True),
+    sa.Column('event_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('event_id','nfc_id'),
+    sa.UniqueConstraint('ticket_number')
     )
     op.create_table('kiosk_participants',
     sa.Column('kiosk_id', sa.Integer(), nullable=True),
@@ -93,8 +111,9 @@ def upgrade():
 def downgrade():
     ### commands auto generated by Alembic - please adjust! ###
     op.drop_table('kiosk_participants')
-    op.drop_table('kiosk')
     op.drop_table('participant')
+    op.drop_table('kiosk')
     op.drop_table('user')
+    op.drop_table('cxlog')
     op.drop_table('event')
     ### end Alembic commands ###

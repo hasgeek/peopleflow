@@ -1,10 +1,6 @@
 {% extends "layout.html" %}
 {% block networkbar %}{% endblock %}
-{% block baseheadline %}Peopleflow -  HasGeek{% endblock %}
-{% block titletags -%}
-  <title>{% block title %}Venue Signup - {{ event.title }} - {{ config['SITE_TITLE'] }}{% endblock %}</title>
-  <meta name="DC.title" content="Venue Signup - {{ event.title }} - {{ config['SITE_TITLE'] }}"/>
-{%- endblock %}
+{% block title %}{{ event.title }}{% endblock %}
 {% block headline %}
 <h1>{{ event.title }}- Venue Signup. </h1>
 {% endblock %}
@@ -43,10 +39,10 @@
                     <a class="btn rfid_card {%- if p.attended %} assigned {%- else %} unassigned {%- endif %}"
                       rel="{{ p.id }}"
                       href="javascript:void(0);">
-                      <span class="assign" data-url="{{ url_for('event_signin', event=event.id) }}">Assign Card</span>
+                      <span class="assign" data-url="{{ url_for('event_signin', event=event.id, participant=p.id) }}">Assign Card</span>
                       <span class="unassign" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Unassign Card</span>
                       <span class="unassign_confirm" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Pls confirm (<span class="timeout"></span>)</span>
-                      <span class="tap_card" data-url="{{ url_for('event_signin', event=event.id) }}">Tap the card (<span class="timeout"></span>)</span>
+                      <span class="tap_card" data-url="{{ url_for('event_signin', event=event.id, participant=p.id) }}">Tap the card (<span class="timeout"></span>)</span>
                     </a>
                     <a class="btn print_card" data-url="{{ url_for('print_card') }}" data-method="POST" data-name='{{ p.name|e }}' data-twitter='{{ p.twitter }}'>Print</a>
                   </td>
@@ -128,14 +124,14 @@
 
         if( !assigned ) {
           if( typeof card == 'undefined' ) return false;
-          ajax.data = {nfc_id: card, id: id};
+          ajax.data = {nfc_id: card};
           ajax.success = function( response ) {
-            if( response == "success") {
+            if( response.status) {
               $('a.rfid_card[rel=' + id + ']').removeClass('unassigned').addClass('assigned');
-              toastr.success('The badge has been assigned to ' + participant_name);
+              toastr.success(response.message);
             }
-            else if( response == "id_used") {
-              toastr.warning('This badge is already assigned to someone.');
+            else {
+              toastr.warning(response.message);
             }
             stop_waiting();
           };

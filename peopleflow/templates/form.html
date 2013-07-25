@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% from "baseframe/forms.html" import renderform, richtext_editor %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+  {%- if message %}
+    <p>{{ message }}</p>
+  {%- endif %}
+  {{ renderform(form=form, submit=submit, message=message, cancel_url=cancel_url) }}
+{% endblock %}
+
+{% block footerscripts %}
+  {% for field in form -%}
+    {% if field.widget.input_type == 'tinymce' -%}
+      {{ richtext_editor(field) }}
+    {%- endif %}
+  {%- endfor %}
+  <script type="text/javascript">
+    $(function() {
+      $('input.datetime-time').timepicker({ 'scrollDefaultNow': true });  
+    });
+  </script>
+{% endblock %}
