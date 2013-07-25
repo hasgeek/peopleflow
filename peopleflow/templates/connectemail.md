@@ -1,6 +1,6 @@
 Hello,
 
-This email brings you the contact information of people you met at {{ event.title }}, {{ event.year }}.
+This email brings you the contact information of people you met at {{ event.title }}, {{ event.from_date.year }}.
 Hope you had a good time!
 
 Given below is a list of your fellow participants:
