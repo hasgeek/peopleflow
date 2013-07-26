@@ -36,7 +36,7 @@
                   <td>{{ p.purchased_tee }}</td>
                   <td>{{ p.notes|e }}</td>
                   <td>
-                    <a class="btn rfid_card {%- if p.attended %} assigned {%- else %} unassigned {%- endif %}"
+                    <a class="btn rfid_card {%- if p.nfc_id %} assigned {%- else %} unassigned {%- endif %}"
                       rel="{{ p.id }}"
                       href="javascript:void(0);">
                       <span class="assign" data-url="{{ url_for('event_signin', event=event.id, participant=p.id) }}">Assign Card</span>
