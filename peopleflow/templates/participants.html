@@ -44,7 +44,7 @@
                       <span class="unassign_confirm" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Pls confirm (<span class="timeout"></span>)</span>
                       <span class="tap_card" data-url="{{ url_for('event_signin', event=event.id, participant=p.id) }}">Tap the card (<span class="timeout"></span>)</span>
                     </a>
-                    <a class="btn print_card" data-url="{{ url_for('print_card') }}" data-method="POST" data-name='{{ p.name|e }}' data-twitter='{{ p.twitter }}'>Print</a>
+                    <a class="btn print_card" data-url="{{ url_for('print_card', event=event.id, participant=p.id) }}" data-method="POST" data-id='{{ p.id }}'>Print</a>
                   </td>
                 </tr>
               {% else %}
@@ -70,15 +70,15 @@
       $('a.print_card').on('click', function(event) {
         $.ajax({
           url: $(this).attr('data-url'),
-          data: {'name': $(this).attr('data-name'),
-                 'twitter': $(this).attr('data-twitter')
-               },
+          data: {'id': $(this).attr('data-id')},
           type: $(this).attr('data-method'),
           success: function(data) {
-            console.log(data.msg);
-          },
-          failure: function(data){
-            console.log(data.msg);
+            if(data.status) {
+              toastr.success(data.msg);
+            }
+            else {
+              toastr.error(data.msg);
+            }
           }
         });
       });
