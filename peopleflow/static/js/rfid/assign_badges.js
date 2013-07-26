@@ -1,4 +1,4 @@
-var MESSAGE_TIME = 3000;
+var MESSAGE_TIME = 5000;
 var messaging_handler = null;
 
 var stats = function() {
