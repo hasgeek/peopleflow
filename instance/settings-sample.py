@@ -45,3 +45,5 @@ STATIC_UPLOAD_FOLDER = 'peopleflow/static/uploads'
 
 DOATTEND_EMAIL = ''
 DOATTEND_PASS = ''
+
+PRINTER_NAME = 'Brother-QL-570'

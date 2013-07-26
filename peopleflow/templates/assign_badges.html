@@ -1,0 +1,36 @@
+{% extends "kiosks_layout.html" %}
+{% block title %}Assign Badges — {{ event.title }}{% endblock %}
+{% block bodytag %}<body class="assign_badges">{% endblock %}
+
+{% block basecontent %}
+<div id="assign_badges">
+  <div id="badge_counters">
+    <div id="total" class="counts">
+      <h1>Total Participants</h1>
+      <div class="counter">0</div>
+    </div>
+    <div id="assigned" class="counts">
+      <h1>Participants with assigned badges</h1>
+      <div class="counter">0</div>
+    </div>
+    <div id="unassigned" class="counts">
+      <h1>Participants not assigned badges yet</h1>
+      <div class="counter">0</div>
+    </div>
+  </div>
+  <div id="messaging">
+    <div id="tap_message" class="message">Please tap a badge to assign it to a participant</div>
+    <div id="none_message" class="message">There are no participants with unasssigned badges.</div>
+    <div id="response" class="message"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block footerscripts %}
+{{ super() }}
+<script src="/static/js/rfid/assign_badges.js"></script>
+<script>
+stats.init('{{ url_for('badge_stats', event=event.id) }}')
+</script>
+{% endblock %}
+{% block footer_logo %}{% endblock %}
