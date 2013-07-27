@@ -76,11 +76,11 @@ def print_card(participant):
     try:
         if 'PRINTER_NAME' in app.config:
             printlabel(app.config['PRINTER_NAME'], make_label_content(participant))
-            return jsonify(status=True, msg=u"Card for %s queued for printing" % participant.name)
+            return jsonify(status=True, msg=u"Label for %s queued for printing" % participant.name)
         else:
             return jsonify(status=False, msg=u"Printer not configured")
     except:
-        return jsonify(status=False, msg=u"Card for %s queued for printing" % participant.name)
+        return jsonify(status=False, msg=u"There was an error in printing the label for %s" % participant.name)
 
 @app.route('/<eid>/search', methods=['POST'])
 @load_model(Event,{'id':'eid'},'event')
