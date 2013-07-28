@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from . import nav
 from .. import app
 from .. import lastuser
 from ..models import db, Event, Participant
@@ -53,6 +54,12 @@ def add_new_participant(event):
 @app.route('/event/<id>/participant/new', methods=['GET', 'POST'])
 @load_model(Event, {'id': 'id'}, 'event')
 @lastuser.requires_permission('registrations')
+@nav.init(
+    parent='event',
+    title="New Participant",
+    urlvars=lambda objects: {'id':objects['event'].id},
+    objects = ['event']
+    )
 def venue_signup(event, participantform=None):
     return add_new_participant(event)
 

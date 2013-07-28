@@ -6,6 +6,7 @@ import csv
 import urllib
 import hashlib
 from StringIO import StringIO
+from . import nav
 from .. import app
 from .. import lastuser
 from ..models import db, Kiosk, Event, Participant, CXLog
@@ -34,6 +35,12 @@ def delete_logo(filename):
 @app.route('/event/<id>/kiosk/new', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id':'id'}, 'event')
+@nav.init(
+    parent='event_kiosks',
+    title="New Kiosk",
+    urlvars=lambda objects: {'id':objects['event'].id},
+    objects = ['event']
+    )
 def kiosk_new(event):
     form = KioskForm()
     if form.validate_on_submit():
@@ -56,6 +63,12 @@ def kiosk_new(event):
     (Event, {'id': 'event'}, 'event'),
     (Kiosk, {'id': 'kiosk'}, 'kiosk'),
     )
+@nav.init(
+    parent='event_kiosks',
+    title=lambda objects: "Edit Kiosk: %s" % (objects['kiosk'].name),
+    urlvars=lambda objects: {'event':objects['event'].id, 'kiosk':objects['kiosk'].id},
+    objects = ['event', 'kiosk']
+    )
 def kiosk_edit(event, kiosk):
     form = KioskEditForm(obj=kiosk)
     if form.validate_on_submit():
@@ -73,6 +86,12 @@ def kiosk_edit(event, kiosk):
 @load_models(
     (Event, {'id': 'event'}, 'event'),
     (Kiosk, {'id': 'kiosk'}, 'kiosk'),
+    )
+@nav.init(
+    parent='event_kiosks',
+    title=lambda objects: "Update Kiosk Logo: %s" % (objects['kiosk'].name),
+    urlvars=lambda objects: {'event':objects['event'].id, 'kiosk':objects['kiosk'].id},
+    objects = ['event', 'kiosk']
     )
 def kiosk_editlogo(event, kiosk):
     form = KioskLogoForm()
@@ -131,6 +150,12 @@ def share(event, kiosk):
     (Event, {'id':'event'}, 'event'),
     (Kiosk, {'id': 'kiosk'}, 'kiosk')
     )
+@nav.init(
+    parent='event_kiosks',
+    title=lambda objects: "Confirm Delete of Kiosk: %s" % (objects['kiosk'].name),
+    urlvars=lambda objects: {'event':objects['event'].id, 'kiosk':objects['kiosk'].id},
+    objects = ['event', 'kiosk']
+    )
 def kiosk_delete(event, kiosk):
     form = ConfirmDeleteForm()
     if form.validate_on_submit():
@@ -145,6 +170,12 @@ def kiosk_delete(event, kiosk):
 @lastuser.requires_permission('kioskadmin')
 @load_models(
     (Event, {'id':'event'}, 'event')
+    )
+@nav.init(
+    parent='event',
+    title="ContactPoint Kiosks",
+    objects=['event'],
+    urlvars=lambda objects: {'event': objects['event'].id}
     )
 def event_kiosks(event):
     return render_template('event_kiosks.html', event=event, siteadmin=lastuser.has_permission('siteadmin'), kioskadmin=lastuser.has_permission('kioskadmin'))

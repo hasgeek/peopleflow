@@ -1,0 +1,14 @@
+{% macro breadcrumbs(nav) %}
+<ul class="breadcrumb">
+{% for link in nav.trail %}
+	<li>
+		{%- if loop.last != True -%}<a href="{{ link.url }}">{%- endif -%}
+		{{ link.title }}
+		{%- if loop.last != True -%}</a>{%- endif -%}
+		{%- if loop.last != True -%}
+			<span class="divider">&raquo;</span>
+		{%- endif -%}
+	</li>
+{% endfor %}	
+</ul>
+{% endmacro %}
