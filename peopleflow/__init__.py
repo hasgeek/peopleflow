@@ -22,7 +22,10 @@ if app.config.get('GUNICORN_ENV'):
 lastuser = Lastuser()
 
 assets['peopleflow.css'][version] = 'css/app.css'
+assets['peopleflow.js'][version] = 'js/app.js'
 assets['cooldown.js'][version] = 'js/cooldown.js'
+assets['indicators.css'][version] = 'css/indicators.css'
+assets['indicators.js'][version] = 'js/indicators.js'
 
 from . import models, views
 from .models import db
@@ -30,7 +33,7 @@ from .views import nav
 
 def init_for(env):
     coaster.app.init_app(app, env)
-    baseframe.init_app(app, requires=['baseframe', 'toastr', 'peopleflow', 'cooldown'])
+    baseframe.init_app(app, requires=['baseframe', 'toastr', 'indicators', 'peopleflow', 'cooldown'])
     lastuser.init_app(app)
     lastuser.init_usermanager(UserManager(db, models.User))
     nav.init_app(app)

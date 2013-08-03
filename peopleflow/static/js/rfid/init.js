@@ -19,20 +19,20 @@ var rfid = function() {
             });
 
             $(window).on('rfid:server_inactive', function(e, data) {
-                $('#rfid_status').removeClass('server_active');
+                indicators.state('rfid_status', 'red');
             });
             $(window).on('rfid:server_active', function(e, data) {
-                $('#rfid_status').addClass('server_active');
+                indicators.state('rfid_status', 'yellow');
             });
-            $('body').append('<a id="rfid_status" href="javascript:void(0)">&bull;</a>');
+            indicators.add('rfid_status', '&FilledSmallSquare;');
         },
         'actions': {},
         'indicator': {
             'tag_placed': function(data) {
-                $('#rfid_obj_status').addClass('tag_placed');
+                indicators.state('rfid_status', 'green');
             },
             'tag_removed': function(data) {
-                $('#rfid_obj_status').removeClass('tag_placed');
+                indicators.state('rfid_status', 'yellow');
             }
         },
         'on': function(action_name, fn) {
