@@ -2,7 +2,7 @@
 	position: fixed;bottom: 5px; left: 5px;z-index: 2222;
 }
 #indicators a {
-	font-size: 1.25em; text-shadow: 0 0 1.5px #444;opacity: 0.75; margin: 0 2px; font-weight: bold
+	font-size: 1.75em; text-shadow: 0 0 1.5px #444;opacity: 0.75; margin: 0 2px; font-weight: bold
 }
 #indicators a:hover {
 	opacity: 1; text-decoration: none
