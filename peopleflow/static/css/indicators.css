@@ -1,0 +1,12 @@
+#indicators {
+	position: fixed;bottom: 5px; left: 5px;z-index: 2222;
+}
+#indicators a {
+	font-size: 1.75em; text-shadow: 0 0 1.5px #444;opacity: 0.75; margin: 0 2px; font-weight: bold
+}
+#indicators a:hover {
+	opacity: 1; text-decoration: none
+}
+#indicators a.red {color:#A00}
+#indicators a.green {color:#0A0}
+#indicators a.yellow {color:#F0EC00}

@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from . import nav
 from .. import app
 from .. import lastuser
 from ..models import db, Event, Participant
 from ..forms import ParticipantForm
+from ..helpers.printlabel import printlabel, make_label_content
 from datetime import datetime, timedelta
 from time import strftime
-from flask import request, flash, url_for, render_template
-from coaster.views import load_model, jsonp
+from flask import request, flash, url_for, render_template, jsonify
+from coaster.views import load_model, load_models, jsonp
 from baseframe.forms import render_redirect
 from flask.ext.wtf import SelectMultipleField, widgets
 
@@ -52,6 +54,12 @@ def add_new_participant(event):
 @app.route('/event/<id>/participant/new', methods=['GET', 'POST'])
 @load_model(Event, {'id': 'id'}, 'event')
 @lastuser.requires_permission('registrations')
+@nav.init(
+    parent='event',
+    title="New Participant",
+    urlvars=lambda objects: {'id':objects['event'].id},
+    objects = ['event']
+    )
 def venue_signup(event, participantform=None):
     return add_new_participant(event)
 
@@ -66,6 +74,20 @@ def get_participant(event, nfc_id):
             response = jsonp(error="invalid")
         return response
 
+@app.route('/event/<event>/participant/<participant>/print_card', methods=['POST'])
+@lastuser.requires_permission(['kioskadmin', 'registrations'])
+@load_models(
+    (Participant, {'event_id': 'event', 'id': 'participant'}, 'participant')
+    )
+def print_card(participant):
+    try:
+        if 'PRINTER_NAME' in app.config:
+            printlabel(app.config['PRINTER_NAME'], make_label_content(participant))
+            return jsonify(status=True, msg=u"Label for %s queued for printing" % participant.name)
+        else:
+            return jsonify(status=False, msg=u"Printer not configured")
+    except:
+        return jsonify(status=False, msg=u"There was an error in printing the label for %s" % participant.name)
 
 @app.route('/<eid>/search', methods=['POST'])
 @load_model(Event,{'id':'eid'},'event')

@@ -1,37 +1,63 @@
 #!/usr/bin/env python
 
 import tempfile
+import argparse
 import os, time
 from reportlab.lib.units import mm
 from reportlab.lib.enums import TA_CENTER
 from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.platypus.flowables import HRFlowable
 from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.colors import Color
 
 
-def printlabel(line1, line2=''):
+def printlabel(printer, lines):
 
     f = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
     fname = f.name
     f.close()
 
+    heights = [18, 32, 38]
+
     doc = SimpleDocTemplate(fname,
-                            pagesize=(62 * mm, 30 * mm),
+                            pagesize=(62 * mm, heights[len(lines) - 1] * mm),
                             topMargin=0, leftMargin=0,
                             rightMargin=0, bottomMargin=0)
     story = []
 
-    style1 = ParagraphStyle("s1", fontName="Helvetica", alignment=TA_CENTER, fontSize=18, leading=18)
-    style2 = ParagraphStyle("s2", fontName="Helvetica", alignment=TA_CENTER, fontSize=13, leading=13, spaceBefore=6)
-
-    story.append(Paragraph(line1, style1))
-    story.append(Paragraph(line2, style2))
+    styles = [
+        ParagraphStyle("s1", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=15, leading=15),
+        ParagraphStyle("s2", fontName="Helvetica", alignment=TA_CENTER, fontSize=15, leading=18, spaceBefore=4, textColor=u"#555555"),
+        ParagraphStyle("s3", fontName="Helvetica", alignment=TA_CENTER, fontSize=12, leading=13, spaceBefore=4, textColor=u"#777777")
+        ]
+    for i, line in enumerate(lines):
+        if i < len(styles):
+            story.append(Paragraph(line, styles[i]))
+            if i == 0 and len(lines) > 1:
+                story.append(HRFlowable(width='95%', color=u"#333333", spaceBefore=5))
     doc.build(story)
 
-    #os.system("gnome-open " + fname)
-    os.system("lpr -P Brother-QL-570 " + fname)
+    os.system("lpr -P %s %s" % (printer, fname))
     time.sleep(2)
     os.unlink(fname)
 
+def make_label_content(participant):
+    data = [participant.name]
+    if participant.company:
+        compline = participant.company
+        if participant.job:
+            compline = u"%s, %s" % (participant.job, compline)
+        data.append(compline)
+    if(participant.twitter):
+        data.append('@' + participant.twitter)
+    return data
+
 
 if __name__ == '__main__':
-    printlabel("Kiran Jonnalagadda isn't long enough", "@jackerhack")
+    parser = argparse.ArgumentParser(description='Script to test printing of labels. Tries to test through fairly large 2-liners for name and job+company.')
+    parser.add_argument('printer', type=str, help='The name of the printer')
+    parser.add_argument('--lines', type=int, help='The number of lines to print', default=3)
+    args = parser.parse_args()
+    data = ["Kiran Jonnalagadda isn't long enough", "CEO, HasGeek Media LLP.", "@jackerhack"]
+    data = data[:args.lines]
+    printlabel(args.printer, data)

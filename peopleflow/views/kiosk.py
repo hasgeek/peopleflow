@@ -6,10 +6,12 @@ import csv
 import urllib
 import hashlib
 from StringIO import StringIO
+from . import nav
 from .. import app
 from .. import lastuser
 from ..models import db, Kiosk, Event, Participant, CXLog
 from ..forms import KioskForm, KioskEditForm, KioskLogoForm, ConfirmSignoutForm
+from ..helpers.printlabel import printlabel, make_label_content
 from flask import request, flash, url_for, render_template, jsonify, make_response
 from baseframe.forms import render_redirect, ConfirmDeleteForm
 from jinja2 import Markup
@@ -33,6 +35,12 @@ def delete_logo(filename):
 @app.route('/event/<id>/kiosk/new', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id':'id'}, 'event')
+@nav.init(
+    parent='event_kiosks',
+    title="New Kiosk",
+    urlvars=lambda objects: {'id':objects['event'].id},
+    objects = ['event']
+    )
 def kiosk_new(event):
     form = KioskForm()
     if form.validate_on_submit():
@@ -55,6 +63,12 @@ def kiosk_new(event):
     (Event, {'id': 'event'}, 'event'),
     (Kiosk, {'id': 'kiosk'}, 'kiosk'),
     )
+@nav.init(
+    parent='event_kiosks',
+    title=lambda objects: "Edit Kiosk: %s" % (objects['kiosk'].name),
+    urlvars=lambda objects: {'event':objects['event'].id, 'kiosk':objects['kiosk'].id},
+    objects = ['event', 'kiosk']
+    )
 def kiosk_edit(event, kiosk):
     form = KioskEditForm(obj=kiosk)
     if form.validate_on_submit():
@@ -72,6 +86,12 @@ def kiosk_edit(event, kiosk):
 @load_models(
     (Event, {'id': 'event'}, 'event'),
     (Kiosk, {'id': 'kiosk'}, 'kiosk'),
+    )
+@nav.init(
+    parent='event_kiosks',
+    title=lambda objects: "Update Kiosk Logo: %s" % (objects['kiosk'].name),
+    urlvars=lambda objects: {'event':objects['event'].id, 'kiosk':objects['kiosk'].id},
+    objects = ['event', 'kiosk']
     )
 def kiosk_editlogo(event, kiosk):
     form = KioskLogoForm()
@@ -130,6 +150,12 @@ def share(event, kiosk):
     (Event, {'id':'event'}, 'event'),
     (Kiosk, {'id': 'kiosk'}, 'kiosk')
     )
+@nav.init(
+    parent='event_kiosks',
+    title=lambda objects: "Confirm Delete of Kiosk: %s" % (objects['kiosk'].name),
+    urlvars=lambda objects: {'event':objects['event'].id, 'kiosk':objects['kiosk'].id},
+    objects = ['event', 'kiosk']
+    )
 def kiosk_delete(event, kiosk):
     form = ConfirmDeleteForm()
     if form.validate_on_submit():
@@ -144,6 +170,12 @@ def kiosk_delete(event, kiosk):
 @lastuser.requires_permission('kioskadmin')
 @load_models(
     (Event, {'id':'event'}, 'event')
+    )
+@nav.init(
+    parent='event',
+    title="ContactPoint Kiosks",
+    objects=['event'],
+    urlvars=lambda objects: {'event': objects['event'].id}
     )
 def event_kiosks(event):
     return render_template('event_kiosks.html', event=event, siteadmin=lastuser.has_permission('siteadmin'), kioskadmin=lastuser.has_permission('kioskadmin'))
@@ -208,3 +240,37 @@ def contact_exchange(event):
         db.session.add(log)
         db.session.commit()
         return jsonify(success=True)
+
+@app.route('/event/<event>/assign_badges', methods=['GET','POST'])
+@lastuser.requires_permission('registrations')
+@load_model(Event, {'id':'event'}, 'event')
+def assign_badges(event):
+    if request.method=='GET':
+        return render_template('assign_badges.html', event=event)
+    if request.method == 'POST':
+        nfc_id = request.form['nfc_id']
+        someone = Participant.query.filter_by(event_id=event.id, nfc_id=nfc_id).first()
+        if someone:
+            return jsonify(message=u"This badge is already assigned to %s" % someone.name, alert=u"error")
+        orphan = Participant.query.filter_by(event_id=event.id, nfc_id=None).first()
+        if orphan:
+            orphan.nfc_id = nfc_id
+            try:
+                db.session.commit()
+                if 'PRINTER_NAME' in app.config:
+                    printlabel(app.config['PRINTER_NAME'], make_label_content(orphan))
+                return jsonify(message=u"This badge has been assigned to %s%s" % (orphan.name, u" from " + orphan.company), alert=u"success")
+            except:
+                db.session.rollback()
+                return jsonify(message=u"There was an error assigning this badge to %s" % orphan.name, alert=u"error")
+        else:
+            return jsonify(message=u"Yo! There are no more unassigned participants to be assigned a badge!", alert=u"warning")
+
+@app.route('/event/<event>/badge_stats', methods=['GET'])
+@lastuser.requires_permission('registrations')
+@load_model(Event, {'id':'event'}, 'event')
+def badge_stats(event):
+    total = Participant.query.filter_by(event_id=event.id)
+    unassigned = total.filter_by(nfc_id=None).count()
+    total = total.count()
+    return jsonify(total=total, assigned=total-unassigned, unassigned=unassigned)
