@@ -317,6 +317,7 @@ var userui = function() {
         users = {};
         user_matrix = [[],[],[],[],[]];
         timer.reset();
+        ui.enable();
     }
 
     ui.init = function(opts) {
@@ -329,12 +330,20 @@ var userui = function() {
         $('#contex_user_sample').remove();
     };
 
+    ui.disable = function() {
+        disabled = true;
+    };
+
+    ui.enable = function() {
+        disabled = false;
+    };
+
     ui.exchange = function() {
         if(len == 1) {
             ui.reset()
         }
         else {
-            disabled = true;
+            ui.disable();
             var user_list = {'ids': []};
             for(i = 0; i < user_matrix.length; i++) {
                 for(j = 0; j < user_matrix[i].length; j++) {
