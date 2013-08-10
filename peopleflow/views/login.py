@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import Response, redirect, flash
+from flask import redirect, flash, Markup, escape
 from flask.ext.lastuser import LastUser
 from flask.ext.lastuser.sqlalchemy import UserManager
 from coaster.views import get_next_url
@@ -41,7 +41,10 @@ def lastuser_error(error, error_description=None, error_uri=None):
     if error == 'access_denied':
         flash("You denied the request to login", category='error')
         return redirect(get_next_url())
-    return Response(u"Error: %s\n"
-                    u"Description: %s\n"
-                    u"URI: %s" % (error, error_description, error_uri),
-                    mimetype="text/plain")
+    return render_message(
+        title="Error: {0}".format(error),
+        message=Markup(
+            "<p>{desc}</p><p>URI: {uri}</p>".format(
+                desc=escape(error_description or ''), uri=escape(error_uri or _('NA')))
+            )
+        )
