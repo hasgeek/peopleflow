@@ -1,5 +1,3 @@
-DEFAULT_MAIL_SENDER = 'ContactPoint <MAIL_USERNAME>'
-
 # -*- coding: utf-8 -*-
 #: Site title
 SITE_TITLE = 'HasGeek App'
@@ -34,7 +32,8 @@ LASTUSER_CLIENT_SECRET = ''
 #: DEFAULT_MAIL_SENDER : default None
 MAIL_FAIL_SILENTLY = False
 MAIL_SERVER = 'localhost'
-DEFAULT_MAIL_SENDER = ('HasGeek', 'info@hasgeek.com')
+MAIL_DEFAULT_SENDER = ('HasGeek', 'info@hasgeek.com')
+DEFAULT_MAIL_SENDER = MAIL_DEFAULT_SENDER # For compatibility with older Flask-Mail
 #: Logging: recipients of error emails
 ADMINS = []
 #: Log file
