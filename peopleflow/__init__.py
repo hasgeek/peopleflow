@@ -33,6 +33,8 @@ from .views import nav
 
 def init_for(env):
     coaster.app.init_app(app, env)
+    db.init_app(app)
+    db.app = app
     baseframe.init_app(app, requires=['baseframe', 'toastr', 'indicators', 'peopleflow', 'cooldown'])
     lastuser.init_app(app)
     lastuser.init_usermanager(UserManager(db, models.User))
