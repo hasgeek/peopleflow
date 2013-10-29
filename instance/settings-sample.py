@@ -10,7 +10,7 @@ GOOGLE_SITE_VERIFICATION = ''
 #: Typekit code
 TYPEKIT_CODE = ''
 #: Database backend
-SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+SQLALCHEMY_DATABASE_URI = 'postgresql://hasgeek:hasgeek@localhost:5432/peopleflow'
 #: Secret key
 SECRET_KEY = 'make this something random'
 #: Timezone
