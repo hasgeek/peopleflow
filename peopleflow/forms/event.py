@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import flask.ext.wtf as wtf
+import wtforms
+import wtforms.fields.html5
 from baseframe.forms import Form
 
 class EventForm(Form):
-    title = wtf.TextField('Title', validators=[wtf.Required('A title is required')])
-    name = wtf.TextField('Name', validators=[wtf.Required('A name is required')])
-    from_date = wtf.DateField('From', description="Format: YYYY-MM-DD", validators=[wtf.Required('Propose a from date')])
-    to_date = wtf.DateField('To', description="Format: YYYY-MM-DD", validators=[wtf.Required('Propose a to date')])
-    venue = wtf.TextField('Venue', validators=[wtf.Required('Venue information is required')])
-    doattend_id = wtf.TextField('Doattend Event ID')
+    title = wtforms.TextField('Title', validators=[wtforms.validators.Required('A title is required')])
+    name = wtforms.TextField('Name', validators=[wtforms.validators.Required('A name is required')])
+    from_date = wtforms.DateField('From', description="Format: YYYY-MM-DD", validators=[wtforms.validators.Required('Propose a from date')])
+    to_date = wtforms.DateField('To', description="Format: YYYY-MM-DD", validators=[wtforms.validators.Required('Propose a to date')])
+    venue = wtforms.TextField('Venue', validators=[wtforms.validators.Required('Venue information is required')])
+    doattend_id = wtforms.TextField('Doattend Event ID')

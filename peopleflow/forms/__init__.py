@@ -2,12 +2,13 @@ from .event import *
 from .participant import *
 from .kiosk import *
 
-import flask.ext.wtf as wtf
+import wtforms
+import wtforms.fields.html5
 
 class ConfirmSignoutForm(Form):
     """
     Confirm a delete operation
     """
     # The labels on these widgets are not used. See delete.html.
-    delete = wtf.SubmitField(u"Sign out")
-    cancel = wtf.SubmitField(u"Cancel")
+    delete = wtforms.SubmitField(u"Sign out")
+    cancel = wtforms.SubmitField(u"Cancel")

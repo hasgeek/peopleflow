@@ -12,7 +12,7 @@ from time import strftime
 from flask import request, flash, url_for, render_template, jsonify
 from coaster.views import load_model, load_models, jsonp
 from baseframe.forms import render_redirect
-from flask.ext.wtf import SelectMultipleField, widgets
+from wtforms import SelectMultipleField, widgets
 
 def add_new_participant(event):
     class Part(ParticipantForm):
