@@ -40,11 +40,6 @@ def lastusernotify(user):
 def lastuser_error(error, error_description=None, error_uri=None):
     if error == 'access_denied':
         flash("You denied the request to login", category='error')
-        return redirect(get_next_url())
-    return render_message(
-        title="Error: {0}".format(error),
-        message=Markup(
-            "<p>{desc}</p><p>URI: {uri}</p>".format(
-                desc=escape(error_description or ''), uri=escape(error_uri or _('NA')))
-            )
-        )
+    else:
+        flash(error_description)
+    return redirect(get_next_url())
