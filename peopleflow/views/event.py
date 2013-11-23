@@ -139,8 +139,8 @@ def sync_event(event):
                 updated = updated + 1
                 ret = ret +  "Updated " + str(participant) + "\n"
         except Exception as e:
-            ret = ret +  "Error adding " + str(participant) + ':' + e
-            failed.append(participant.name + ',' + participant.email) + "\n"
+            ret = ret +  "Error adding " + str(participant) + ':' + str(e)
+            failed.append(participant.name + ',' + participant.email + "\n")
             db.session.rollback()
     ret = ret + "Done with Participants<br>\n"
     ret = ret + "Starting Guests<br>\n"
