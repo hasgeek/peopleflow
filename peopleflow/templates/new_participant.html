@@ -4,13 +4,14 @@
 {% block content %}
 <form id="new_participant" method="POST" action="{{ url_for("venue_signup", id=event.id) }}" accept-charset="UTF-8" class="form-horizontal">
     {{ renderform_inner(form, 'new_participant') }}
-    <div class="field">
-        <a class="btn rfid_card unassigned"
+    <div class="field pull-left" style="margin: 20px 5px;">
+        <a class="btn btn-success rfid_card unassigned"
         href="javascript:void(0);">
             <span class="assign" rel="">Assign Card And Submit</span>
             <span class="tap_card">Tap the card (<span class="timeout"></span>)</span>
         </a>
     </div>
+    {{ rendersubmit([(None, submit or _("Submit without assigning a card"), 'btn-primary')], cancel_url=cancel_url) }}
 </form>
 {% endblock %}
 {% block footerscripts %}

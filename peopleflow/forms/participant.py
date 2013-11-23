@@ -15,7 +15,7 @@ class ParticipantForm(Form):
     city = wtforms.TextField(u'City')
     twitter = wtforms.TextField(u'twitter handle', description=u"Twitter handle of the participant without the @ symbol")
     notes = wtforms.TextAreaField('Notes')
-    nfc_id = wtforms.HiddenField('NFC', validators=[wtforms.validators.Required('Please check the NFC Reader')])
+    nfc_id = wtforms.HiddenField('NFC')
 
     def __init__(self, event):
         self.event = event

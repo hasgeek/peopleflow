@@ -52,7 +52,7 @@ def add_new_participant(event):
             return render_redirect(url_for('event', event=event.id))
         except:
             pass
-    return render_template('new_participant.html', form=form, event=event)
+    return render_template('new_participant.html', form=form, event=event, cancel_url=url_for('event', event=event.id))
 
 @app.route('/event/<id>/participant/new', methods=['GET', 'POST'])
 @load_model(Event, {'id': 'id'}, 'event')
