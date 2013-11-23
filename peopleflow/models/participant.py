@@ -24,7 +24,7 @@ class Participant(db.Model, BaseMixin):
     #: Name of the participant
     name = db.Column(db.Unicode(80), nullable=False)
     #: Email of the participant
-    email = db.Column(db.Unicode(80), nullable=False, unique=True)
+    email = db.Column(db.Unicode(80), nullable=False)
     #: Company name
     company = db.Column(db.Unicode(80), nullable=True)
     #: Job title
@@ -32,7 +32,7 @@ class Participant(db.Model, BaseMixin):
     #: City
     city = db.Column(db.Unicode(80), nullable=True)
     #: Phone
-    phone = db.Column(db.Unicode(15), nullable=True)
+    phone = db.Column(db.Unicode(25), nullable=True)
     #: Twitter handle
     twitter = db.Column(db.Unicode(80), nullable=True)
     #: Whether the participant has purchased a T-shirt
@@ -56,7 +56,7 @@ class Participant(db.Model, BaseMixin):
     #: Event the participant is attending
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
 
-    __table_args__ = (db.UniqueConstraint('event_id', 'nfc_id'),)
+    __table_args__ = (db.UniqueConstraint('event_id', 'nfc_id'), db.UniqueConstraint('event_id', 'email', 'name'))
 
     def __repr__(self):
         return self.name

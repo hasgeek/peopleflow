@@ -79,7 +79,7 @@ def upgrade():
     sa.Column('company', sa.Unicode(length=80), nullable=True),
     sa.Column('job', sa.Unicode(length=80), nullable=True),
     sa.Column('city', sa.Unicode(length=80), nullable=True),
-    sa.Column('phone', sa.Unicode(length=15), nullable=True),
+    sa.Column('phone', sa.Unicode(length=25), nullable=True),
     sa.Column('twitter', sa.Unicode(length=80), nullable=True),
     sa.Column('purchased_tee', sa.Boolean(), nullable=True),
     sa.Column('regdate', sa.DateTime(), nullable=False),
@@ -93,7 +93,7 @@ def upgrade():
     sa.Column('event_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('event_id', 'email', 'name'),
     sa.UniqueConstraint('event_id','nfc_id'),
     sa.UniqueConstraint('ticket_number')
     )
