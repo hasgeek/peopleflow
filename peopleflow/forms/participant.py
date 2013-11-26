@@ -24,3 +24,7 @@ class ParticipantForm(Form):
     def validate_email(self, field):
         if Participant.query.filter_by(email=field.data, event_id=self.event.id).first():
             raise wtforms.ValidationError(u'The email address %s already exists' % field.data)
+
+    def validate_nfc_id(self, field):
+        if not field.data:
+            field.data = None
