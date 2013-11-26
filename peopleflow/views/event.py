@@ -17,6 +17,7 @@ from flask import request, flash, url_for, render_template, jsonify
 from werkzeug import secure_filename
 from baseframe.forms import render_redirect, ConfirmDeleteForm
 from coaster.views import jsonp, load_model, load_models
+from coaster.utils import make_name
 from mechanize import ParseResponse, urlopen, urljoin
 
 hideemail = re.compile('.{1,3}@')
@@ -58,23 +59,28 @@ def sync_event(event):
     guests_csv = urlopen(urljoin(uri, 'events/' + event.doattend_id + '/orders/confirmed_guests.csv')).read()
     urlopen(urljoin(uri, 'accounts/sign_out'))
     f = StringIO.StringIO(csv_data)
-    f.next()
+    headers = [make_name(field).replace(u'-', u'').replace(u'\n', u'') for field in f.next().split(',')]
     users = unicodecsv.reader(f, delimiter=',')
+    def indexof(name):
+        try:
+            return headers.index(name)
+        except ValueError:
+            return None
     columns = dict(
-        ticket_number=1,
-        name=2,
-        email=3,
-        company=4,
-        job=5,
-        city=7,
-        phone=6,
-        twitter=8,
-        regdate=0,
-        order_id=10
+        ticket_number=indexof(u'ticketnumber'),
+        name=indexof(u'name'),
+        email=indexof(u'email'),
+        company=indexof(u'company'),
+        job=indexof(u'jobtitle'),
+        city=indexof(u'city'),
+        phone=indexof(u'phone'),
+        twitter=indexof(u'twitterhandle'),
+        regdate=indexof(u'date'),
+        order_id=indexof(u'orderid')
         )
     others = dict(
-        ticket_type=9,
-        addons=16
+        ticket_type=indexof(u'ticketname'),
+        addons=indexof(u'addonspurchased')
         )
     added = 0
     failed = []
@@ -145,21 +151,21 @@ def sync_event(event):
     ret = ret + "Done with Participants<br>\n"
     ret = ret + "Starting Guests<br>\n"
     f = StringIO.StringIO(guests_csv)
-    f.next()
+    headers = [make_name(field).replace(u'-', u'').replace(u'\n', u'') for field in f.next().split(',')]
     users = unicodecsv.reader(f, delimiter=',')
     columns = dict(
-        ticket_number=0,
-        name=1,
-        email=2,
-        company=3,
-        job=4,
-        city=6,
-        phone=5,
-        twitter=7,
-        regdate=9
+        ticket_number=indexof(u'ticketnumber'),
+        name=indexof(u'name'),
+        email=indexof(u'email'),
+        company=indexof(u'company'),
+        job=indexof(u'jobtitle'),
+        city=indexof(u'city'),
+        phone=indexof(u'phone'),
+        twitter=indexof(u'twitterhandle'),
+        regdate=indexof(u'confirmedon')
         )
     others = dict(
-        ticket_type=8
+        ticket_type=indexof(u'ticket')
         )
     for user in users:
         append_purchases = False
