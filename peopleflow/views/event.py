@@ -128,7 +128,7 @@ def sync_event(event):
             participant.purchases = participant.purchases + (user[others['addons']]).strip().split(',')
         for purchase in participant.purchases:
             purchase = purchase.strip()
-        if u"T-shirt" in participant.purchases:
+        if u"T-shirt" in participant.purchases or u"Corporate" in participant.purchases:
             participant.purchased_tee = True
         participant.purchases = ','.join(list(set(participant.purchases)))
         participant.online_reg = True
