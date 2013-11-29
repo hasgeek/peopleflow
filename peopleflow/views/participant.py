@@ -88,6 +88,8 @@ def get_participant(event, nfc_id):
 def collected_tee(participant):
     try:
         participant.collected_tee = request.form.get('collected_tee', None)
+        if not participant.purchased_tee and participant.collected_tee:
+            participant.purchased_tee = True
         db.session.commit()
         return jsonify(
             status=True,

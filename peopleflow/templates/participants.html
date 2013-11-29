@@ -35,16 +35,12 @@
                     {% if p.purchased_tee %}Yes{% else %}No{% endif %}
                   </td>
                   <td>
-                    {% if p.purchased_tee %}
-                      <input type="checkbox" class="collected_tee" value="1"
-                        data-url="{{ url_for('collected_tee', event=event.id, participant=p.id) }}"
-                        {% if p.collected_tee %}
-                          checked="checked"
-                        {% endif %}
-                      >
-                    {% else %}
-                      N/A
-                    {% endif %}
+                    <input type="checkbox" class="collected_tee" value="1"
+                      data-url="{{ url_for('collected_tee', event=event.id, participant=p.id) }}"
+                      {% if p.collected_tee %}
+                        checked="checked"
+                      {% endif %}
+                    >
                   </td>
                   <td>{{ p.notes|e }}</td>
                   <td>
