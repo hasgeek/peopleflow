@@ -17,6 +17,7 @@
               <th width="7%">Order ID</th>
               <th width="21%">Name/Company/Email</th>
               <th width="18%">Purchases</th>
+              <th width="7%">T-shirt Purchased?</th>
               <th width="7%">T-shirt Collected?</th>
               <th width="20%">Notes</th>
               <th width="20%">Action</th>
@@ -30,6 +31,9 @@
                   {{ p.company|e }}<br>
                   {{ hideemail.sub('...@', p.email)|e }}</td>
                   <td>{{ p.purchases }}</td>
+                  <td>
+                    {% if p.purchased_tee %}Yes{% else %}No{% endif %}
+                  </td>
                   <td>
                     {% if p.purchased_tee %}
                       <input type="checkbox" class="collected_tee" value="1"
