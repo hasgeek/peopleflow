@@ -80,27 +80,6 @@ def get_participant(event, nfc_id):
             response = jsonp(error="invalid")
         return response
 
-@app.route('/event/<event>/participant/<participant>/collected_tee', methods=['POST'])
-@lastuser.requires_permission(['registrations'])
-@load_models(
-    (Participant, {'event_id': 'event', 'id': 'participant'}, 'participant')
-    )
-def collected_tee(participant):
-    try:
-        participant.collected_tee = request.form.get('collected_tee', None)
-        if not participant.purchased_tee and participant.collected_tee:
-            participant.purchased_tee = True
-        db.session.commit()
-        return jsonify(
-            status=True,
-            message=u"T-shirt status updated for {participant}".format(participant=participant.name)
-            )
-    except:
-        return jsonify(
-            status=False,
-            message=u"There was an error updating T-shirt status for {participant}".format(participant.name)
-            )
-
 @app.route('/event/<event>/participant/<participant>/print_card', methods=['POST'])
 @lastuser.requires_permission(['kioskadmin', 'registrations'])
 @load_models(

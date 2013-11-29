@@ -37,8 +37,6 @@ class Participant(db.Model, BaseMixin):
     twitter = db.Column(db.Unicode(80), nullable=True)
     #: Whether the participant has purchased a T-shirt
     purchased_tee = db.Column(db.Boolean, default=False, nullable=True)
-    #: Whether the participant has collected their T-shirt
-    collected_tee = db.Column(db.Boolean, default=False, nullable=True)
     #: Date of registration
     regdate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     #:NFC ID

@@ -17,8 +17,7 @@
               <th width="7%">Order ID</th>
               <th width="21%">Name/Company/Email</th>
               <th width="18%">Purchases</th>
-              <th width="7%">T-shirt Purchased?</th>
-              <th width="7%">T-shirt Collected?</th>
+              <th width="7%">T-shirt?</th>
               <th width="20%">Notes</th>
               <th width="20%">Action</th>
             </thead>
@@ -31,17 +30,7 @@
                   {{ p.company|e }}<br>
                   {{ hideemail.sub('...@', p.email)|e }}</td>
                   <td>{{ p.purchases }}</td>
-                  <td>
-                    {% if p.purchased_tee %}Yes{% else %}No{% endif %}
-                  </td>
-                  <td>
-                    <input type="checkbox" class="collected_tee" value="1"
-                      data-url="{{ url_for('collected_tee', event=event.id, participant=p.id) }}"
-                      {% if p.collected_tee %}
-                        checked="checked"
-                      {% endif %}
-                    >
-                  </td>
+                  <td>{{ p.purchased_tee }}</td>
                   <td>{{ p.notes|e }}</td>
                   <td>
                     <a class="btn rfid_card {%- if p.nfc_id %} assigned {%- else %} unassigned {%- endif %}"
@@ -75,7 +64,7 @@
       interval = null;
     };
     $(function(){
-      $('a.print_card').live('click', function(event) {
+      $('a.print_card').on('click', function(event) {
         $.ajax({
           url: $(this).attr('data-url'),
           data: {'id': $(this).attr('data-id')},
@@ -119,20 +108,6 @@
           $('a.rfid_card').addClass('disabled');
           current.removeClass('disabled');
         }
-      });
-      
-      $('input[type=checkbox].collected_tee').live('click', function(event){
-        var data = {collected_tee: $(this).is(':checked')};
-        $.ajax({
-          url: $(this).attr('data-url'),
-          type: 'POST',
-          data: data,
-          success: function(response) {
-            if(response.status) toastr.success(response.message);
-            else toastr.error(response.message);
-          }
-        })
-        
       });
 
       var toggle = function(participant, card) {
