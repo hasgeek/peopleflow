@@ -35,6 +35,8 @@ class Participant(db.Model, BaseMixin):
     phone = db.Column(db.Unicode(25), nullable=True)
     #: Twitter handle
     twitter = db.Column(db.Unicode(80), nullable=True)
+    #: Whether the participant is a Speaker at the event
+    speaker = db.Column(db.Boolean, default=False, nullable=False)
     #: Whether the participant has purchased a T-shirt
     purchased_tee = db.Column(db.Boolean, default=False, nullable=True)
     #: Date of registration

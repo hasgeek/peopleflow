@@ -17,8 +17,9 @@
               <th width="7%">Order ID</th>
               <th width="21%">Name/Company/Email</th>
               <th width="18%">Purchases</th>
+              <th width="7%">Speaker?</th>
               <th width="7%">T-shirt?</th>
-              <th width="20%">Notes</th>
+              <th width="13%">Notes</th>
               <th width="20%">Action</th>
             </thead>
             <tbody>
@@ -30,7 +31,8 @@
                   {{ p.company|e }}<br>
                   {{ hideemail.sub('...@', p.email)|e }}</td>
                   <td>{{ p.purchases }}</td>
-                  <td>{{ p.purchased_tee }}</td>
+                  <td>{{ "Yes" if p.speaker else "No" }}</td>
+                  <td>{{ "Yes" if p.purchased_tee else "No" }}</td>
                   <td>{{ p.notes|e }}</td>
                   <td>
                     <a class="btn rfid_card {%- if p.nfc_id %} assigned {%- else %} unassigned {%- endif %}"

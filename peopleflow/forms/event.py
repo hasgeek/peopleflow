@@ -27,7 +27,16 @@ class EventForm(Form):
     from_date = wtforms.DateField('From', description="Format: YYYY-MM-DD", validators=[wtforms.validators.Required('Propose a from date')])
     to_date = wtforms.DateField('To', description="Format: YYYY-MM-DD", validators=[wtforms.validators.Required('Propose a to date')])
     venue = wtforms.TextField('Venue', validators=[wtforms.validators.Required('Venue information is required')])
+    funnel_space = wtforms.TextField('Funnel Proposal Space')
     doattend_id = wtforms.TextField('Doattend Event ID')
     print_type = wtforms.fields.SelectField('Print Type', choices=[(u'badge', 'Badge'), (u'label', 'Label')], default=u"badge")
 
     options = wtforms.fields.FormField(BadgeOptions)
+
+class EventSyncForm(Form):
+    funnel_username = wtforms.TextField('Funnel Username')
+    funnel_password = wtforms.PasswordField('Funnel Password')
+
+    def validate_funnel_password(self, field):
+        if self.funnel_username.data != "" and field.data == "":
+            raise wtforms.ValidationError("If you enter the username, you have to enter the password")
