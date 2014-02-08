@@ -146,7 +146,7 @@ def sync_event(event):
                 ret = ret +  "Updated " + participant.name.encode('utf-8') + "\n"
         except Exception as e:
             ret = ret +  "Error adding " + participant.name.encode('utf-8') + ':' + str(e)
-            failed.append(participant.name + ',' + participant.email + "\n")
+            failed.append(participant.name.encode('utf-8') + ',' + participant.email + "\n")
             db.session.rollback()
     ret = ret + "Done with Participants<br>\n"
     ret = ret + "Starting Guests<br>\n"
@@ -217,13 +217,13 @@ def sync_event(event):
             db.session.commit()
             if new:
                 added = added + 1
-                ret = ret + "Added " + str(participant) + "\n"
+                ret = ret + "Added " + participant.name.encode('utf-8') + "\n"
             else:
                 updated = updated + 1
-                ret = ret +  "Updated " + str(participant) + "\n"
+                ret = ret +  "Updated " + participant.name.encode('utf-8') + "\n"
         except Exception as e:
-            ret = ret +  "Error adding " + str(participant) + ':' + e
-            failed.append(participant.name + ',' + participant.email) + "\n"
+            ret = ret +  "Error adding " + participant.name.encode('utf-8') + ':' + e
+            failed.append(participant.name.encode('utf-8') + ',' + participant.email) + "\n"
             db.session.rollback()
     ret = ret + "Done with Guests<br>\n"
     ret = ret + "Removing deleted tickets<br>\n"
@@ -233,9 +233,9 @@ def sync_event(event):
             db.session.delete(participant)
             db.session.commit()
             deleted = deleted + 1
-            ret = ret +  "Deleted " + str(participant) + "\n"
+            ret = ret +  "Deleted " + participant.name.encode('utf-8') + "\n"
         except Exception as e:
-            ret = ret +  "Error deleting  " + str(participant) + ':' + e
+            ret = ret +  "Error deleting  " + participant.name.encode('utf-8') + ':' + e
     ret = ret + "Deleting complete<br>\n"
 
     return '<pre>' + ret + "Added " + str(added) + ", Updated " + str(updated) + ", Failed " + str(failed) + " & Deleted " + str(deleted) + '</pre>'
