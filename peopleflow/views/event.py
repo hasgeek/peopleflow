@@ -140,12 +140,12 @@ def sync_event(event):
             db.session.commit()
             if new:
                 added = added + 1
-                ret = ret + "Added " + str(participant) + "\n"
+                ret = ret + "Added " + participant.name.encode('utf-8') + "\n"
             else:
                 updated = updated + 1
-                ret = ret +  "Updated " + str(participant) + "\n"
+                ret = ret +  "Updated " + participant.name.encode('utf-8') + "\n"
         except Exception as e:
-            ret = ret +  "Error adding " + str(participant) + ':' + str(e)
+            ret = ret +  "Error adding " + participant.name.encode('utf-8') + ':' + str(e)
             failed.append(participant.name + ',' + participant.email + "\n")
             db.session.rollback()
     ret = ret + "Done with Participants<br>\n"
