@@ -31,6 +31,8 @@ class Event(db.Model, BaseMixin):
     print_type = db.Column(db.Unicode(10), default=u'badge', nullable=False)
     #: If print type is badge, printing options for badges
     options = db.Column(JsonDict, nullable=False)
+    speaker_options = db.Column(JsonDict, nullable=False)
+    crew_options = db.Column(JsonDict, nullable=False)
     
     #: List of kiosks. event.kiosks gives access to the objects.
     # kiosks = db.relationship('Kiosk', backref='event', lazy='dynamic')

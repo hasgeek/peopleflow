@@ -9,17 +9,27 @@ def set_none(self, field):
     if not field.data:
         field.data = None
 
+def set_integer_or_none(self, field):
+    if field.data == "":
+        field.data = None
+    else:
+        field.data = int(field.data)
+
 class BadgeOptions(wtforms.Form):
     name_color = wtforms.TextField('Name Color', validators=[wtforms.validators.Length(max=7)])
     company_color = wtforms.TextField('Company & Job Color', validators=[wtforms.validators.Length(max=7)])
     twitter_color = wtforms.TextField('Twitter Color', validators=[wtforms.validators.Length(max=7)])
-    topMargin = wtforms.IntegerField('Top Margin(in mm)')
-    leftMargin = wtforms.IntegerField('Left Margin(in mm)')
-    rightMargin = wtforms.IntegerField('Right Margin(in mm)')
-    bottomMargin = wtforms.IntegerField('Bottom Margin(in mm)')
+    topMargin = wtforms.TextField('Top Margin(in mm)')
+    leftMargin = wtforms.TextField('Left Margin(in mm)')
+    rightMargin = wtforms.TextField('Right Margin(in mm)')
+    bottomMargin = wtforms.TextField('Bottom Margin(in mm)')
     validate_name_color = set_none
     validate_company_color = set_none
     validate_twitter_color = set_none
+    validate_topMargin = set_integer_or_none
+    validate_leftMargin = set_integer_or_none
+    validate_rightMargin = set_integer_or_none
+    validate_bottomMargin = set_integer_or_none
 
 class EventForm(Form):
     title = wtforms.TextField('Title', validators=[wtforms.validators.Required('A title is required')])
@@ -32,6 +42,8 @@ class EventForm(Form):
     print_type = wtforms.fields.SelectField('Print Type', choices=[(u'badge', 'Badge'), (u'label', 'Label')], default=u"badge")
 
     options = wtforms.fields.FormField(BadgeOptions)
+    speaker_options = wtforms.fields.FormField(BadgeOptions)
+    crew_options = wtforms.fields.FormField(BadgeOptions)
 
 class EventSyncForm(Form):
     funnel_username = wtforms.TextField('Funnel Username')

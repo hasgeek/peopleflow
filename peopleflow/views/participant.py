@@ -89,7 +89,12 @@ def get_participant(event, nfc_id):
 def print_card(event, participant):
     try:
         if 'PRINTER_NAME' in app.config:
-            printlabel(app.config['PRINTER_NAME'], event.print_type, make_label_content(participant), event.options)
+            options = dict(event.options)
+            if participant.speaker:
+                options.update(dict((option, value) for option, value in event.speaker_options.iteritems() if value))
+            elif 'Crew' in participant.purchases:
+                options.update(dict((option, value) for option, value in event.crew_options.iteritems() if value))
+            printlabel(app.config['PRINTER_NAME'], event.print_type, make_label_content(participant), options)
             return jsonify(status=True, msg=u"Label for %s queued for printing" % participant.name)
         else:
             return jsonify(status=False, msg=u"Printer not configured")
