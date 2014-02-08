@@ -61,6 +61,71 @@ def sync_event(event):
     f = StringIO.StringIO(csv_data)
     headers = [make_name(field).replace(u'-', u'').replace(u'\n', u'') for field in f.next().split(',')]
     users = unicodecsv.reader(f, delimiter=',')
+
+    added = [0]
+    failed = []
+    updated = [0]
+    deleted = 0
+    tickets = []
+    ret = ["Starting Participants"]
+    def process_ticket(user):
+        participant = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
+        if not participant:
+            for p in Participant.query.filter_by(email=user[columns['email']].strip(), event_id=event.id).all():
+                if levenshtein(p.name, user[columns['name']].strip()) <= 3:
+                    participant = p
+                    break
+        if not columns['name'] or user[columns['name']] == 'CANCELLED':
+            return
+        new = participant is None
+        if new:
+            participant = Participant()
+            participant.event_id = event.id
+            participant.purchases = []
+        else:
+            if participant.purchases is None:
+                participant.purchases = []
+            else:
+                participant.purchases = participant.purchases.split(',')
+        p_updated = False
+        for field in columns.keys():
+            if columns[field]:
+                value = user[columns[field]].strip()
+                value = None if value == '*' or value == '' else value
+                if value != getattr(participant, field):
+                    print value, '!=', getattr(participant, field)
+                    setattr(participant, field, value)
+        if participant.twitter:
+            participant.twitter = participant.twitter.replace('@', '').strip()
+        if participant.phone:
+            participant.phone = participant.phone.strip().replace(' ', '').replace('-','')
+        if user[others['ticket_type']]:
+            participant.purchases.append(user[others['ticket_type']].strip())
+        if others['addons'] and user[others['addons']]:
+            participant.purchases = participant.purchases + (user[others['addons']]).strip().split(',')
+        for purchase in participant.purchases:
+            purchase = purchase.strip()
+        if u"T-shirt" in participant.purchases or u"Corporate" in participant.purchases:
+            participant.purchased_tee = True
+        participant.purchases = ','.join(list(set(participant.purchases)))
+        participant.online_reg = True
+        if participant.ticket_number:
+            tickets.append(participant.ticket_number)
+        try:
+            if new:
+                db.session.add(participant)
+            if new or p_updated:
+                db.session.commit()
+            if new:
+                added[0] = added[0] + 1
+                ret.append("Added " + participant.name.encode('utf-8'))
+            elif p_updated:
+                updated[0] = updated[0] + 1
+                ret.append("Updated " + participant.name.encode('utf-8'))
+        except Exception as e:
+            ret.append("Error adding " + participant.name.encode('utf-8') + ':' + str(e))
+            failed.append(participant.name.encode('utf-8') + '(' + participant.email + ')')
+            db.session.rollback()
     def indexof(name):
         try:
             return headers.index(name)
@@ -82,74 +147,11 @@ def sync_event(event):
         ticket_type=indexof(u'ticketname'),
         addons=indexof(u'addonspurchased')
         )
-    added = 0
-    failed = []
-    updated = 0
-    deleted = 0
-    ret = "Starting Participants<br>\n"
-    tickets = []
+
     for user in users:
-        append_purchases = False
-        participant = None
-        ticket_update = False
-        ticket = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
-        if ticket is not None:
-            ticket_update = True
-            participant = ticket
-        else:
-            participants = Participant.query.filter_by(email=user[columns['email']].strip(), event_id=event.id).all()
-            for p in participants:
-                if levenshtein(p.name, user[columns['name']].strip()) <= 3:
-                    participant = p
-                    append_purchases = True
-        new = False
-        if participant is None:
-            new = True
-        if new:
-            participant = Participant()
-            participant.event_id = event.id
-            participant.purchases = []
-        if new or ticket_update:
-            for field in columns.keys():
-                setattr(participant, field, user[columns[field]].strip())
-            if participant.twitter == "":
-                participant.twitter = None
-            else:
-                participant.twitter = participant.twitter.replace('@', '').strip()
-            participant.phone = participant.phone.strip().replace(' ', '').replace('-','')
-        if not new or ticket_update:
-            if participant.purchases is None or append_purchases == False:
-                participant.purchases = []
-            else:
-                participant.purchases = participant.purchases.split(',')
-        if user[others['ticket_type']]:
-            participant.purchases.append(user[others['ticket_type']].strip())
-        if user[others['addons']]:
-            participant.purchases = participant.purchases + (user[others['addons']]).strip().split(',')
-        for purchase in participant.purchases:
-            purchase = purchase.strip()
-        if u"T-shirt" in participant.purchases or u"Corporate" in participant.purchases:
-            participant.purchased_tee = True
-        participant.purchases = ','.join(list(set(participant.purchases)))
-        participant.online_reg = True
-        if participant.ticket_number is not None:
-            tickets.append(participant.ticket_number)
-        try:
-            if new:
-                db.session.add(participant)
-            db.session.commit()
-            if new:
-                added = added + 1
-                ret = ret + "Added " + participant.name.encode('utf-8') + "\n"
-            else:
-                updated = updated + 1
-                ret = ret +  "Updated " + participant.name.encode('utf-8') + "\n"
-        except Exception as e:
-            ret = ret +  "Error adding " + participant.name.encode('utf-8') + ':' + str(e)
-            failed.append(participant.name.encode('utf-8') + ',' + participant.email + "\n")
-            db.session.rollback()
-    ret = ret + "Done with Participants<br>\n"
-    ret = ret + "Starting Guests<br>\n"
+        process_ticket(user)
+    ret.append("Done with Participants")
+    ret.append("Starting Guests")
     f = StringIO.StringIO(guests_csv)
     headers = [make_name(field).replace(u'-', u'').replace(u'\n', u'') for field in f.next().split(',')]
     users = unicodecsv.reader(f, delimiter=',')
@@ -168,77 +170,21 @@ def sync_event(event):
         ticket_type=indexof(u'ticket')
         )
     for user in users:
-        append_purchases = False
-        participant = None
-        ticket_update = False
-        ticket = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
-        if ticket is not None:
-            ticket_update = True
-            participant = ticket
-        else:
-            participants = Participant.query.filter_by(email=user[columns['email']].strip(), event_id=event.id).all()
-            for p in participants:
-                if levenshtein(p.name, user[columns['name']].strip()) <= 3:
-                    participant = p
-                    append_purchases = True
-        new = False
-        if participant is None:
-            new = True
-        if new:
-            participant = Participant()
-            participant.event_id = event.id
-            participant.purchases = []
-        if new or ticket_update:
-            for field in columns.keys():
-                setattr(participant, field, user[columns[field]].strip())
-            if participant.twitter == "":
-                participant.twitter = None
-            else:
-                participant.twitter = participant.twitter.replace('@', '').strip()
-            participant.phone = participant.phone.strip().replace(' ', '').replace('-','')
-        if not new or ticket_update:
-            if participant.purchases is None or append_purchases == False:
-                participant.purchases = []
-            else:
-                participant.purchases = participant.purchases.split(',')
-        if user[others['ticket_type']]:
-            participant.purchases.append(user[others['ticket_type']].strip())
-        for purchase in participant.purchases:
-            purchase = purchase.strip()
-        if u"T-shirt" in participant.purchases:
-            participant.purchased_tee = True
-        participant.purchases = ','.join(list(set(participant.purchases)))
-        participant.online_reg = True
-        if participant.ticket_number is not None:
-            tickets.append(participant.ticket_number)
-        try:
-            if new:
-                db.session.add(participant)
-            db.session.commit()
-            if new:
-                added = added + 1
-                ret = ret + "Added " + participant.name.encode('utf-8') + "\n"
-            else:
-                updated = updated + 1
-                ret = ret +  "Updated " + participant.name.encode('utf-8') + "\n"
-        except Exception as e:
-            ret = ret +  "Error adding " + participant.name.encode('utf-8') + ':' + e
-            failed.append(participant.name.encode('utf-8') + ',' + participant.email) + "\n"
-            db.session.rollback()
-    ret = ret + "Done with Guests<br>\n"
-    ret = ret + "Removing deleted tickets<br>\n"
+        process_ticket(user)
+    ret.append("Done with Guests")
+    ret.append("Removing deleted tickets")
     participants = Participant.query.filter(~Participant.ticket_number.in_(tickets), Participant.online_reg==True, Participant.event_id==event.id).all()
     for participant in participants:
         try:
             db.session.delete(participant)
             db.session.commit()
             deleted = deleted + 1
-            ret = ret +  "Deleted " + participant.name.encode('utf-8') + "\n"
+            ret.append(participant.name.encode('utf-8'))
         except Exception as e:
-            ret = ret +  "Error deleting  " + participant.name.encode('utf-8') + ':' + e
-    ret = ret + "Deleting complete<br>\n"
+            ret.append("Error deleting  " + participant.name.encode('utf-8') + ':' + e)
+    ret.append("Deleting complete")
 
-    return '<pre>' + ret + "Added " + str(added) + ", Updated " + str(updated) + ", Failed " + str(failed) + " & Deleted " + str(deleted) + '</pre>'
+    return '<pre>' + '\n'.join(ret) + "\nAdded " + str(added[0]) + ", Updated " + str(updated[0]) + " & Deleted " + str(deleted) + ", Failed: " + '\n' + '\n'.join(failed) + '</pre>'
 
 @app.route('/event/<event>', methods=['GET'])
 @lastuser.requires_permission('registrations')
