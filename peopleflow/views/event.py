@@ -33,6 +33,7 @@ def event_new():
     if form.validate_on_submit():
         event = Event()
         form.populate_obj(event)
+        event.options = form.options.data
         db.session.add(event)
         try:
             db.session.commit()
@@ -271,6 +272,7 @@ def event_edit(event):
     form = EventForm(obj=event)
     if form.validate_on_submit():
         form.populate_obj(event)
+        event.options = form.options.data
         try:
             db.session.commit()
             flash("Edited event '%s'." % event.title, 'success')

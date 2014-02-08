@@ -83,17 +83,18 @@ def get_participant(event, nfc_id):
 @app.route('/event/<event>/participant/<participant>/print_card', methods=['POST'])
 @lastuser.requires_permission(['kioskadmin', 'registrations'])
 @load_models(
-    (Participant, {'event_id': 'event', 'id': 'participant'}, 'participant')
+    (Participant, {'event_id': 'event', 'id': 'participant'}, 'participant'),
+    (Event, {'id': 'event'}, 'event')
     )
-def print_card(participant):
+def print_card(event, participant):
     try:
         if 'PRINTER_NAME' in app.config:
-            printlabel(app.config['PRINTER_NAME'], make_label_content(participant))
+            printlabel(app.config['PRINTER_NAME'], event.print_type, make_label_content(participant), event.options)
             return jsonify(status=True, msg=u"Label for %s queued for printing" % participant.name)
         else:
             return jsonify(status=False, msg=u"Printer not configured")
-    except:
-        return jsonify(status=False, msg=u"There was an error in printing the label for %s" % participant.name)
+    except Exception as e:
+        return jsonify(status=False, msg=u"There was an error in printing the label for %s: %s" % (participant.name, str(e)))
 
 @app.route('/<eid>/search', methods=['POST'])
 @load_model(Event,{'id':'eid'},'event')

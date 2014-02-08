@@ -37,18 +37,19 @@ def printlabel(printer, print_type, lines, options={}):
                                 rightMargin=(1 if 'rightMargin' not in options else options['rightMargin']) * mm,
                                 bottomMargin=(9 if 'bottomMargin' not in options else options['bottomMargin']) * mm)
         styles = [
-        ParagraphStyle("s1", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=20, leading=22, textColor="#DF5E0E"),
-        ParagraphStyle("s2", fontName="Helvetica", alignment=TA_CENTER, fontSize=17, leading=19, spaceBefore=2, textColor="#428BCA"),
-        ParagraphStyle("s3", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=15, leading=18, spaceBefore=2, textColor="#55acee"),
+        ParagraphStyle("s1", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=20, leading=22, textColor=options['name_color'] if 'name_color' in options and options['name_color'] else "#000000"),
+        ParagraphStyle("s2", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=17, leading=19, spaceBefore=2, textColor=options['company_color'] if 'company_color' in options and options['company_color'] else "#000000"),
+        ParagraphStyle("s3", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=15, leading=18, spaceBefore=2, textColor=options['twitter_color'] if 'twitter_color' in options and options['twitter_color'] else "#55ACEE"),
         ParagraphStyle("s4", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=22, leading=30, textColor="#444444"),
         ]
     story = []
 
     for i, line in enumerate(lines):
         if i < len(styles):
-            story.append(Paragraph(line, styles[i]))
+            if line:
+                story.append(Paragraph(line, styles[i]))
             if i == 0 and len(lines) > 1:
-                story.append(HRFlowable(width='95%', spaceBefore=5))
+                story.append(HRFlowable(width='95%', spaceBefore=5, thickness=2, color="#000000"))
     if lines[len(lines) - 1] == "CREW":
         story = story[-1:] + story[:-1]
     doc.build(story)
@@ -64,8 +65,12 @@ def make_label_content(participant):
         if participant.job:
             compline = u"%s, %s" % (participant.job, compline)
         data.append(compline)
-    if(participant.twitter):
+    else:
+        data.append(None)
+    if participant.twitter:
         data.append('@' + participant.twitter)
+    else:
+        data.append(None)
     if u'Crew' in participant.purchases:
         data.append("CREW")
     return data

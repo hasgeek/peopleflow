@@ -2,7 +2,7 @@
 
 from . import db, BaseMixin
 from datetime import date
-
+from coaster.sqlalchemy import JsonDict
 
 class Event(db.Model, BaseMixin):
     """
@@ -25,6 +25,11 @@ class Event(db.Model, BaseMixin):
     #: the objects
     participants = db.relationship('Participant', backref='event',
                       lazy='dynamic')
+    #: Print type: label, badge
+    print_type = db.Column(db.Unicode(10), default=u'badge', nullable=False)
+    #: If print type is badge, printing options for badges
+    options = db.Column(JsonDict, nullable=False)
+    
     #: List of kiosks. event.kiosks gives access to the objects.
     # kiosks = db.relationship('Kiosk', backref='event', lazy='dynamic')
 
