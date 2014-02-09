@@ -33,10 +33,10 @@ def event_new():
     form = EventForm()
     if form.validate_on_submit():
         event = Event()
-        form.populate_obj(event)
         event.options = form.options.data
         event.speaker_options = form.speaker_options.data
         event.crew_options = form.crew_options.data
+        form.populate_obj(event)
         db.session.add(event)
         try:
             db.session.commit()
