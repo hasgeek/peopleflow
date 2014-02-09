@@ -261,8 +261,8 @@ def event_signin(event, participant):
             return jsonify(status=False, message=u"This badge is already assigned to %s" % someone.name)
         else:
             participant.nfc_id = nfc_id
-            participant.attended = True
-            participant.attend_date = datetime.utcnow()
+            # participant.attended = True
+            # participant.attend_date = datetime.utcnow()
             try:
                 db.session.commit()
                 return jsonify(status=True, message=u"The badge has been successfully assigned to %s" % participant.name)
@@ -288,17 +288,11 @@ def participation_status(event, participant):
     )
 @lastuser.requires_permission('registrations')
 def event_signout(event, participant):
-    participant.attended = False
+    # participant.attended = False
     participant.nfc_id = None
-    participant.attend_date = None
+    # participant.attend_date = None
     db.session.commit()
     return jsonify(status=True)
-
-@app.route('/event/<id>/count', methods=['GET', 'POST'])
-@load_model(Event, {'id': 'id'}, 'event')
-def get_count(event):
-    response = jsonp(signed=event.participants.filter_by(attended=True).count(), total=event.participants.count())
-    return response
 
 
 @app.route('/event/<id>/edit', methods=['GET','POST'])

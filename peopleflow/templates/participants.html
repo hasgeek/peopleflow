@@ -6,7 +6,6 @@
     <form class="well form-search form-horizontal">
     <input autofocus class="input-medium search-query" id="search" type="text" name="key" value=""/>
     <a href="{{ url_for('venue_signup', id=event.id) }}" class="pull-right btn btn-primary">New Participant</a>
-    <strong id="count"></strong>
     </form>
 </div>
 
@@ -204,18 +203,6 @@
         }
       }
     });
-
-    (function poll(){
-       setTimeout(function(){
-          $.getJSON("/event/{{ event.id }}/count", function(data){
-            if(data['signed']){
-              $('#count').html(data['signed']+'/'+data['total']);
-                }
-            poll();
-              }
-            );
-      }, 5000);
-    })();
   </script>
 {% endblock %}
 

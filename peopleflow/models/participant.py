@@ -47,10 +47,6 @@ class Participant(db.Model, BaseMixin):
     online_reg = db.Column(db.Boolean, default=True, nullable=True)
     #: Order ID
     order_id = db.Column(db.Integer, nullable=True)
-    #: Did the participant attend the event?
-    attended = db.Column(db.Boolean, default=False, nullable=False)
-    #: Datetime the participant showed up
-    attend_date = db.Column(db.DateTime, nullable=True)
     #: Purchases made by the participant
     purchases = db.Column(db.Unicode(200), nullable=True)
     #: Additional notes for a participant

@@ -44,9 +44,7 @@ def add_new_participant(event):
         participant.phone = participant.phone.replace(' ','').replace('-','').strip()
         participant.twitter = participant.twitter.replace('@','').strip()
         participant.purchases = u','.join(participant.purchases)
-        participant.attended = True
         participant.online_reg = False
-        participant.attend_date = datetime.utcnow()
         participant.event_id = event.id
         db.session.add(participant)
         try:
