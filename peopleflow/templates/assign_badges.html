@@ -3,6 +3,16 @@
 {% block bodytag %}<body class="assign_badges">{% endblock %}
 
 {% block basecontent %}
+<form id="assign_badges_selector">
+  <label for="badge_type">Assign to: 
+    <select name="type" id="badge_type">
+      <option value="all">All</option>
+      <option value="participants">Participants</option>
+      <option value="speaker">Speaker</option>
+      <option value="crew">Crew</option>
+    </select>
+  </label>
+</form>
 <div id="assign_badges">
   <div id="badge_counters">
     <div id="total" class="counts">

@@ -250,8 +250,17 @@ def assign_badges(event):
         someone = Participant.query.filter_by(event_id=event.id, nfc_id=nfc_id).first()
         if someone:
             return jsonify(message=u"This badge is already assigned to %s.<br><small>Purchases: %s</small>" % (someone.name, someone.purchases), alert=u"error")
-        orphan = Participant.query.filter_by(event_id=event.id, nfc_id=None).order_by(Participant.name.asc())[0]
-        if orphan:
+        if request.form.get('type') == 'all':
+            orphan = Participant.query.filter(Participant.event_id == event.id)
+        elif request.form.get('type') == 'participants':
+            orphan = Participant.query.filter(Participant.event_id == event.id, ~Participant.purchases.contains('Crew'), Participant.speaker == False)
+        elif request.form.get('type') == 'speaker':
+            orphan = Participant.query.filter(Participant.event_id == event.id, Participant.speaker == True)
+        elif request.form.get('type') == 'crew':
+            orphan = Participant.query.filter(Participant.event_id == event.id, Participant.purchases.contains('Crew'))
+        orphan = orphan.filter_by(nfc_id=None).order_by(Participant.name.asc())
+        if orphan.count():
+            orphan = orphan[0]
             orphan.nfc_id = nfc_id
             try:
                 db.session.commit()
@@ -273,7 +282,14 @@ def assign_badges(event):
 @lastuser.requires_permission('registrations')
 @load_model(Event, {'id':'event'}, 'event')
 def badge_stats(event):
-    total = Participant.query.filter_by(event_id=event.id)
+    if request.args.get('type') == 'all':
+        total = Participant.query.filter(Participant.event_id == event.id)
+    elif request.args.get('type') == 'participants':
+        total = Participant.query.filter(Participant.event_id == event.id, ~Participant.purchases.contains('Crew'), Participant.speaker == False)
+    elif request.args.get('type') == 'speaker':
+        total = Participant.query.filter(Participant.event_id == event.id, Participant.speaker == True)
+    elif request.args.get('type') == 'crew':
+        total = Participant.query.filter(Participant.event_id == event.id, Participant.purchases.contains('Crew'))
     unassigned = total.filter_by(nfc_id=None).count()
     total = total.count()
     return jsonify(total=total, assigned=total-unassigned, unassigned=unassigned)
