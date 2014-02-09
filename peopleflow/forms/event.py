@@ -32,6 +32,16 @@ class BadgeOptions(wtforms.Form):
     validate_rightMargin = set_integer_or_none
     validate_bottomMargin = set_integer_or_none
 
+class LabelMixin:
+    label = wtforms.TextField('Label')
+    validate_label = set_none
+
+class CrewOptions(BadgeOptions, LabelMixin):
+    pass
+
+class SpeakerOptions(BadgeOptions, LabelMixin):
+    pass
+
 class EventForm(Form):
     title = wtforms.TextField('Title', validators=[wtforms.validators.Required('A title is required')])
     name = wtforms.TextField('Name', validators=[wtforms.validators.Required('A name is required')])
@@ -43,8 +53,8 @@ class EventForm(Form):
     print_type = wtforms.fields.SelectField('Print Type', choices=[(u'badge', 'Badge'), (u'label', 'Label')], default=u"badge")
 
     options = wtforms.fields.FormField(BadgeOptions)
-    speaker_options = wtforms.fields.FormField(BadgeOptions)
-    crew_options = wtforms.fields.FormField(BadgeOptions)
+    speaker_options = wtforms.fields.FormField(SpeakerOptions)
+    crew_options = wtforms.fields.FormField(CrewOptions)
 
 class EventSyncForm(Form):
     funnel_username = wtforms.TextField('Funnel Username')
