@@ -6,3 +6,4 @@ from .event import *
 from .user import *
 from .kiosk import *
 from .cxlogs import *
+from .venue import *

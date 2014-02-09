@@ -47,7 +47,6 @@ class EventForm(Form):
     name = wtforms.TextField('Name', validators=[wtforms.validators.Required('A name is required')])
     from_date = wtforms.DateField('From', description="Format: YYYY-MM-DD", validators=[wtforms.validators.Required('Propose a from date')])
     to_date = wtforms.DateField('To', description="Format: YYYY-MM-DD", validators=[wtforms.validators.Required('Propose a to date')])
-    venue = wtforms.TextField('Venue', validators=[wtforms.validators.Required('Venue information is required')])
     funnel_space = wtforms.TextField('Funnel Proposal Space')
     doattend_id = wtforms.TextField('Doattend Event ID')
     print_type = wtforms.fields.SelectField('Print Type', choices=[(u'badge', 'Badge'), (u'label', 'Label')], default=u"badge")
