@@ -104,7 +104,8 @@ body.contact_exchange {background: url(/static/images/contact-exchange-bg.gif) 5
 #assign_badges #badge_counters .counts h1 {height: 20%}
 #assign_badges #badge_counters .counts .counter{font-size: 10em;color: #888;height: 80%;line-height: 1em}
 #assign_badges #messaging {height: 48%; text-align: center; color: #333;padding: 5% 2%;border: 1px solid #CCC; background: #EEE;border-radius: 5px;margin: 1%;box-sizing: border-box;}
-#assign_badges #messaging .message {font-size: 5em;line-height: 1em; display: none;}
+#assign_badges #messaging .message {font-size: 3.5em;line-height: 1em; display: none;}
 #assign_badges #messaging.tap #tap_message {display: block;}
 #assign_badges #messaging.none #none_message {display: block;}
 #assign_badges #messaging.response #response {display: block;}
+#assign_badges_selector {position: absolute;bottom: 55%;text-align: center; width: 100%; z-index: 1000}
