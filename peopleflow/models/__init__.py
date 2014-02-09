@@ -7,3 +7,4 @@ from .user import *
 from .kiosk import *
 from .cxlogs import *
 from .venue import *
+from .activity import *

@@ -1,0 +1,1 @@
+uwsgi --http :8000 --wsgi-file website.py --master --processes 10 --async 10 --ugreen

@@ -9,7 +9,7 @@ import simplejson as json
 from . import nav
 from .. import app
 from .. import lastuser
-from ..models import db, Event, Participant
+from ..models import db, Event, Participant, Venue, Activity
 from ..forms import EventForm, ConfirmSignoutForm, EventSyncForm
 from ..helpers import levenshtein
 from pytz import utc, timezone
@@ -20,6 +20,8 @@ from baseframe.forms import render_redirect, ConfirmDeleteForm
 from coaster.views import jsonp, load_model, load_models
 from coaster.utils import make_name
 from mechanize import ParseResponse, urlopen, urljoin, Browser, RobustFactory
+from sqlalchemy.orm.exc import NoResultFound
+from collections import defaultdict
 
 hideemail = re.compile('.{1,3}@')
 
@@ -64,6 +66,7 @@ def sync_event(event):
         browser = Browser(factory=RobustFactory())
         speakers = []
         speakers_fetched = False
+        ret = []
         if event.funnel_space and request.form.get('funnel_username', None) and request.form.get('funnel_password', None):
             browser.open("https://funnel.hasgeek.com/login")
             browser.select_form(nr=1)
@@ -76,14 +79,55 @@ def sync_event(event):
                 return render_template('form.html', form=EventSyncForm(), title=u"Sync", submit=u"Sync Now")
             else:
                 speakers_fetched = True
+            ret.append("Fetching speakers")
             browser.open("https://funnel.hasgeek.com/{space}/json".format(space=event.funnel_space))
-            for proposal in json.loads(browser.response().read())['proposals']:
+            funnel_data = json.loads(browser.response().read())
+            for proposal in funnel_data['proposals']:
                 if proposal['confirmed']:
                     proposal['speaker'] = unicode(proposal['speaker'])
                     if u'(' in proposal['speaker']:
                         proposal['speaker'] = u'('.join(proposal['speaker'].split('(')[:-1]).strip().title()
                     speakers.append((proposal['speaker'], proposal['email']))
             speakers = list(set(speakers))
+            ret.append("There are %s speakers" % len(speakers))
+            ret.append("Syncing venues from Funnel")
+            venues = dict()
+            for venue in funnel_data['venues']:
+                try:
+                    venues[venue['name']] = Venue.query.filter_by(event=event, title=venue['title']).one()
+                    ret.append("Venue %s exists" % venue['title'])
+                except NoResultFound:
+                    venues[venue['name']] = Venue(event=event, title=venue['title'])
+                    db.session.add(venues[venue['name']])
+                    ret.append("Adding venue %s" % venue['title'])
+            for room in funnel_data['rooms']:
+                venues[room['name']] = venues[room['venue']]
+            activity = defaultdict(list)
+            for day_number, day in enumerate(funnel_data['schedule']):
+                for slot in day['slots']:
+                    for session in slot['sessions']:
+                        if session['room'] and session['room'] in venues:
+                            if (day_number, day['date']) not in activity[session['room']]:
+                                activity[session['room']].append((day_number, day['date']))
+            for venue, days in activity.iteritems():
+                activities = []
+                venues[venue].from_date = days[0][1]
+                venues[venue].to_date = days[len(days) - 1][1]
+                for day_number, date in days:
+                    try:
+                        item = Activity.query.filter_by(venue=venues[venue], date=date).one()
+                        ret.append("Activity existed: %s on %s" % (item.title, item.date))
+                    except NoResultFound:
+                        item = Activity(venue=venues[venue], date=date, title="Day %s - %s" % (day_number + 1, venues[venue].title))
+                        db.session.add(item)
+                        ret.append("Adding activity: %s on %s" % (item.title, item.date))
+                        activities.append(item.id)
+            try:
+                db.session.commit()
+                ret.append("Funnel sync complete")
+            except Exception as e:
+                ret.append("Error in Funnel sync: %s" % str(e))
+        return json.dumps(ret)
         if app.config['DOATTEND_EMAIL'] in [None, ''] or app.config['DOATTEND_PASS'] in [None, ''] or event.doattend_id in [None, '']:
             return 'Data not available'
         uri = 'http://doattend.com/'
@@ -104,7 +148,7 @@ def sync_event(event):
         updated = [0]
         deleted = 0
         tickets = []
-        ret = ["Starting Participants"]
+        ret.append("Starting Participants")
         def process_ticket(user):
             user[columns['name']] = user[columns['name']].title()
             participant = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
