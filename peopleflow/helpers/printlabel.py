@@ -61,7 +61,7 @@ def printlabel(printer, print_type, lines, options={}):
         story = story[-1:] + story[:-1]
     doc.build(story)
 
-    os.system("lpr -P %s %s" % (printer, fname))
+    os.system("lpr -o page-ranges=1 -P %s %s" % (printer, fname))
     time.sleep(2)
     os.unlink(fname)
 
