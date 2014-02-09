@@ -263,7 +263,7 @@ def assign_badges(event):
                         options.update(dict((option, value) for option, value in event.speaker_options.iteritems() if value))
                     elif 'Crew' in orphan.purchases:
                         options.update(dict((option, value) for option, value in event.crew_options.iteritems() if value))
-                    # printlabel(app.config['PRINTER_NAME'], event.print_type, make_label_content(orphan), options)
+                    printlabel(app.config['PRINTER_NAME'], event.print_type, make_label_content(orphan), options)
                 return jsonify(message=u"This badge has been assigned to %s%s.<br><small>Purchases: %s</small>" % (orphan.name, u" from " + orphan.company if orphan.company else "", orphan.purchases), alert=u"success")
             except:
                 db.session.rollback()
