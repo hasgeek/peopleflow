@@ -251,15 +251,20 @@ def assign_badges(event):
         nfc_id = request.form['nfc_id']
         someone = Participant.query.filter_by(event_id=event.id, nfc_id=nfc_id).first()
         if someone:
-            return jsonify(message=u"This badge is already assigned to %s" % someone.name, alert=u"error")
-        orphan = Participant.query.filter_by(event_id=event.id, nfc_id=None).first()
+            return jsonify(message=u"This badge is already assigned to %s.<br><small>Purchases: %s</small>" % (someone.name, someone.purchases), alert=u"error")
+        orphan = Participant.query.filter_by(event_id=event.id, nfc_id=None).order_by(Participant.name.asc())[0]
         if orphan:
             orphan.nfc_id = nfc_id
             try:
                 db.session.commit()
                 if 'PRINTER_NAME' in app.config:
-                    printlabel(app.config['PRINTER_NAME'], make_label_content(orphan))
-                return jsonify(message=u"This badge has been assigned to %s%s" % (orphan.name, u" from " + orphan.company), alert=u"success")
+                    options = dict(event.options)
+                    if orphan.speaker:
+                        options.update(dict((option, value) for option, value in event.speaker_options.iteritems() if value))
+                    elif 'Crew' in orphan.purchases:
+                        options.update(dict((option, value) for option, value in event.crew_options.iteritems() if value))
+                    # printlabel(app.config['PRINTER_NAME'], event.print_type, make_label_content(orphan), options)
+                return jsonify(message=u"This badge has been assigned to %s%s.<br><small>Purchases: %s</small>" % (orphan.name, u" from " + orphan.company if orphan.company else "", orphan.purchases), alert=u"success")
             except:
                 db.session.rollback()
                 return jsonify(message=u"There was an error assigning this badge to %s" % orphan.name, alert=u"error")

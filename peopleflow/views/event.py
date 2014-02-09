@@ -81,7 +81,7 @@ def sync_event(event):
                 if proposal['confirmed']:
                     proposal['speaker'] = unicode(proposal['speaker'])
                     if u'(' in proposal['speaker']:
-                        proposal['speaker'] = u'('.join(proposal['speaker'].split('(')[:-1]).strip()
+                        proposal['speaker'] = u'('.join(proposal['speaker'].split('(')[:-1]).strip().title()
                     speakers.append((proposal['speaker'], proposal['email']))
             speakers = list(set(speakers))
         if app.config['DOATTEND_EMAIL'] in [None, ''] or app.config['DOATTEND_PASS'] in [None, ''] or event.doattend_id in [None, '']:
@@ -106,13 +106,14 @@ def sync_event(event):
         tickets = []
         ret = ["Starting Participants"]
         def process_ticket(user):
+            user[columns['name']] = user[columns['name']].title()
             participant = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
             if not participant:
                 for p in Participant.query.filter_by(email=user[columns['email']].strip(), event_id=event.id).all():
                     if levenshtein(p.name, user[columns['name']].strip()) <= 3:
                         participant = p
                         break
-            if not columns['name'] or user[columns['name']] == 'CANCELLED':
+            if not columns['name'] or user[columns['name']] == 'Cancelled':
                 return
             new = participant is None
             if new:
@@ -133,7 +134,7 @@ def sync_event(event):
             for field in columns.keys():
                 if columns[field]:
                     value = user[columns[field]]
-                    if type(value) == basestring:
+                    if type(value) == unicode:
                         value = value.strip()
                     value = None if value == '*' or value == '' else value
                     if (new or (field != 'ticket_number' and getattr(participant, field))) and value != getattr(participant, field):
