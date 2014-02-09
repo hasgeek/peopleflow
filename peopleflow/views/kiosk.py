@@ -60,8 +60,8 @@ def kiosk_new(event):
 @app.route('/event/<event>/kiosk/<kiosk>/edit', methods=['GET','POST'])
 @lastuser.requires_permission('siteadmin')
 @load_models(
+    (Kiosk, {'id': 'kiosk', 'event_id': 'event'}, 'kiosk'),
     (Event, {'id': 'event'}, 'event'),
-    (Kiosk, {'id': 'kiosk'}, 'kiosk'),
     )
 @nav.init(
     parent='event_kiosks',
@@ -84,8 +84,8 @@ def kiosk_edit(event, kiosk):
 @app.route('/event/<event>/kiosk/<kiosk>/editlogo', methods=['GET','POST'])
 @lastuser.requires_permission('siteadmin')
 @load_models(
+    (Kiosk, {'id': 'kiosk', 'event_id': 'event'}, 'kiosk'),
     (Event, {'id': 'event'}, 'event'),
-    (Kiosk, {'id': 'kiosk'}, 'kiosk'),
     )
 @nav.init(
     parent='event_kiosks',
@@ -110,11 +110,10 @@ def kiosk_editlogo(event, kiosk):
             flash("Could not update logo for kiosk '%s'." % kiosk.name, 'error')
     return render_template('form.html', form=form, title=u"Update Logo — " + kiosk.name + u" — " + event.title, submit=u"Save", cancel_url=url_for('event_kiosks', event=event.id))
 
-#TODO: Check for kiosk-event releationship when fetching kiosk
 @app.route('/event/<event>/kiosk/<kiosk>', methods=['GET','POST'])
 @load_models(
+    (Kiosk, {'id': 'kiosk', 'event_id': 'event'}, 'kiosk'),
     (Event, {'id':'event'}, 'event'),
-    (Kiosk, {'id': 'kiosk'}, 'kiosk')
     )
 @lastuser.requires_permission('kioskadmin')
 def kiosk(event, kiosk):
@@ -123,11 +122,10 @@ def kiosk(event, kiosk):
         return render_template('kiosk.html', kiosk=kiosk, event=event)
 
 
-#TODO: Check for kiosk-event and event-participant relationship
 @app.route('/event/<event>/kiosk/<kiosk>/subscribe',methods=['GET', 'POST'])
 @load_models(
+    (Kiosk, {'id': 'kiosk', 'event_id': 'event'}, 'kiosk'),
     (Event, {'id':'event'}, 'event'),
-    (Kiosk, {'id': 'kiosk'}, 'kiosk')
     )
 @lastuser.requires_permission('kioskadmin')
 def share(event, kiosk):
@@ -147,8 +145,8 @@ def share(event, kiosk):
 @app.route('/event/<event>/kiosk/<kiosk>/delete', methods=['GET','POST'])
 @lastuser.requires_permission('siteadmin')
 @load_models(
+    (Kiosk, {'id': 'kiosk', 'event_id': 'event'}, 'kiosk'),
     (Event, {'id':'event'}, 'event'),
-    (Kiosk, {'id': 'kiosk'}, 'kiosk')
     )
 @nav.init(
     parent='event_kiosks',
