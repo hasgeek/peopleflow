@@ -17,6 +17,7 @@ def set_integer_or_none(self, field):
 
 class BadgeOptions(wtforms.Form):
     name_color = wtforms.TextField('Name Color', validators=[wtforms.validators.Length(max=7)])
+    hr_color = wtforms.TextField('Horizonal Rule Color', validators=[wtforms.validators.Length(max=7)])
     company_color = wtforms.TextField('Company & Job Color', validators=[wtforms.validators.Length(max=7)])
     twitter_color = wtforms.TextField('Twitter Color', validators=[wtforms.validators.Length(max=7)])
     topMargin = wtforms.TextField('Top Margin(in mm)')
