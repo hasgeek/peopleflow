@@ -16,7 +16,7 @@ def printlabel(printer, print_type, lines, options={}):
     f = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
     fname = f.name
     f.close()
-    if options['label']:
+    if 'label' in options and options['label']:
         lines.append(options['label'].upper())
     if print_type == 'label':
         heights = [18, 32, 38, 47]
@@ -57,7 +57,7 @@ def printlabel(printer, print_type, lines, options={}):
                 story.append(Paragraph(line, styles[i]))
             if i == name_len - 1 and len(lines) > name_len:
                 story.append(HRFlowable(width='95%', spaceBefore=5, thickness=2, color=options['hr_color'] if 'hr_color' in options and options['hr_color'] else "#777777"))
-    if options['label']:
+    if 'label' in options and options['label']:
         story = story[-1:] + story[:-1]
     doc.build(story)
 
