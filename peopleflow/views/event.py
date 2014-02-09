@@ -124,7 +124,7 @@ def sync_event(event):
                 if participant.purchases is None:
                     participant.purchases = []
                 else:
-                    participant.purchases = participant.purchases.split(',')
+                    participant.purchases = participant.purchases.split(', ')
             if columns['order_id'] and user[columns['order_id']]:
                 user[columns['order_id']] = int(user[columns['order_id']])
             if columns['twitter'] and user[columns['twitter']] and '@' in user[columns['twitter']]:
@@ -151,7 +151,7 @@ def sync_event(event):
                 purchase = purchase.strip()
             if u"T-shirt" in participant.purchases or u"Corporate" in participant.purchases:
                 participant.purchased_tee = True
-            participant.purchases = ','.join(list(set(participant.purchases)))
+            participant.purchases = ', '.join(list(set(participant.purchases)))
             participant.online_reg = True
             if participant.ticket_number:
                 tickets.append(participant.ticket_number)
