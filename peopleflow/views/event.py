@@ -127,7 +127,6 @@ def sync_event(event):
                 ret.append("Funnel sync complete")
             except Exception as e:
                 ret.append("Error in Funnel sync: %s" % str(e))
-        return json.dumps(ret)
         if app.config['DOATTEND_EMAIL'] in [None, ''] or app.config['DOATTEND_PASS'] in [None, ''] or event.doattend_id in [None, '']:
             return 'Data not available'
         uri = 'http://doattend.com/'
