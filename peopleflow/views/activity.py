@@ -62,7 +62,6 @@ def venue_activity(event, venue):
 def activity_edit(event, venue, activity):
     form = ActivityEditForm(obj=activity)
     if form.validate_on_submit():
-        activity = Activity()
         form.populate_obj(activity)
         db.session.commit()
         flash("Activity updated")

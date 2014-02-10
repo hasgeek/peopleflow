@@ -27,7 +27,7 @@ def venue_new(event):
         db.session.commit()
         flash("Venue added")
         return render_redirect(url_for('event_venues', event=event.id))
-    return render_template('form.html', form=form, title=u"New Venue — " + event.title, submit=u"Add", cancel_url=url_for('event_venues', event=event.id))
+    return render_template('form.html', form=form, cancel_url=url_for('event_venues', event=event.id))
 
 
 @app.route('/event/<event>/venues', methods=['GET'])
@@ -43,3 +43,23 @@ def venue_new(event):
     )
 def event_venues(event):
     return render_template('event_venues.html', event=event)
+
+@app.route('/event/<event>/venue/<venue>/edit', methods=['GET', 'POST'])
+@lastuser.requires_permission('siteadmin')
+@load_models(
+	(Venue, {'id': 'venue', 'event_id': 'event'}, 'venue'),
+	(Event, {'id': 'event'}, 'event'))
+@nav.init(
+    parent='event_venues',
+    title=lambda objects: "Edit: %s" % objects['venue'].title,
+    urlvars=lambda objects: {'event': objects['event'].id, 'venue': objects['venue'].id},
+    objects = ['event']
+    )
+def venue_edit(event, venue):
+    form = VenueForm(obj=venue)
+    if form.validate_on_submit():
+        form.populate_obj(venue)
+        db.session.commit()
+        flash("Venue updated")
+        return render_redirect(url_for('event_venues', event=event.id))
+    return render_template('form.html', form=form, cancel_url=url_for('event_venues', event=event.id))
