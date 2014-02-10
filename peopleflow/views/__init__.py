@@ -3,4 +3,4 @@
 from ..nav import Nav
 nav = Nav()
 
-from . import index, login, event, participant, kiosk
+from . import index, login, event, participant, kiosk, venue, activity

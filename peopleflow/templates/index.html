@@ -8,8 +8,9 @@
       <div class="item">
         <div class="links">
           {% if siteadmin %}<a href="{{ url_for('event_edit', id=event.id) }}" title="Edit"><span class="icon-edit"></span>Edit</a>{% endif %}
-          {% if kioskadmin or siteadmin %}<a href="{{ url_for('event_kiosks', event=event.id) }}" title="ContactPoint Kiosks"><span class="icon-laptop"></span>ContactPoint Kiosks</a>{% endif %}
+          {% if kioskadmin or siteadmin %}<a href="{{ url_for('event_kiosks', event=event.id) }}" title="ContactPoint Kiosks"><span class="icon-laptop"></span>CP Kiosks</a>{% endif %}
           {% if kioskadmin or siteadmin %}<a href="{{ url_for('contact_exchange', event=event.id) }}" title="ContactExchange"><span class="icon-exchange"></span>ContactExchange</a>{% endif %}
+          {% if siteadmin %}<a href="{{ url_for('event_venues', event=event.id) }}" title="Venues"><span class="icon-map-marker"></span>Venues</a>{% endif %}
           {% if siteadmin %}<a href="{{ url_for('event_delete', id=event.id) }}" title="Delete" class="red"><span class="icon-trash"></span>Delete</a>{% endif %}
         </div>
         {% if registrations or siteadmin %}

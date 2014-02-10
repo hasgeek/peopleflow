@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block title %}Venues — {{ event.title }}{% endblock %}
+{% block headline %}
+<a class="btn" href="{{ url_for('venue_new', id=event.id) }}"><span class="icon-plus"></span>Add a venue</a>
+{% endblock %}
+{% block content %}
+<div class="boxed_list">
+  {% for venue in event.venues %}
+    <div class="item">
+      <a class="link" href="{{ url_for('venue_activity', event=event.id, venue=venue.id) }}" title="{{ venue.title }}">
+        <div class="serial">{{ loop.index }}</div>
+        <div class="l1">{{ venue.title }}</div>
+        <div class="l2">{{ venue.activity_dates.__len__() }} activities</div>
+        {% if venue.activity_dates.__len__() %}<div class="l3">{{ venue.from_date }} - {{ venue.to_date }}</div>{% endif %}
+      </a>
+    </div>
+  {%- else -%}
+    <p></p>
+    <p>There are no venues currently.<a href="{{ url_for('venue_new', id=event.id) }}">Add a kiosk</a></p>
+  {% endfor %}
+</div>
+{% endblock %}

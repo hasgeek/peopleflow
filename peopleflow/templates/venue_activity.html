@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %}Venues — {{ event.title }}{% endblock %}
+{% block headline %}
+<a class="btn" href="{{ url_for('activity_new', event=event.id, venue=venue.id) }}"><span class="icon-plus"></span>Add an activity</a>
+{% endblock %}
+{% block content %}
+<div class="boxed_list">
+  {% for item in venue.activity %}
+    <div class="item">
+      <div class="links">
+        <a href="{{ url_for('activity_edit', event=event.id, venue=venue.id, activity=item.id) }}" title="Edit"><span class="icon-edit"></span>Edit</a>
+      </div>
+      <div class="link">
+        <div class="serial">{{ loop.index }}</div>
+        <div class="l1">{{ item.title }}</div>
+        <div class="l2">{{ item.date }}</div>
+      </div>
+    </div>
+  {%- else -%}
+    <p></p>
+    <p>There is no activity defined currently.<a href="{{ url_for('activity_new', event=event.id, venue=venue.id) }}">Add an activity</a></p>
+  {% endfor %}
+</div>
+{% endblock %}

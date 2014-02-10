@@ -1,6 +1,8 @@
 from .event import *
 from .participant import *
 from .kiosk import *
+from .venue import *
+from .activity import *
 
 import wtforms
 import wtforms.fields.html5
