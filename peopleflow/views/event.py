@@ -94,10 +94,10 @@ def sync_event(event):
             venues = dict()
             for venue in funnel_data['venues']:
                 try:
-                    venues[venue['name']] = Venue.query.filter_by(event=event, title=venue['title']).one()
+                    venues[venue['name']] = Venue.query.filter_by(event=event, title=venue['title'], from_funnel=True).one()
                     ret.append("Venue %s exists" % venue['title'])
                 except NoResultFound:
-                    venues[venue['name']] = Venue(event=event, title=venue['title'])
+                    venues[venue['name']] = Venue(event=event, title=venue['title'], from_funnel=True)
                     db.session.add(venues[venue['name']])
                     ret.append("Adding venue %s" % venue['title'])
             for room in funnel_data['rooms']:
@@ -115,10 +115,10 @@ def sync_event(event):
                 venues[venue].to_date = days[len(days) - 1][1]
                 for day_number, date in days:
                     try:
-                        item = Activity.query.filter_by(venue=venues[venue], date=date).one()
+                        item = Activity.query.filter_by(venue=venues[venue], date=date, from_funnel=True).one()
                         ret.append("Activity existed: %s on %s" % (item.title, item.date))
                     except NoResultFound:
-                        item = Activity(venue=venues[venue], date=date, title="Day %s - %s" % (day_number + 1, venues[venue].title))
+                        item = Activity(venue=venues[venue], date=date, title="Day %s - %s" % (day_number + 1, venues[venue].title), from_funnel=True)
                         db.session.add(item)
                         ret.append("Adding activity: %s on %s" % (item.title, item.date))
                         activities.append(item.id)

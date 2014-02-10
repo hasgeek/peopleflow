@@ -13,6 +13,9 @@ class Activity(db.Model, BaseMixin):
     #Activity Date
     date = db.Column(db.Date, nullable=False)
 
+    #: Whether this was fetched from Funnel
+    from_funnel = db.Column(db.Boolean, default=False, nullable=False)
+
     #: Venue at which the activity is happening.
     venue_id = db.Column(db.Integer, db.ForeignKey('venue.id'), nullable=False)
     venue = db.relationship(Venue, primaryjoin=venue_id == Venue.id, backref=db.backref('activity'))

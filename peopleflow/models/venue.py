@@ -14,6 +14,9 @@ class Venue(db.Model, BaseMixin):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
     event = db.relationship(Event, primaryjoin=event_id == Event.id, backref=db.backref('venues'))
 
+    #: Whether this was fetched from Funnel
+    from_funnel = db.Column(db.Boolean, default=False, nullable=False)
+
     @hybrid_property
     def activity_dates(self):
         dates = [activity.date for activity in self.activity]
