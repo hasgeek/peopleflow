@@ -32,6 +32,9 @@ class BadgeOptions(wtforms.Form):
     validate_rightMargin = set_integer_or_none
     validate_bottomMargin = set_integer_or_none
 
+class Options(BadgeOptions):
+    nfc = wtforms.BooleanField('Use NFC')
+
 class LabelMixin:
     label = wtforms.TextField('Label')
     validate_label = set_none
@@ -51,7 +54,7 @@ class EventForm(Form):
     doattend_id = wtforms.TextField('Doattend Event ID')
     print_type = wtforms.fields.SelectField('Print Type', choices=[(u'badge', 'Badge'), (u'label', 'Label')], default=u"badge")
 
-    options = wtforms.fields.FormField(BadgeOptions)
+    options = wtforms.fields.FormField(Options)
     speaker_options = wtforms.fields.FormField(SpeakerOptions)
     crew_options = wtforms.fields.FormField(CrewOptions)
 

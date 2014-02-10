@@ -3,6 +3,7 @@
 from . import db, BaseMixin
 from datetime import date
 from coaster.sqlalchemy import JsonDict
+from sqlalchemy.ext.hybrid import hybrid_property
 
 class Event(db.Model, BaseMixin):
     """
@@ -34,6 +35,10 @@ class Event(db.Model, BaseMixin):
     
     #: List of kiosks. event.kiosks gives access to the objects.
     # kiosks = db.relationship('Kiosk', backref='event', lazy='dynamic')
+
+    @hybrid_property
+    def nfc(self):
+        return 'nfc' in self.options and self.options['nfc']
 
     def __repr__(self):
         return self.name
