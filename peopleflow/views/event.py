@@ -287,7 +287,13 @@ def sync_event(event):
                 ret.append("Error deleting  " + participant.name.encode('utf-8') + ':' + e)
         ret.append("Deleting complete")
 
-        return '<pre>' + '\n'.join(ret) + "\nAdded " + str(added[0]) + ", Updated " + str(updated[0]) + " & Deleted " + str(deleted) + "\nFailed: " + '\n' + '\n'.join(failed) + '</pre>'
+        return json.dumps(dict(
+            added=added[0],
+            updated=updated[0],
+            deleted=deleted,
+            failed=failed,
+            trace=ret
+            ))
 
 @app.route('/event/<event>', methods=['GET'])
 @lastuser.requires_permission('registrations')
