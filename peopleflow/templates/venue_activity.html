@@ -9,6 +9,7 @@
     <div class="item">
       <div class="links">
         <a href="{{ url_for('activity_edit', event=event.id, venue=venue.id, activity=item.id) }}" title="Edit"><span class="icon-edit"></span>Edit</a>
+        {% if not item.from_funnel %}<a href="{{ url_for('activity_delete', event=event.id, venue=venue.id, activity=item.id) }}" title="Delete" class="red"><span class="icon-trash"></span>Delete</a>{% endif %}
       </div>
       <div class="link">
         <div class="serial">{{ loop.index }}</div>

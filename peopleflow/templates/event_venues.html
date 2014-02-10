@@ -7,6 +7,9 @@
 <div class="boxed_list">
   {% for venue in event.venues %}
     <div class="item">
+      <div class="links">
+        {% if not venue.from_funnel %}<a href="{{ url_for('venue_delete', event=event.id, venue=venue.id) }}" title="Delete" class="red"><span class="icon-trash"></span>Delete</a>{% endif %}
+      </div>
       <a class="link" href="{{ url_for('venue_activity', event=event.id, venue=venue.id) }}" title="{{ venue.title }}">
         <div class="serial">{{ loop.index }}</div>
         <div class="l1">{{ venue.title }}</div>

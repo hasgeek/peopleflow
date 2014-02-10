@@ -6,8 +6,8 @@ from .. import lastuser
 from ..models import db, Venue, Event, Activity
 from ..forms import ActivityForm, ActivityEditForm
 from coaster.views import load_model, load_models
-from flask import flash, url_for, render_template
-from baseframe.forms import render_redirect
+from flask import flash, url_for, render_template, request
+from baseframe.forms import render_redirect, ConfirmDeleteForm
 
 @app.route('/event/<event>/venue/<venue>/activity/new', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
@@ -67,3 +67,29 @@ def activity_edit(event, venue, activity):
         flash("Activity updated")
         return render_redirect(url_for('venue_activity', event=event.id, venue=venue.id))
     return render_template('form.html', form=form, title=u"Edit Activity: %s — %s - %s" % (activity.title, venue.title, event.title), submit=u"Update", cancel_url=url_for('venue_activity', event=event.id, venue=venue.id))
+
+@app.route('/event/<event>/venue/<venue>/activity/<activity>/delete', methods=['GET','POST'])
+@lastuser.requires_permission('siteadmin')
+@load_models(
+    (Activity, {'venue_id': 'venue', 'id': 'activity'}, 'activity'),
+    (Venue, {'id': 'venue', 'event_id': 'event'}, 'venue'),
+    (Event, {'id': 'event'}, 'event'))
+@nav.init(
+    parent='venue_activity',
+    title=lambda objects: "Confirm Delete: %s" % objects['activity'].title,
+    objects=['event'],
+    urlvars=lambda objects: {'event': objects['event'].id, 'venue': objects['venue'].id, 'activity': objects['activity'].id}
+    )
+def activity_delete(event, venue, activity):
+    if venue.from_funnel:
+        flash("You cannot delete activities created by Funnel", "danger")
+        return render_redirect(url_for('event_venues', event=event.id))
+    form = ConfirmDeleteForm()
+    if form.validate_on_submit():
+        if 'delete' in request.form:
+            db.session.delete(activity)
+            flash("Deleted activity %s" % activity.title)
+            db.session.commit()
+        return render_redirect(url_for('venue_activity', event=event.id, venue=venue.id), code=303)
+    return render_template('baseframe/delete.html', form=form, title=u"Delete '%s' ?" % (activity.title),
+        message=u"Do you really want to delete the activity '%s'? All checkins related to it will be deleted." % (activity.title))
