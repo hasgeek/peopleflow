@@ -91,15 +91,29 @@ def sync_event(event):
             speakers = list(set(speakers))
             ret.append("There are %s speakers" % len(speakers))
             ret.append("Syncing venues from Funnel")
+            try:
+                names = [venue['name'] for venue in funnel_data['venues']]
+                for venue in Venue.query.filter_by(event=event, from_funnel=True).filter(~Venue.name.in_(names)).all():
+                    for activity in venue.activity:
+                        db.session.delete(activity)
+                    db.session.delete(venue)
+                db.session.commit()
+                ret.append("Deleted removed venues")
+            except Exception as e:
+                    ret.append("Error deleting removed venues: %s" % str(e))
             venues = dict()
             for venue in funnel_data['venues']:
                 try:
-                    venues[venue['name']] = Venue.query.filter_by(event=event, title=venue['title'], from_funnel=True).one()
-                    ret.append("Venue %s exists" % venue['title'])
+                    venues[venue['name']] = Venue.query.filter_by(name=venue['name'], event=event, from_funnel=True).one()
+                    ret.append("Venue %s exists as %s" % (venue['title'], venues[venue['name']].title))
                 except NoResultFound:
-                    venues[venue['name']] = Venue(event=event, title=venue['title'], from_funnel=True)
-                    db.session.add(venues[venue['name']])
-                    ret.append("Adding venue %s" % venue['title'])
+                    try:
+                        venues[venue['name']] = Venue(event=event, name=venue['name'], title=venue['title'], from_funnel=True)
+                        db.session.add(venues[venue['name']])
+                        db.session.commit()
+                        ret.append("Added venue %s" % venue['title'])
+                    except Exception as e:
+                        ret.append("Error adding venue %s: %s" % (venue['title'], str(e)))
             for room in funnel_data['rooms']:
                 venues[room['name']] = venues[room['venue']]
             activity = defaultdict(list)
@@ -109,24 +123,28 @@ def sync_event(event):
                         if session['room'] and session['room'] in venues:
                             if (day_number, day['date']) not in activity[session['room']]:
                                 activity[session['room']].append((day_number, day['date']))
+
             for venue, days in activity.iteritems():
-                activities = []
-                venues[venue].from_date = days[0][1]
-                venues[venue].to_date = days[len(days) - 1][1]
+                try:
+                    dates = [date for (day_number, date) in days]
+                    Activity.query.filter_by(venue=venues[venue], from_funnel=True).filter(~Activity.date.in_(dates)).delete(synchronize_session=False)
+                    ret.append("Deleted removed activity days for %s" % venues[venue].title)
+                except Exception as e:
+                    ret.append("Error deleting removed activity days for %s: %s" % (venues[venue].title, str(e)))
                 for day_number, date in days:
                     try:
                         item = Activity.query.filter_by(venue=venues[venue], date=date, from_funnel=True).one()
-                        ret.append("Activity existed: %s on %s" % (item.title, item.date))
+                        ret.append("Activity on %s exists as %s" % (item.date, item.title))
                     except NoResultFound:
-                        item = Activity(venue=venues[venue], date=date, title="Day %s - %s" % (day_number + 1, venues[venue].title), from_funnel=True)
-                        db.session.add(item)
-                        ret.append("Adding activity: %s on %s" % (item.title, item.date))
-                        activities.append(item.id)
-            try:
-                db.session.commit()
-                ret.append("Funnel sync complete")
-            except Exception as e:
-                ret.append("Error in Funnel sync: %s" % str(e))
+                        try:
+                            item = Activity(venue=venues[venue], date=date, title="Day %s - %s" % (day_number + 1, venues[venue].title), from_funnel=True)
+                            db.session.add(item)
+                            db.session.commit()
+                            ret.append("Added activity: %s on %s" % (item.title, item.date))
+                        except Exception as e:
+                            ret.append("Error adding activity %s: %s" % ("Day %s - %s" % (day_number + 1, venues[venue].title), str(e)))
+            ret.append("Funnel sync complete")
+            return json.dumps(ret)
         if app.config['DOATTEND_EMAIL'] in [None, ''] or app.config['DOATTEND_PASS'] in [None, ''] or event.doattend_id in [None, '']:
             return 'Data not available'
         uri = 'http://doattend.com/'

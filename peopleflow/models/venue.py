@@ -1,10 +1,10 @@
 
-from . import db, BaseMixin
+from . import db, BaseMixin, BaseNameMixin
 from .event import Event
 from datetime import datetime
 from sqlalchemy.ext.hybrid import hybrid_property
 
-class Venue(db.Model, BaseMixin):
+class Venue(db.Model, BaseNameMixin):
 
     __tablename__ = 'venue'
     #: Venue Name
