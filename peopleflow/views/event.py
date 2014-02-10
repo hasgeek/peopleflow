@@ -144,7 +144,6 @@ def sync_event(event):
                         except Exception as e:
                             ret.append("Error adding activity %s: %s" % ("Day %s - %s" % (day_number + 1, venues[venue].title), str(e)))
             ret.append("Funnel sync complete")
-            return json.dumps(ret)
         if app.config['DOATTEND_EMAIL'] in [None, ''] or app.config['DOATTEND_PASS'] in [None, ''] or event.doattend_id in [None, '']:
             return 'Data not available'
         uri = 'http://doattend.com/'
