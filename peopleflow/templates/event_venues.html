@@ -8,6 +8,7 @@
   {% for venue in event.venues %}
     <div class="item">
       <div class="links">
+        <a href="{{ url_for('venue_edit', event=event.id, venue=venue.id) }}" title="Edit"><span class="icon-edit"></span>Edit</a>
         {% if not venue.from_funnel %}<a href="{{ url_for('venue_delete', event=event.id, venue=venue.id) }}" title="Delete" class="red"><span class="icon-trash"></span>Delete</a>{% endif %}
       </div>
       <a class="link" href="{{ url_for('venue_activity', event=event.id, venue=venue.id) }}" title="{{ venue.title }}">
