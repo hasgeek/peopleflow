@@ -131,7 +131,7 @@ def kiosk(event, kiosk):
 def share(event, kiosk):
     if request.method=='POST':
         nfc_id = request.form['id']
-        participant = Participant.query.filter_by(nfc_id=nfc_id).first()
+        participant = Participant.query.filter_by(event=event, nfc_id=nfc_id).first()
         # share = Share()
         # share.share_date = datetime.utcnow()
         # share.participant_id = participant
