@@ -5,7 +5,7 @@ from baseframe.forms import Form
 from ..models import Activity
 
 class ActivityEditForm(Form):
-    title = wtforms.TextField('Venue Name', validators=[wtforms.validators.Required('A name is required')])
+    title = wtforms.TextField('Activity Name', validators=[wtforms.validators.Required('A name is required')])
 
 class ActivityForm(ActivityEditForm):
     def __init__(self, venue, **kwargs):
