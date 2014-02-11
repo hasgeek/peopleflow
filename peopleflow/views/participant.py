@@ -99,6 +99,38 @@ def print_card(event, participant):
     except Exception as e:
         return jsonify(status=False, msg=u"There was an error in printing the label for %s: %s" % (participant.name, str(e)))
 
+
+@app.route('/event/<event>/participant/<participant>/checkin', methods=['POST'])
+@lastuser.requires_permission(['kioskadmin', 'registrations'])
+@load_models(
+    (Participant, {'event_id': 'event', 'id': 'participant'}, 'participant'),
+    (Event, {'id': 'event'}, 'event')
+    )
+def participant_checkin(event, participant):
+    if not event.active:
+        return jsonify(status=False, msg="Event not active")
+    activity = event.activity(today=True)
+    if len(activity) == 1:
+        if activity[0].checkedin(participant):
+            return jsonify(status=True, already=True, msg="%s is already checked into %s" % (participant.name, activity[0].title))
+        else:
+            activity[0].checkin(participant)
+            return jsonify(status=True, msg="%s has been checked into %s" % (participant.name, activity[0].title))
+    else:
+        checkin_for = request.form.get('checkin_for')
+        if not checkin_for:
+            return jsonify(status=False, msg="Please specify which activity to checkin for")
+        else:
+            for item in activity:
+                if item.id == checkin_for:
+                    if activity[0].checkedin(participant):
+                        return jsonify(status=True, already=True, msg="%s is already checked into %s" % (participant.name, activity[0].title))
+                    else:
+                        item.checkin(participant)
+                        return jsonify(status=True, msg="%s has been checked into %s" % (participant.name, item.title))
+            return jsonify(status=False, msg="Incorrect activity specified")
+
+
 @app.route('/<eid>/search', methods=['POST'])
 @load_model(Event,{'id':'eid'},'event')
 @lastuser.requires_permission('registrations')

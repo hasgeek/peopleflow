@@ -40,5 +40,17 @@ class Event(db.Model, BaseMixin):
     def nfc(self):
         return 'nfc' in self.options and self.options['nfc']
 
+    def activity(self, today=False):
+        activity = []
+        for venue in self.venues:
+            for item in venue.activity:
+                if not today or date.today() == item.date:
+                    activity.append(item)
+        return activity
+
+    @hybrid_property
+    def active(self):
+        return bool(len(self.activity(today=True)))
+
     def __repr__(self):
         return self.name
