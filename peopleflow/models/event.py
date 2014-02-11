@@ -22,6 +22,10 @@ class Event(db.Model, BaseMixin):
     doattend_id = db.Column(db.Unicode(10), nullable=True)
     #: Funnel Proposal Space
     funnel_space = db.Column(db.Unicode(25), nullable=True)
+
+    #: Eventframe Sync URL
+    eventframe_sync = db.Column(db.Unicode(1024), nullable=True)
+
     #: List of participants, event.participants gives access to
     #: the objects
     participants = db.relationship('Participant', backref='event',

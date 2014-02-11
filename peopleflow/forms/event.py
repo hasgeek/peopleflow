@@ -51,6 +51,7 @@ class EventForm(Form):
     from_date = wtforms.DateField('From', description="Format: YYYY-MM-DD", validators=[wtforms.validators.Required('Propose a from date')])
     to_date = wtforms.DateField('To', description="Format: YYYY-MM-DD", validators=[wtforms.validators.Required('Propose a to date')])
     funnel_space = wtforms.TextField('Funnel Proposal Space')
+    eventframe_sync = wtforms.TextField('Eventframe RSVP JSON URL')
     doattend_id = wtforms.TextField('Doattend Event ID')
     print_type = wtforms.fields.SelectField('Print Type', choices=[(u'badge', 'Badge'), (u'label', 'Label')], default=u"badge")
 
@@ -59,8 +60,8 @@ class EventForm(Form):
     crew_options = wtforms.fields.FormField(CrewOptions)
 
 class EventSyncForm(Form):
-    funnel_username = wtforms.TextField('Funnel Username')
-    funnel_password = wtforms.PasswordField('Funnel Password')
+    lastuser_username = wtforms.TextField('LastUser Username')
+    lastuser_password = wtforms.PasswordField('LastUser Password')
 
     def validate_funnel_password(self, field):
         if self.funnel_username.data != "" and field.data == "":

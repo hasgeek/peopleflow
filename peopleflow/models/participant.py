@@ -20,7 +20,7 @@ class Participant(db.Model, BaseMixin):
     __tablename__ = 'participant'
     
     #: Ticket number
-    ticket_number = db.Column(db.Unicode(15), nullable=True, unique=True)
+    ticket_number = db.Column(db.Unicode(15), nullable=True)
     #: Name of the participant
     name = db.Column(db.Unicode(80), nullable=False)
     #: Email of the participant
@@ -54,7 +54,7 @@ class Participant(db.Model, BaseMixin):
     #: Event the participant is attending
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'))
 
-    __table_args__ = (db.UniqueConstraint('event_id', 'nfc_id'), db.UniqueConstraint('event_id', 'email', 'name'))
+    __table_args__ = (db.UniqueConstraint('event_id', 'nfc_id'), db.UniqueConstraint('event_id', 'email', 'name'), db.UniqueConstraint('event_id', 'ticket_number'))
 
     def __repr__(self):
         return self.name
