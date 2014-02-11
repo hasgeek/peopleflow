@@ -178,7 +178,6 @@ def sync_event(event):
         tickets = []
         ret.append("Starting Participants")
         def process_ticket(user):
-            print user
             user[columns['name']] = user[columns['name']].title()
             participant = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
             if not participant:
@@ -314,7 +313,7 @@ def sync_event(event):
                 db.session.delete(participant)
                 db.session.commit()
                 deleted = deleted + 1
-                ret.append(participant.name.encode('utf-8'))
+                ret.append("Delete: " + participant.name.encode('utf-8'))
             except Exception as e:
                 ret.append("Error deleting  " + participant.name.encode('utf-8') + ':' + e)
         ret.append("Deleting complete")
