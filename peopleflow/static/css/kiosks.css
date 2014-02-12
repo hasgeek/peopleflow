@@ -109,3 +109,15 @@ body.contact_exchange {background: url(/static/images/contact-exchange-bg.gif) 5
 #assign_badges #messaging.none #none_message {display: block;}
 #assign_badges #messaging.response #response {display: block;}
 #assign_badges_selector {position: absolute;bottom: 55%;text-align: center; width: 100%; z-index: 1000}
+
+#activity_checkin {position: absolute;width: 100%;top: 0px;bottom: 60px; text-align: center;}
+#activity_checkin .top {height: 50%; width: 100%; font-size: 4em; line-height: 1em; box-sizing: border-box; padding-top: 3%;}
+#activity_checkin .top .welcome {font-size: 0.9em; color: #AAA}
+#activity_checkin .top .event {font-size: 1.2em}
+#activity_checkin .top .activity {font-size: 1.1em; color: #666;}
+#activity_checkin .top .venue {font-size: 0.8em; color: #AAA;}
+#activity_checkin .bottom {height: 30%; width: 100%; font-size: 4.5em;line-height: 1em; padding-top: 5%; color: #555; box-sizing: border-box; padding-top: 10%;}
+.activity_checkin #messaging { position: absolute;width: 100%; height: 100%; background: rgba(0,0,0, 0.8); z-index: 4001; text-align: center; display: none}
+.activity_checkin #messaging .message {width: 100%; height: 50%; color: white; font-size: 4.5em; line-height: 1em; box-sizing: border-box; padding-top: 10%}
+.activity_checkin #messaging .purchases { width: 100%; height: 48%; box-sizing: border-box; color: #AAA; font-size: 3.5em; line-height: 1em}
+.activity_checkin #messaging .purchases .purchase_list { font-size: 1.75em; color: #CCC; padding-top: 25px;}

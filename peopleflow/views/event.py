@@ -10,7 +10,7 @@ from . import nav
 from .. import app
 from .. import lastuser
 from ..models import db, Event, Participant, Venue, Activity
-from ..forms import EventForm, ConfirmSignoutForm, EventSyncForm
+from ..forms import EventForm, ConfirmSignoutForm, EventSyncForm, SelectActivityForm, ActivityCheckinForm
 from ..helpers import levenshtein
 from pytz import utc, timezone
 from datetime import datetime
@@ -436,3 +436,54 @@ def event_delete(event):
     return render_template('baseframe/delete.html', form=form, title=u"Delete '%s' ?" % (event.title),
         message=u"Do you really want to delete the event '%s'?" % (event.title))
 
+
+@app.route('/event/<event>/checkin', methods=['GET', 'POST'])
+@lastuser.requires_permission(['kioskadmin', 'registrations'])
+@load_model(Event, {'id': 'event'}, 'event')
+def event_nfc_checkin(event):
+    if request.method == 'GET':
+        checkin_for = None
+        checkin_form = ActivityCheckinForm()
+        if event.active:
+            activity = event.activity(today=True)
+            if len(activity) > 1:
+                checkin_for = request.args.get('checkin_for') 
+                for item in activity:
+                    if item.id == checkin_for:
+                        checkin_for = item
+                        break
+                if not checkin_for:
+                    activity_form = SelectActivityForm()
+                    activity_form.checkin_for.choices = [item.id for item in activity] 
+                    return render_template('form.html', form=activity_form)
+                else:
+                    checkin_form.activity_id.data = checkin_for.id
+            else:
+                checkin_for = activity[0]
+        return render_template('activity_checkin.html', event=event, checkin_for=checkin_for, checkin_form=checkin_form)
+    else:
+        if not event.active:
+            return jsonify(status=False, msg="Event not active")
+        participant = Participant.query.filter_by(nfc_id=request.form.get('nfc_id'), event=event).first() if request.form.get('nfc_id') else None
+        if not participant:
+            return jsonify(status=False, msg="You are not signed up for the event")
+        activity = event.activity(today=True)
+        if len(activity) == 1:
+            if activity[0].checkedin(participant):
+                return jsonify(status=True, already=True, msg="Hi %s! You have already checked into %s" % (participant.name, activity[0].title), purchases=participant.purchases)
+            else:
+                activity[0].checkin(participant)
+                return jsonify(status=True, msg="Hi %s! Thanks for checking into %s!" % (participant.name, activity[0].title), purchases=participant.purchases)
+        else:
+            checkin_for = request.form.get('checkin_for')
+            if not checkin_for:
+                return jsonify(status=False, msg="Please specify which activity to checkin for")
+            else:
+                for item in activity:
+                    if item.id == checkin_for:
+                        if activity[0].checkedin(participant):
+                            return jsonify(status=True, already=True, msg="%s is already checked into %s" % (participant.name, activity[0].title))
+                        else:
+                            item.checkin(participant)
+                            return jsonify(status=True, msg="%s has been checked into %s" % (participant.name, item.title))
+                return jsonify(status=False, msg="Incorrect activity specified")

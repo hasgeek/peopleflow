@@ -19,3 +19,10 @@ class ActivityForm(ActivityEditForm):
             raise wtforms.ValidationError(u'You cannot have two activities on the same date. %s already exists.' % exists.title)
         if field.data < self.venue.event.from_date or field.data > self.venue.event.to_date:
             raise wtforms.ValidationError(u'Activity date should be within the event dates %s & %s.' % (self.venue.event.from_date, self.venue.event.to_date))
+
+class SelectActivityForm(Form):
+    checkin_for = wtforms.SelectField()
+
+class ActivityCheckinForm(Form):
+    activity_id = wtforms.HiddenField()
+    nfc_id = wtforms.HiddenField()

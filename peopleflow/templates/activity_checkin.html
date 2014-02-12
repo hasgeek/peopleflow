@@ -1,0 +1,46 @@
+{% extends "kiosks_layout.html" %}
+{% from 'baseframe/forms.html' import renderform_inner %}
+{% block title %}Checkin — {{ event.title }}{% endblock %}
+{% block bodytag %}<body class="activity_checkin">{% endblock %}
+
+{% block basecontent %}
+{% if checkin_for %}
+  <div id="messaging">
+    <div class="message"></div>
+    <div class="purchases">You have purchased: <div class="purchase_list"></div></div>
+  </div>
+  <div id="activity_checkin">
+    <div class="top">
+      <div class="welcome">Welcome to</div>
+      <div class="event">{{ event.name }}</div>
+      <div class="activity">{{ checkin_for.title }}</div>
+      <div class="venue">{{ checkin_for.venue.title }}</div>
+    </div>
+    <div class="bottom">
+      Please tap your badge to checkin for {{ checkin_for.title }}
+    </div>
+  </div>
+  <form id="activity_checkin_form">
+    {{ renderform_inner(checkin_form, 'activity_checkin_form') }}
+  </form>
+{% else %}
+  <div id="activity_checkin">
+    <div class="top">
+      <div class="welcome">Welcome to</div>
+      <div class="event">{{ event.name }}</div>
+    </div>
+    <div class="bottom">
+      There is no activity scheduled today!
+    </div>
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block footerscripts %}
+{{ super() }}
+{% if checkin_for %}
+  <script src="/static/js/rfid/activity_checkin.js"></script>
+{% endif %}
+{% endblock %}
+
+{% block footer_logo %}{% endblock %}
