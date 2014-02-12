@@ -3,6 +3,15 @@
 
 {% block pageheaders %}
 <link rel="stylesheet" type="text/css" href="/static/css/kiosks.css">
+{% if event %}
+<style type="text/css">
+	{% for color in [1, 2, 3] %}
+		{% if event.color(color) %}
+		.template_color_{{ color }} {color: {{ event.color(color) }} !important; }
+		{% endif %}
+	{% endfor %}		
+</style>
+{% endif %}
 {% endblock %}
 
 {% block basecontent %}{% endblock %}

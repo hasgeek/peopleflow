@@ -44,6 +44,11 @@ class Event(db.Model, BaseMixin):
     def nfc(self):
         return 'nfc' in self.options and self.options['nfc']
 
+    def color(self, color=1):
+        color = str(color)
+        key = 'template_color' + color
+        return self.options[key] if key in self.options else None
+
     def activity(self, today=False):
         activity = []
         for venue in self.venues:
