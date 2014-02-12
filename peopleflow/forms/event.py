@@ -34,6 +34,12 @@ class BadgeOptions(wtforms.Form):
 
 class Options(BadgeOptions):
     nfc = wtforms.BooleanField('Use NFC')
+    template_color1 = wtforms.TextField('Template Color 1', validators=[wtforms.validators.Length(max=7)])
+    template_color2 = wtforms.TextField('Template Color 2', validators=[wtforms.validators.Length(max=7)])
+    template_color3 = wtforms.TextField('Template Color 3', validators=[wtforms.validators.Length(max=7)])
+    validate_template_color_1 = set_none
+    validate_template_color_2 = set_none
+    validate_template_color_3 = set_none
 
 class LabelMixin:
     label = wtforms.TextField('Label')
