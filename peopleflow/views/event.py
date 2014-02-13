@@ -5,6 +5,7 @@ import StringIO
 import unicodecsv
 import os
 import re
+import requests
 import simplejson as json
 from . import nav
 from .. import app
@@ -22,6 +23,9 @@ from coaster.utils import make_name
 from mechanize import ParseResponse, urlopen, urljoin, Browser, RobustFactory
 from sqlalchemy.orm.exc import NoResultFound
 from collections import defaultdict
+from urllib import urlencode
+from hashlib import md5
+from base64 import b64encode
 
 hideemail = re.compile('.{1,3}@')
 
@@ -185,6 +189,8 @@ def sync_event(event):
                     if levenshtein(p.name, user[columns['name']].strip()) <= 3:
                         participant = p
                         break
+            elif participant.email != user[columns['email']]:
+                participant.image = 'LOAD'
             if not columns['name'] or user[columns['name']] == 'Cancelled':
                 return
             new = participant is None
@@ -192,6 +198,7 @@ def sync_event(event):
                 participant = Participant()
                 participant.event_id = event.id
                 participant.purchases = []
+                participant.image = 'LOAD'
             else:
                 if participant.purchases is None:
                     participant.purchases = []
@@ -317,6 +324,22 @@ def sync_event(event):
             except Exception as e:
                 ret.append("Error deleting  " + participant.name.encode('utf-8') + ':' + e)
         ret.append("Deleting complete")
+
+        for participant in Participant.query.filter_by(event=event, image='LOAD').all():
+                ret.append("Loading gravatar image for %s" % ( participant.email))
+                try:
+                    response = requests.get(
+                        "http://www.gravatar.com/avatar/" + md5(participant.email.lower()).hexdigest(),
+                        params={'d': '404', 's': '400'})
+                    if response.status_code == 404:
+                        participant.image = None
+                        ret.append('Image not present')
+                    else:
+                        participant.image = b64encode(response.content)
+                        ret.append('Image loaded: %s' % participant.image)
+                    db.session.commit()
+                except Exception as e:
+                    ret.append('Error: ' + str(e))
 
         return json.dumps(dict(
             added=added[0],
@@ -473,10 +496,10 @@ def event_nfc_checkin(event):
             name = name[0] if len(name[0]) > 3 else participant.name
             name = '<strong>%s</strong>' % name
             if activity.checkedin(participant):
-                return jsonify(status=True, already=True, msg='<p>Hi %s!</p><p>You have already checked in for</p><p class="activity">%s</p>' % (name, activity.title), purchases=participant.purchases)
+                return jsonify(status=True, already=True, msg='<p>Hi %s!</p><p>You have already checked in for</p><p class="activity">%s</p>' % (name, activity.title), purchases=participant.purchases, image=("data:image/jpeg;base64,%s" % participant.image if participant.image and participant.image != 'LOAD' else None))
             else:
                 activity.checkin(participant)
-                return jsonify(status=True, already=False, msg='<p>Welcome %s!</p><p>Thanks for checking in at</p><p class="activity">%s</p>' % (name, activity.title), purchases=participant.purchases)
+                return jsonify(status=True, already=False, msg='<p>Welcome %s!</p><p>Thanks for checking in at</p><p class="activity">%s</p>' % (name, activity.title), purchases=participant.purchases, image=("data:image/jpeg;base64,%s" % participant.image if participant.image and participant.image != 'LOAD' else None))
         if len(activity) == 1:
             return make_checkin(activity[0])
         else:

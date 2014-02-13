@@ -2,10 +2,16 @@ rfid.on('tag_placed', function(data){
 	var messaging = $('#messaging');
 	if(data['tag_id']) {
 		$.post('checkin', {nfc_id: data['tag_id'], activity_id: $('#activity_id').val()}, function(response){
+			messaging.find('.image img').attr('src', null);
+			messaging.removeClass('has_image');
 			if(response.status) {
 				messaging.find('.message').removeClass('error');
 				if(response.already) messaging.find('.message').addClass('already');
 				else messaging.find('.message').removeClass('already');
+				if(response.image) {
+					messaging.find('.image img').attr('src', response.image);
+					messaging.addClass('has_image');
+				}
 				messaging.find('.purchase_list').html(response['purchases']);
 				messaging.find('.purchases').show();
 			}
