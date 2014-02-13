@@ -119,6 +119,12 @@ body.contact_exchange {background: url(/static/images/contact-exchange-bg.gif) 5
 #activity_checkin .top .venue {font-size: 0.8em; color: #AAA;line-height: 1.5em;}
 #activity_checkin .bottom {position: absolute; bottom: 1%; left: 2%; right: 2%; top:61%; font-size: 4.5em;line-height: 1em; padding-top: 3%; color: #555; box-sizing: border-box;border-top: 2px solid #333;}
 body.activity_checkin #messaging { position: absolute;width: 100%; height: 100%; background: rgba(0,0,0, 0.9); z-index: 4001; text-align: center; display: none}
-body.activity_checkin #messaging .message {width: 100%; height: 50%; color: white; font-size: 4.5em; line-height: 1em; box-sizing: border-box; padding-top: 10%}
-body.activity_checkin #messaging .purchases { width: 100%; height: 48%; box-sizing: border-box; color: #AAA; font-size: 3.5em; line-height: 1.2em}
+body.activity_checkin #messaging .message {position: absolute; bottom: 51%; margin-left: 5%; width: 90%; color: #090; box-sizing: border-box; padding-bottom: 1%; border-bottom: 5px solid #DDD}
+body.activity_checkin #messaging .message p {font-size: 3.5em; line-height: 1.3em;}
+body.activity_checkin #messaging .message p strong { font-weight: 500}
+body.activity_checkin #messaging .message .activity { color: #white; font-size: 5.5em}
+body.activity_checkin #messaging .message p:first-child {font-size: 5em;}
+body.activity_checkin #messaging .message.error { color: #A00;}
+body.activity_checkin #messaging .message.already { color: #EE0;}
+body.activity_checkin #messaging .purchases {position: absolute; width: 100%; top: 50%; box-sizing: border-box; color: #AAA; font-size: 3.5em; line-height: 1.2em}
 body.activity_checkin #messaging .purchases .purchase_list { font-size: 1.75em; color: #CCC; padding-top: 25px; line-height: 1.1em;}

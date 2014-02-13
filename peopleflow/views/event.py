@@ -468,12 +468,17 @@ def event_nfc_checkin(event):
         if not participant:
             return jsonify(status=False, msg="You are not signed up for the event")
         activity = event.activity(today=True)
-        if len(activity) == 1:
-            if activity[0].checkedin(participant):
-                return jsonify(status=True, already=True, msg="Hi %s! You have already checked into %s" % (participant.name, activity[0].title), purchases=participant.purchases)
+        def make_checkin(activity):
+            name = participant.name.split(' ')
+            name = name[0] if len(name[0]) > 3 else participant.name
+            name = '<strong>%s</strong>' % name
+            if activity.checkedin(participant):
+                return jsonify(status=True, already=True, msg='<p>Hi %s!</p><p>You have already checked in for</p><p class="activity">%s</p>' % (name, activity.title), purchases=participant.purchases)
             else:
-                activity[0].checkin(participant)
-                return jsonify(status=True, msg="Hi %s! Thanks for checking into %s!" % (participant.name, activity[0].title), purchases=participant.purchases)
+                activity.checkin(participant)
+                return jsonify(status=True, already=False, msg='<p>Welcome %s!</p><p>Thanks for checking in at</p><p class="activity">%s</p>' % (name, activity.title), purchases=participant.purchases)
+        if len(activity) == 1:
+            return make_checkin(activity[0])
         else:
             checkin_for = request.form.get('checkin_for')
             if not checkin_for:
@@ -481,9 +486,5 @@ def event_nfc_checkin(event):
             else:
                 for item in activity:
                     if item.id == checkin_for:
-                        if activity[0].checkedin(participant):
-                            return jsonify(status=True, already=True, msg="%s is already checked into %s" % (participant.name, activity[0].title))
-                        else:
-                            item.checkin(participant)
-                            return jsonify(status=True, msg="%s has been checked into %s" % (participant.name, item.title))
+                        return make_checkin(item)
                 return jsonify(status=False, msg="Incorrect activity specified")
