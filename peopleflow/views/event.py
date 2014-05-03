@@ -226,8 +226,8 @@ def sync_event(event):
                 participant.purchases.append(user[others['ticket_type']].strip())
             if 'addons' in others and others['addons'] and user[others['addons']]:
                 participant.purchases = participant.purchases + (user[others['addons']]).strip().split(',')
-            for purchase in participant.purchases:
-                purchase = purchase.strip()
+            for i, purchase in enumerate(participant.purchases):
+                participant.purchases[i] = purchase.strip().replace(u'Apr 18 - 19', u'May 16 - 17').replace(u'Apr 16 - 17', u'May 14 - 15').replace(u'Apr 16 - 19', u'May 14 - 17')
             if u"T-shirt" in participant.purchases or u"Corporate" in participant.purchases:
                 participant.purchased_tee = True
             participant.purchases = ', '.join(list(set(participant.purchases)))
