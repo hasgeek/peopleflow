@@ -11,8 +11,8 @@ from . import nav
 from .. import app
 from .. import lastuser
 from ..models import db, Event, Participant, Venue, Activity
-from ..forms import EventForm, ConfirmSignoutForm, EventSyncForm, SelectActivityForm, ActivityCheckinForm
-from ..helpers import levenshtein
+from ..forms import NewEventForm, EditEventForm, EventLogoForm, WelcomeLogoForm, ConfirmSignoutForm, EventSyncForm, SelectActivityForm, ActivityCheckinForm
+from ..helpers import levenshtein, upload, delete_upload
 from pytz import utc, timezone
 from datetime import datetime
 from flask import request, flash, url_for, render_template, jsonify
@@ -36,13 +36,17 @@ hideemail = re.compile('.{1,3}@')
     )
 @lastuser.requires_permission('siteadmin')
 def event_new():
-    form = EventForm()
+    form = NewEventForm()
     if form.validate_on_submit():
         event = Event()
         event.options = form.options.data
         event.speaker_options = form.speaker_options.data
         event.crew_options = form.crew_options.data
         form.populate_obj(event)
+        if event.event_logo:
+            event.event_logo = upload(event.event_logo)
+        if event.welcome_logo:
+            event.welcome_logo = upload(event.welcome_logo, 'sponsors')
         db.session.add(event)
         try:
             db.session.commit()
@@ -425,7 +429,7 @@ def event_signout(event, participant):
     urlvars=lambda objects: {'id': objects['event'].id}
     )
 def event_edit(event):
-    form = EventForm(obj=event)
+    form = EditEventForm(obj=event)
     if form.validate_on_submit():
         form.populate_obj(event)
         event.options = form.options.data
@@ -438,6 +442,65 @@ def event_edit(event):
         except:
             flash("Could not save event '%s'." % event.title, 'error')
     return render_template('form.html', form=form, title=u"Edit — " + event.title, submit=u"Save", cancel_url=url_for('index'))
+
+@app.route('/event/<id>/editlogo', methods=['GET','POST'])
+@lastuser.requires_permission('siteadmin')
+@load_model(Event, {'id': 'id'}, 'event')
+@nav.init(
+    parent='event',
+    title=lambda objects: "Update Event Logo: %s" % (objects['event'].name),
+    objects=['event'],
+    urlvars=lambda objects: {'id': objects['event'].id}
+    )
+def event_editlogo(event):
+    form = EventLogoForm()
+    if form.validate_on_submit():
+        old_logo = event.event_logo
+        form.populate_obj(event)
+        if event.event_logo:
+            event.event_logo = upload(event.event_logo)
+        else:
+            event.event_logo = None
+        try:
+            db.session.commit()
+            flash("Updated logo for event '%s'." % event.name, 'success')
+            event_with_old_logo = Event.query.filter_by(event_logo=old_logo).first()
+            if event_with_old_logo is not None:
+                delete_upload(old_logo)
+            return render_redirect(url_for('index'), code=303)
+        except:
+            flash("Could not update logo for event '%s'." % event.title, 'error')
+    return render_template('form.html', form=form, title=u"Update Logo — " + event.title, submit=u"Save", cancel_url=url_for('index'))
+
+
+@app.route('/event/<id>/editwelcomelogo', methods=['GET','POST'])
+@lastuser.requires_permission('siteadmin')
+@load_model(Event, {'id': 'id'}, 'event')
+@nav.init(
+    parent='event',
+    title=lambda objects: "Update Welcome Screen Sponsor Logo: %s" % (objects['event'].name),
+    objects=['event'],
+    urlvars=lambda objects: {'id': objects['event'].id}
+    )
+def event_edit_welcome_logo(event):
+    form = WelcomeLogoForm()
+    if form.validate_on_submit():
+        old_logo = event.welcome_logo
+        form.populate_obj(event)
+        if event.welcome_logo:
+            event.welcome_logo = upload(event.welcome_logo, 'sponsors')
+        else:
+            event.event_logo = None
+        try:
+            db.session.commit()
+            flash("Updated logo for event '%s'." % event.name, 'success')
+            event_with_old_logo = Event.query.filter_by(event_logo=old_logo).first()
+            if event_with_old_logo is not None:
+                delete_upload(old_logo, 'sponsors')
+            return render_redirect(url_for('index'), code=303)
+        except:
+            flash("Could not update logo for event '%s'." % event.title, 'error')
+    return render_template('form.html', form=form, title=u"Update Logo — " + event.title, submit=u"Save", cancel_url=url_for('index'))
 
 
 @app.route('/event/<id>/delete', methods=['GET','POST'])

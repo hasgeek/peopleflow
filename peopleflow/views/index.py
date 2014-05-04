@@ -5,6 +5,7 @@ from . import nav
 from .. import app
 from .. import lastuser
 from ..models import Event
+import simplejson as json
 from flask import render_template, g
 from coaster.views import load_model
 
@@ -20,3 +21,7 @@ def index():
 @app.route('/ping', methods=['GET'])
 def ping():
 	return "1"
+
+@app.route('/events.json')
+def events_json():
+	return json.dumps([dict(id=event.id, name=event.name) for event in Event.query.order_by('from_date desc, to_date desc').all()])

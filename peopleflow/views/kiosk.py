@@ -3,14 +3,13 @@
 
 import os
 import csv
-import urllib
-import hashlib
 from StringIO import StringIO
 from . import nav
 from .. import app
 from .. import lastuser
 from ..models import db, Kiosk, Event, Participant, CXLog
 from ..forms import KioskForm, KioskEditForm, KioskLogoForm, ConfirmSignoutForm
+from ..helpers import upload, delete_upload
 from ..helpers.printlabel import printlabel, make_label_content
 from flask import request, flash, url_for, render_template, jsonify, make_response
 from baseframe.forms import render_redirect, ConfirmDeleteForm
@@ -20,17 +19,6 @@ from coaster.views import jsonp, load_model, load_models
 from coaster.gfm import markdown
 from flask.ext.mail import Mail, Message
 
-def save_logo(url):
-    file = urllib.urlopen(url).read()
-    filename = hashlib.md5(file).hexdigest()
-    filepath = os.path.join(app.config['STATIC_UPLOAD_FOLDER'], 'sponsors', filename)
-    with open(filepath, 'wb') as f:
-        f.write(file)
-        f.close()
-    return filename
-
-def delete_logo(filename):
-    os.remove(os.path.join(app.config['STATIC_UPLOAD_FOLDER'], 'sponsors', filename))
 
 @app.route('/event/<id>/kiosk/new', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
@@ -46,7 +34,7 @@ def kiosk_new(event):
     if form.validate_on_submit():
         kiosk = Kiosk()
         form.populate_obj(kiosk)
-        kiosk.company_logo = save_logo(kiosk.company_logo)
+        kiosk.company_logo = upload(kiosk.company_logo, 'sponsors')
         kiosk.event_id = event.id
         db.session.add(kiosk)
         try:
@@ -98,13 +86,13 @@ def kiosk_editlogo(event, kiosk):
     if form.validate_on_submit():
         old_logo = kiosk.company_logo
         form.populate_obj(kiosk)
-        kiosk.company_logo = save_logo(kiosk.company_logo)
+        kiosk.company_logo = upload(kiosk.company_logo, 'sponsors')
         try:
             db.session.commit()
             flash("Updated logo for kiosk '%s'." % kiosk.name, 'success')
             kiosk_with_old_logo = Kiosk.query.filter_by(company_logo=old_logo).first()
             if kiosk_with_old_logo is None:
-                delete_logo(old_logo)
+                delete_upload(old_logo, 'sponsors')
             return render_redirect(url_for('event_kiosks', event=event.id), code=303)
         except:
             flash("Could not update logo for kiosk '%s'." % kiosk.name, 'error')

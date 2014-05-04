@@ -36,6 +36,10 @@ class Event(db.Model, BaseMixin):
     options = db.Column(JsonDict, nullable=False)
     speaker_options = db.Column(JsonDict, nullable=False)
     crew_options = db.Column(JsonDict, nullable=False)
+
+    #: Logos
+    event_logo = db.Column(db.Unicode(120), nullable=True)
+    welcome_logo = db.Column(db.Unicode(120), nullable=True)
     
     #: List of kiosks. event.kiosks gives access to the objects.
     # kiosks = db.relationship('Kiosk', backref='event', lazy='dynamic')

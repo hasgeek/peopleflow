@@ -1,4 +1,7 @@
+import urllib
 from peopleflow.helpers.printlabel import *
+from .. import app
+import hashlib
 
 def levenshtein(a,b):
     "Calculates the Levenshtein distance between a and b."
@@ -19,3 +22,15 @@ def levenshtein(a,b):
             current[j] = min(add, delete, change)
             
     return current[n]
+
+def upload(url, folder='images'):
+    file = urllib.urlopen(url).read()
+    filename = hashlib.md5(file).hexdigest()
+    filepath = os.path.join(app.config['STATIC_UPLOAD_FOLDER'], folder, filename)
+    with open(filepath, 'wb') as f:
+        f.write(file)
+        f.close()
+    return filename
+
+def delete_upload(filename, folder='images'):
+    os.remove(os.path.join(app.config['STATIC_UPLOAD_FOLDER'], folder, filename))

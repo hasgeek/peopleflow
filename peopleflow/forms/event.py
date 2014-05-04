@@ -51,7 +51,7 @@ class CrewOptions(BadgeOptions, LabelMixin):
 class SpeakerOptions(BadgeOptions, LabelMixin):
     pass
 
-class EventForm(Form):
+class EventDataForm():
     title = wtforms.TextField('Title', validators=[wtforms.validators.Required('A title is required')])
     name = wtforms.TextField('Name', validators=[wtforms.validators.Required('A name is required')])
     from_date = wtforms.DateField('From', description="Format: YYYY-MM-DD", validators=[wtforms.validators.Required('Propose a from date')])
@@ -61,9 +61,22 @@ class EventForm(Form):
     doattend_id = wtforms.TextField('Doattend Event ID')
     print_type = wtforms.fields.SelectField('Print Type', choices=[(u'badge', 'Badge'), (u'label', 'Label')], default=u"badge")
 
+class EventLogoForm(Form):
+    event_logo = wtforms.TextField('Event Logo', description="Provide the URL for the image for the event logo.", validators=[wtforms.validators.Optional(), wtforms.validators.URL(message="Please provide a valid URL")])
+
+class WelcomeLogoForm(Form):
+    welcome_logo = wtforms.TextField('Welcome Screen Sponsor Logo', description="Provide the URL for the image for the logo of the welcome screen sponsor.", validators=[wtforms.validators.URL(message="Please provide a valid URL")])
+
+class EventOptionsForm():
     options = wtforms.fields.FormField(Options)
     speaker_options = wtforms.fields.FormField(SpeakerOptions)
     crew_options = wtforms.fields.FormField(CrewOptions)
+
+class NewEventForm(EventDataForm, EventLogoForm, WelcomeLogoForm, EventOptionsForm, Form):
+    pass
+
+class EditEventForm(EventDataForm, EventOptionsForm, Form):
+    pass
 
 class EventSyncForm(Form):
     lastuser_username = wtforms.TextField('LastUser Username')
