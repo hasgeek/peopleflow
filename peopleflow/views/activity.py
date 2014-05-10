@@ -81,7 +81,7 @@ def activity_edit(event, venue, activity):
     urlvars=lambda objects: {'event': objects['event'].id, 'venue': objects['venue'].id, 'activity': objects['activity'].id}
     )
 def activity_delete(event, venue, activity):
-    if venue.from_funnel:
+    if activity.from_funnel:
         flash("You cannot delete activities created by Funnel", "danger")
         return render_redirect(url_for('event_venues', event=event.id))
     form = ConfirmDeleteForm()
