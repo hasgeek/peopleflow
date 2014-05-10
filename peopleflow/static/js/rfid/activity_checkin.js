@@ -28,7 +28,7 @@ rfid.on('tag_placed', function(data){
 });
 
 function loop_in() {
-	$('.top .welcome').toggle('slide', {direction: 'up'}, 1000);
+	$('.top').toggle('slide', {direction: 'up'}, 1000);
 	$('.top .event').toggle('slide', {direction: 'up'}, 2000);
 	$('.top .activity').toggle('slide', {direction: 'left'}, 4000);
 	$('.top .venue').toggle('slide', {direction: 'right'}, 4000, function() {
@@ -38,7 +38,7 @@ function loop_in() {
 }
 
 function loop_out() {
-	$('.top .welcome').toggle('slide', {direction: 'left'}, 250);
+	$('.top').toggle('slide', {direction: 'down'}, 250);
 	$('.top .event').toggle('slide', {direction: 'right'}, 500);
 	$('.top .activity').toggle('slide', {direction: 'left'}, 1000);
 	$('.top .venue').toggle('slide', {direction: 'right'}, 1000);
@@ -47,4 +47,4 @@ function loop_out() {
 	});
 }
 
-loop_out();
+// loop_out();

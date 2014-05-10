@@ -10,15 +10,37 @@
     <div class="message"></div>
     <div class="purchases">You have purchased: <div class="purchase_list"></div></div>
   </div>
+  {% if event.welcome_logo %}
+    {% set welcome_msg = "welcome you to" %}
+  {% else %}
+    {% set welcome_msg = "welcomes you to" %}
+  {% endif %}
+  {% if not event.event_logo %}
+    {% set welcome_msg = welcome_msg + " " + event.name %}
+  {% endif %}
   <div id="activity_checkin">
-    <div class="top">
-      <div class="welcome">Welcome to</div>
-      <div class="event template_color_1">{{ event.name }}</div>
-      <div class="activity template_color_2">{{ checkin_for.title }}</div>
-      <div class="venue template_color_3">{{ checkin_for.venue.title }}</div>
+    <div class="top{% if event.event_logo %} has_logo{% endif %}">
+      <div class="welcome_logo">
+        {% if event.welcome_logo %}
+          <img alt="Checkin Sponsor" src="/static/uploads/sponsors/{{ event.welcome_logo }}" align="absmiddle">
+          <span class="and">&amp;</span>
+        {% endif %}
+        <img alt="HasGeek" src="/static/images/logo-large.png" align="absmiddle">
+      </div>
+      <div class="welcome_msg">{{ welcome_msg }}</div>
+      {% if event.event_logo %}
+        <div class="event_logo">
+          <img src="/static/uploads/images/{{ event.event_logo }}" alt="{{ event.name }}">
+        </div>
+      {% endif %}
     </div>
-    <div class="bottom">
-      Please tap your badge to checkin for {{ checkin_for.title }}
+    <div class="bottom template_color_3">
+      <div class="checkin">
+        <h2 class="activity template_color_1">{{ checkin_for.title }}</h2>
+        <img src="/static/images/checkin.png">
+        <h1 class="venue template_color_2">{{ checkin_for.venue.title }}</h1>
+      </div>
+      <div class="message template_color_3">Please tap your badge to checkin for the day</div>
     </div>
   </div>
   <form id="activity_checkin_form">
