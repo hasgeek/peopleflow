@@ -121,7 +121,7 @@ body.activity_checkin {background: url(/static/images/canvas.jpg)}
 #activity_checkin .top .and { font-size: 3em;line-height: 100%; margin: 0 10px;}
 #activity_checkin .top .event_logo img, #activity_checkin .top .welcome_logo img {max-height: 100%}
 #activity_checkin .bottom {position: absolute; top: 45%; bottom: 0%; width: 90%;left: 5%;border: 1px solid #454545; background: rgba(255,255,255,0.6); border-radius: 20px; text-align: left;}
-#activity_checkin .bottom .message {font-size: 8em;color: #666;line-height: 1.1em;}
+#activity_checkin .bottom .message {font-size: 7em;color: #666;line-height: 1.25em;}
 #activity_checkin .bottom .checkin {width: 30%; text-align: center; float: left;height: 100%; box-sizing: border-box; padding: 1%}
 #activity_checkin .bottom .checkin .venue {font-size: 1.5em;}
 #activity_checkin .bottom .checkin .activity {font-size: 2.25em;}
