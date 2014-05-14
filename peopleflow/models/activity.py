@@ -6,6 +6,7 @@ from datetime import datetime
 activity_checkins = db.Table('activity_checkins',
 db.Column('activity_id', db.Integer, db.ForeignKey('activity.id')),
 db.Column('participant_id', db.Integer, db.ForeignKey('participant.id')),
+db.Column('email', db.Boolean, default=False, nullable=False),
 db.Column('time', db.DateTime, default=datetime.utcnow, nullable=False))
 
 class Activity(db.Model, BaseMixin):
