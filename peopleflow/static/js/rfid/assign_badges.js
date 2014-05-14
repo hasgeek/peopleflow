@@ -25,7 +25,7 @@ var stats = function() {
 	}
 
 	stats.refresh = function() {
-		$.get(url, {type: $('#badge_type').val()}, function(data){
+		$.get(url, {type: $('#badge_type').val(), ticket_type: $('#ticket_type').val()}, function(data){
 			counts = data;
 			update_counters();
 			if(!messaging_handler) {
@@ -55,7 +55,7 @@ var stats = function() {
 rfid.on('tag_placed', function(data){
 	var messaging = $('#messaging');
 	if(data['tag_id']) {
-		$.post('assign_badges', {nfc_id: data['tag_id'], type: $('#badge_type').val()}, function(response){
+		$.post('assign_badges', {nfc_id: data['tag_id'], type: $('#badge_type').val(), ticket_type: $('#ticket_type').val()}, function(response){
 			if(messaging_handler) {
 				window.clearTimeout(messaging_handler);
 			}

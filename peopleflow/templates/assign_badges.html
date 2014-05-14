@@ -4,12 +4,19 @@
 
 {% block basecontent %}
 <form id="assign_badges_selector">
-  <label for="badge_type">Assign to: 
+  <label for="badge_type">Participant type: 
     <select name="type" id="badge_type">
       <option value="all">All</option>
       <option value="participants">Participants</option>
       <option value="speaker">Speaker</option>
       <option value="crew">Crew</option>
+    </select>
+  </label>
+  <label for="ticket_type">Ticket type: 
+    <select name="ticket_type" id="ticket_type">
+      <option value="all">All</option>
+      <option value="workshops">Workshop</option>
+      <option value="others">Non-workshop</option>
     </select>
   </label>
 </form>

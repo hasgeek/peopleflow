@@ -246,6 +246,11 @@ def assign_badges(event):
             orphan = Participant.query.filter(Participant.event_id == event.id, Participant.speaker == True)
         elif request.form.get('type') == 'crew':
             orphan = Participant.query.filter(Participant.event_id == event.id, Participant.purchases.contains('Crew'))
+        if request.args.get('ticket_type') != 'all':
+            if request.form.get('ticket_type') == 'workshops':
+                orphan = orphan.filter(Participant.purchases.contains('Workshop')|Participant.purchases.contains('Corporate'))
+            elif request.form.get('ticket_type') == 'others':
+                orphan = orphan.filter(~(Participant.purchases.contains('Workshop')|Participant.purchases.contains('Corporate')))
         orphan = orphan.filter_by(nfc_id=None).order_by(Participant.name.asc())
         if orphan.count():
             orphan = orphan[0]
@@ -278,6 +283,11 @@ def badge_stats(event):
         total = Participant.query.filter(Participant.event_id == event.id, Participant.speaker == True)
     elif request.args.get('type') == 'crew':
         total = Participant.query.filter(Participant.event_id == event.id, Participant.purchases.contains('Crew'))
+    if request.args.get('ticket_type') != 'all':
+        if request.args.get('ticket_type') == 'workshops':
+            total = total.filter(Participant.purchases.contains('Workshop')|Participant.purchases.contains('Corporate'))
+        elif request.args.get('ticket_type') == 'others':
+            total = total.filter(~(Participant.purchases.contains('Workshop')|Participant.purchases.contains('Corporate')))
     unassigned = total.filter_by(nfc_id=None).count()
     total = total.count()
     return jsonify(total=total, assigned=total-unassigned, unassigned=unassigned)
