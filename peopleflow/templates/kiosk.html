@@ -16,11 +16,12 @@
   </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-    <button class="btn" data-dismiss="modal" aria-hidden="true">I'm not <span class="name"></span></button>
+    <!--<button class="btn" data-dismiss="modal" aria-hidden="true">I'm not <span class="name"></span></button>!-->
     <form id="kiosk" action="{{ url_for('share', kiosk=kiosk.id, event=event.id) }}" method="POST">
+      Your details will be shared in <span class="timeout">5</span> seconds.
       <input id="nfc_id" class="hidden" type="hidden" name="id" value="" />
-      <input id="share" class="btn btn-primary hidden" type="submit" value="Share" />
-      <input type="submit" class="btn btn-primary" value="Share">
+      <input id="share" class="btn btn-primary hidden" type="submit" value="OK" />
+      <input type="submit" class="btn btn-primary btn-ok" value="OK">
     </form>
   </div>
 </div>
@@ -53,6 +54,8 @@
 {{ super() }}
 <script type="text/javascript">
 rfid.on( 'tag_placed', function(data) {
+  //timer = window.setTimeout("stop_listening();", 5000);
+  
   if (data['tag_id']) {
     url = "/event/{{ event.id }}/participant/"+data['tag_id'];
     $('input#nfc_id').attr("value",data['tag_id'] );
@@ -72,6 +75,13 @@ rfid.on( 'tag_placed', function(data) {
         $('#info .name').html(data.name);
         $('#info').modal();
       };
+      setTimeout(function(){
+        $('#kiosk').submit();
+      }, 5000);
+      interval = window.setInterval(function(){
+        var tout = $('#kiosk .timeout'); 
+        tout.html(Number(tout.text()) - 1);
+      }, 1000);
     });
   }
 });
@@ -79,6 +89,7 @@ $(document).ready(function(){
   var img = $('#contact_point #company .logo img')
   img.css({'margin-top': -img.height()/2, 'top': '50%'});
 });
+
 
 </script>
 
