@@ -21,6 +21,8 @@ LASTUSER_SERVER = 'https://auth.hasgeek.com/'
 LASTUSER_CLIENT_ID = ''
 #: Lastuser client secret
 LASTUSER_CLIENT_SECRET = ''
+#: Turn off login session verification
+LASTUSER_USE_SESSIONS = False
 #: Mail settings
 #: MAIL_FAIL_SILENTLY : default True
 #: MAIL_SERVER : default 'localhost'
