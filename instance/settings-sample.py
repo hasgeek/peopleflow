@@ -37,7 +37,7 @@ MAIL_SERVER = 'localhost'
 MAIL_DEFAULT_SENDER = 'HasGeek <peopleflow@hasgeek.com>'
 DEFAULT_MAIL_SENDER = MAIL_DEFAULT_SENDER # For compatibility with older Flask-Mail
 #: Logging: recipients of error emails
-ADMINS = ['serveradmin@hasgeek.com']
+ADMINS = ['webmaster@hasgeek.com']
 #: Log file
 LOGFILE = 'error.log'
 UPLOAD_FOLDER = 'uploads'
