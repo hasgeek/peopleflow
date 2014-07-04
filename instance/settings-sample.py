@@ -34,10 +34,10 @@ LASTUSER_USE_SESSIONS = False
 #: DEFAULT_MAIL_SENDER : default None
 MAIL_FAIL_SILENTLY = False
 MAIL_SERVER = 'localhost'
-MAIL_DEFAULT_SENDER = ('HasGeek', 'info@hasgeek.com')
+MAIL_DEFAULT_SENDER = 'HasGeek <peopleflow@hasgeek.com>'
 DEFAULT_MAIL_SENDER = MAIL_DEFAULT_SENDER # For compatibility with older Flask-Mail
 #: Logging: recipients of error emails
-ADMINS = []
+ADMINS = ['serveradmin@hasgeek.com']
 #: Log file
 LOGFILE = 'error.log'
 UPLOAD_FOLDER = 'uploads'
