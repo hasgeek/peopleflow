@@ -45,9 +45,9 @@ var timer = function() {
             toFixed: 0,
             introDuration: 0,
             countdownCss: {
-                fontSize: '3.75em',
+                fontSize: '3.5em',
                 color: '#FFF',
-                fontWeight: 'bolder',
+                fontWeight: 'bolder'
             },
             completeFn: function() {
                 userui.exchange();
