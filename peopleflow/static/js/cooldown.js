@@ -170,6 +170,7 @@
           "<div class='remaining-time' style='line-height: ", this.sideLength, "px;'></div>"
         ].join(""));
         this.remainingTimeElement = this.find(".remaining-time").css(this.countdownCss);
+        this.remainingTimeElement.css('width', this.sideLength + 'px');
 
         setTimeout(function() {
           _this.state = STATE.PAUSED;
