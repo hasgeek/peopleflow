@@ -47,7 +47,7 @@
                 href="javascript:void(0);">
                 <span class="assign" data-url="{{ url_for('event_signin', event=event.id, participant=p.id) }}">Assign Card</span>
                 <span class="unassign" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Unassign Card</span>
-                <span class="unassign_confirm" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Pls confirm (<span class="timeout"></span>)</span>
+                <span class="unassign_confirm" data-url="{{ url_for('event_signout', event=event.id, participant=p.id) }}">Confirm (<span class="timeout"></span>)</span>
                 <span class="tap_card" data-url="{{ url_for('event_signin', event=event.id, participant=p.id) }}">Tap the card (<span class="timeout"></span>)</span>
               </a>
             {% endif %}

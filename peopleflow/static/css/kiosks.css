@@ -44,7 +44,7 @@ body.contact_point {background: url(../images/canvas.jpg)}
 #company_info.nocompany.comptag .name, #company_info.nocompany.nocomptag {display: none;}
 
 /*Contact Exchange Kiosk Styles*/
-body.contact_exchange {background: url(/static/images/contact-exchange-bg.gif) 50% 15%; background-size: 115%;}
+/* body.contact_exchange {background: url(/static/images/contact-exchange-bg.gif) 50% 15%; background-size: 115%;} */
 #contact_exchange {position: absolute;width: 100%;top: 0px;bottom: 60px;}
 #contact_exchange .top {position: absolute; top: 0%; left: 1%;right: 1%; bottom: 0%; transition: all 1s;}
 #contact_exchange .logo, #contact_exchange .message { position: absolute; left: 1%; right: 1%;transition: all 1s;}
@@ -61,6 +61,10 @@ body.contact_exchange {background: url(/static/images/contact-exchange-bg.gif) 5
 #contact_exchange .message .step .icon {
     padding: 0.2em; width: 1em; height: 1em; margin: 0px 10px; font-size: 1.25em; color: white;
     float: left; line-height: 1em; text-align: center; clear: left;border-radius: 1em; font-weight: bolder;
+}
+#contact_exchange .message .step .icon [class^="icon-"], #contact_exchange .message .step .icon [class*=" icon-"] {
+    position: relative;
+    top: -0.1em;
 }
 #contact_exchange .message .step.plus .icon {background: #393}
 #contact_exchange .message .step.minus .icon {background: #C33}

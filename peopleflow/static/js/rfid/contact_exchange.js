@@ -1,8 +1,8 @@
 var timer = function() {
     var timer = {};
     var handler = null;
-    var TOTAL_TIME = 10; //Time before the automatic submission happens
-    var ALERT_TIME = 5; //Time before the automatic submission, when the timer needs to be shown
+    var TOTAL_TIME = 20; //Time before the automatic submission happens
+    var ALERT_TIME = 10; //Time before the automatic submission, when the timer needs to be shown
     var cooldown = null, timer_content;
     var DEBUG_TOTAL_TIME = 6;
     var DEBUG_ALERT_TIME = 5;
@@ -38,7 +38,7 @@ var timer = function() {
         timer_content.append('<div class="timer"><div class="elem"></div></div>');
         timer_content.find('.timer').append('<div class="seconds">seconds</div>');
         timer_content.find('.timer').append('<div class="message">for automatic <span class="auto_action">cancellation</span></div>');
-        timer_content.append('<div class="instructions">The following people will be connected.<br>You can: Add/remove people or wait for the timer to end.</div>');
+        timer_content.append('<div class="instructions">The following people will be connected<br>Tap again to add or remove a person</div>');
         cooldown = $('#cooldown .timer .elem').cooldown({
             tickFrequency: 1000,
             arcWidth: 20,
