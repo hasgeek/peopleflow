@@ -65,7 +65,7 @@ class EventLogoForm(Form):
     event_logo = wtforms.TextField('Event Logo', description="Provide the URL for the image for the event logo.", validators=[wtforms.validators.Optional(), wtforms.validators.URL(message="Please provide a valid URL")])
 
 class WelcomeLogoForm(Form):
-    welcome_logo = wtforms.TextField('Welcome Screen Sponsor Logo', description="Provide the URL for the image for the logo of the welcome screen sponsor.", validators=[wtforms.validators.URL(message="Please provide a valid URL")])
+    welcome_logo = wtforms.TextField('Welcome Screen Sponsor Logo', description="Provide the URL for the image for the logo of the welcome screen sponsor.", validators=[wtforms.validators.Optional(), wtforms.validators.URL(message="Please provide a valid URL")])
 
 class EventOptionsForm():
     options = wtforms.fields.FormField(Options)
