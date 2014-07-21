@@ -195,7 +195,7 @@ def sync_event(event):
                         break
             elif participant.email != user[columns['email']]:
                 participant.image = 'LOAD'
-            if not columns['name'] or user[columns['name']] == 'Cancelled':
+            if not columns['name'] or user[columns['name']] == 'Cancelled' or user[columns['name']] == 'Not Attending':
                 return
             new = participant is None
             if new:
