@@ -32,13 +32,30 @@ def printlabel(printer, print_type, lines, options={}):
         ParagraphStyle("s4", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=20, leading=22, textColor="#444444"),
         ]
         name_len = 1
+    elif print_type == 'floppy':
+        doc = SimpleDocTemplate(fname,
+                                pagesize=(85 * mm, 160 * mm),
+                                topMargin=(85 if 'topMargin' not in options or not options['topMargin'] else options['topMargin']) * mm,
+                                leftMargin=(10 if 'leftMargin' not in options or not options['leftMargin'] else options['leftMargin']) * mm,
+                                rightMargin=(10 if 'rightMargin' not in options or not options['rightMargin'] else options['rightMargin']) * mm,
+                                bottomMargin=(10 if 'bottomMargin' not in options or not options['bottomMargin'] else options['bottomMargin']) * mm)
+        name = lines[0].strip().upper().split(" ")
+        lines = [name[0], " ".join(name[1:]) if len(name[1:]) else None] + lines[1:]
+        styles = [
+        ParagraphStyle("s1", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=28 if len(name[0]) < 9 else 21 if len(name[0]) < 11 else 17, leading=28 if len(name[0]) < 9 else 21 if len(name[0]) < 11 else 17, textColor=options['name_color'] if 'name_color' in options and options['name_color'] else "#000000"),
+        ParagraphStyle("s2", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=14, leading=15.5, textColor=options['name_color'] if 'name_color' in options and options['name_color'] else "#000000"),
+        ParagraphStyle("s3", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=12, leading=13, spaceBefore=1.5, textColor=options['company_color'] if 'company_color' in options and options['company_color'] else "#000000"),
+        ParagraphStyle("s4", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=14, leading=17, spaceBefore=1.5, textColor=options['twitter_color'] if 'twitter_color' in options and options['twitter_color'] else "#55ACEE"),
+        ParagraphStyle("s5", fontName="Helvetica-Bold", alignment=TA_CENTER, fontSize=15, leading=19, textColor="#444444"),
+        ]
+        name_len = 2
     else:
         doc = SimpleDocTemplate(fname,
                                 pagesize=(95 * mm, 134 * mm),
-                                topMargin=(60 if 'topMargin' not in options else options['topMargin']) * mm,
-                                leftMargin=(1 if 'leftMargin' not in options else options['leftMargin']) * mm,
-                                rightMargin=(1 if 'rightMargin' not in options else options['rightMargin']) * mm,
-                                bottomMargin=(9 if 'bottomMargin' not in options else options['bottomMargin']) * mm)
+                                topMargin=(60 if 'topMargin' not in options or not options['topMargin'] else options['topMargin']) * mm,
+                                leftMargin=(1 if 'leftMargin' not in options or not options['leftMargin'] else options['leftMargin']) * mm,
+                                rightMargin=(1 if 'rightMargin' not in options or not options['rightMargin'] else options['rightMargin']) * mm,
+                                bottomMargin=(9 if 'bottomMargin' not in options or not options['bottomMargin'] else options['bottomMargin']) * mm)
         name = lines[0].strip().upper().split(" ")
         lines = [name[0], " ".join(name[1:]) if len(name[1:]) else None] + lines[1:]
         styles = [
@@ -56,7 +73,7 @@ def printlabel(printer, print_type, lines, options={}):
             if line:
                 story.append(Paragraph(line, styles[i]))
             if i == name_len - 1 and len(lines) > name_len:
-                story.append(HRFlowable(width='95%', spaceBefore=5, thickness=2, color=options['hr_color'] if 'hr_color' in options and options['hr_color'] else "#777777"))
+                story.append(HRFlowable(width='95%', spaceBefore=3, thickness=2, color=options['hr_color'] if 'hr_color' in options and options['hr_color'] else "#777777"))
     if 'label' in options and options['label']:
         story = story[-1:] + story[:-1]
     doc.build(story)

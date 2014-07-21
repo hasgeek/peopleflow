@@ -59,7 +59,7 @@ class EventDataForm():
     funnel_space = wtforms.TextField('Funnel Proposal Space')
     eventframe_sync = wtforms.TextField('Eventframe RSVP JSON URL')
     doattend_id = wtforms.TextField('Doattend Event ID')
-    print_type = wtforms.fields.SelectField('Print Type', choices=[(u'badge', 'Badge'), (u'label', 'Label')], default=u"badge")
+    print_type = wtforms.fields.SelectField('Print Type', choices=[(u'badge', 'Badge'), (u'floppy', 'Floppy Stickers'), (u'label', 'Label')], default=u"badge")
 
 class EventLogoForm(Form):
     event_logo = wtforms.TextField('Event Logo', description="Provide the URL for the image for the event logo.", validators=[wtforms.validators.Optional(), wtforms.validators.URL(message="Please provide a valid URL")])
