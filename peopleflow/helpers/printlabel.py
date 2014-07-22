@@ -34,11 +34,11 @@ def printlabel(printer, print_type, lines, options={}):
         name_len = 1
     elif print_type == 'floppy':
         doc = SimpleDocTemplate(fname,
-                                pagesize=(85 * mm, 160 * mm),
-                                topMargin=(85 if 'topMargin' not in options or not options['topMargin'] else options['topMargin']) * mm,
-                                leftMargin=(10 if 'leftMargin' not in options or not options['leftMargin'] else options['leftMargin']) * mm,
+                                pagesize=(90 * mm, 160 * mm),
+                                topMargin=(82 if 'topMargin' not in options or not options['topMargin'] else options['topMargin']) * mm,
+                                leftMargin=(12 if 'leftMargin' not in options or not options['leftMargin'] else options['leftMargin']) * mm,
                                 rightMargin=(10 if 'rightMargin' not in options or not options['rightMargin'] else options['rightMargin']) * mm,
-                                bottomMargin=(10 if 'bottomMargin' not in options or not options['bottomMargin'] else options['bottomMargin']) * mm)
+                                bottomMargin=(12 if 'bottomMargin' not in options or not options['bottomMargin'] else options['bottomMargin']) * mm)
         name = lines[0].strip().upper().split(" ")
         lines = [name[0], " ".join(name[1:]) if len(name[1:]) else None] + lines[1:]
         styles = [
