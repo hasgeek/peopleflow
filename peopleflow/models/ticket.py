@@ -12,6 +12,8 @@ class Ticket(db.Model, BaseScopedNameMixin):
 
     __table_args__ = (db.UniqueConstraint("event_id", "name"), {})
 
+    on_the_spot = db.Column(db.Boolean, default=False, nullable=False)
+
     #: Ticket is for this event
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
     event = db.relationship(Event, primaryjoin=event_id == Event.id, backref=db.backref('tickets'))
