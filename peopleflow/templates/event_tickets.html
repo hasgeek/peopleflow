@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %}Products — {{ event.title }}{% endblock %}
+{% block headline %}
+<a class="btn" href="{{ url_for('ticket_new', id=event.id) }}"><span class="icon-plus"></span>Add a ticket</a>
+{% endblock %}
+{% block content %}
+<div class="boxed_list">
+  {% for ticket in event.tickets %}
+    <div class="item">
+      <div class="links">
+        <a href="{{ url_for('ticket_edit', event=event.id, ticket=ticket.id) }}" title="Edit"><span class="icon-edit"></span>Edit</a>
+        <a href="{{ url_for('ticket_delete', event=event.id, ticket=ticket.id) }}" title="Delete" class="red"><span class="icon-trash"></span>Delete</a>
+      </div>
+      <span class="link">
+        <div class="serial">{{ loop.index }}</div>
+        <div class="l1">{{ ticket.title }}</div>
+      </span>
+    </div>
+  {%- else -%}
+    <p></p>
+    <p>There are no tickets currently.<a href="{{ url_for('ticket_new', id=event.id) }}">Add a ticket</a></p>
+  {% endfor %}
+</div>
+{% endblock %}

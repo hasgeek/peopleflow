@@ -1,13 +1,13 @@
 """Products & Tickets
 
-Revision ID: 519731dea59
+Revision ID: 47dddf6f5e5
 Revises: 3987dc471c3
-Create Date: 2014-07-22 19:20:46.912878
+Create Date: 2014-07-23 04:45:09.860792
 
 """
 
 # revision identifiers, used by Alembic.
-revision = '519731dea59'
+revision = '47dddf6f5e5'
 down_revision = '3987dc471c3'
 
 from alembic import op
@@ -34,7 +34,7 @@ def upgrade():
     sa.Column('title', sa.Unicode(length=120), nullable=False),
     sa.Column('event_id', sa.Integer(), nullable=False),
     sa.Column('ticket_id', sa.Integer(), nullable=True),
-    sa.Column('source', sa.Unicode(length=10), nullable=True),
+    sa.Column('source', sa.Unicode(length=30), nullable=True),
     sa.Column('id_source', sa.Unicode(length=30), nullable=True),
     sa.Column('name', sa.Unicode(length=250), nullable=False),
     sa.ForeignKeyConstraint(['event_id'], ['event.id'], ),

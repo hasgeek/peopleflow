@@ -182,48 +182,47 @@ def sync_event(event):
             if browser.geturl() == urljoin(uri, 'accounts/sign_in'):
                 ret.append('DoAttend Login Failed')
             else:
-                ret.append('Syncing tickets')
-                tickets = []
                 browser.open(urljoin(uri, 'events/' + event.doattend_id + '/tickets'))
                 resp = html.fromstring(browser.response().read())
+                def process_tickets(tickets_list, ticket_type):
+                    tickets = []
+                    ticket_ids = []
+                    for ticket in tickets_list:
+                        tickets.append({
+                            'id': ticket.attrib['id'].split('_')[1],
+                            'name': ticket.cssselect('div:nth-child(2) h3')[0].text.strip()
+                            })
+                        ticket_ids.append(ticket.attrib['id'].split('_')[1])
+                    try:
+                        ret.append('Deleting removed ' + ticket_type)
+                        Product.query.filter_by(event=event, source='doattend_'+ticket_type).filter(~Product.id.in_(ticket_ids)).delete(synchronize_session=False)
+                        db.session.commit()
+                        ret.append('Removed ' + ticket_type + ' deleted')
+                    except Exception as e:
+                        ret.append("Error deleting removed %s: %s" % (ticket_type, str(e)))
+                    for ticket in tickets:
+                        try:
+                            t = Product.query.filter_by(id_source=ticket['id'], event=event, source='doattend_' + ticket_type).one()
+                            ret.append("%s(%s) exists as %s" % (ticket['name'], ticket['id'], t.title))
+                        except NoResultFound:
+                            try:
+                                t = Product(id_source=ticket['id'], event=event, title=ticket['name'], source='doattend_' + ticket_type)
+                                t.make_name()
+                                db.session.add(t)
+                                db.session.commit()
+                                ret.append("Added %s(%s)" % (ticket['name'], ticket['id']))
+                            except Exception as e:
+                                ret.append("Error adding %s: %s" % (ticket['name'], str(e)))
+                ret.append('Syncing tickets')
                 tickets_list = resp.get_element_by_id('tickets_list')
                 tickets_list = tickets_list.cssselect('.list')
-                ticket_ids = []
-                for ticket in tickets_list:
-                    tickets.append({
-                        'id': ticket.attrib['id'].split('_')[1],
-                        'name': ticket.cssselect('div:nth-child(2) h3')[0].text.strip()
-                        })
-                    ticket_ids.append(ticket.attrib['id'].split('_')[1])
+                process_tickets(tickets_list, 'tickets')
+                ret.append('Tickets Synced')
+                ret.append('Syncing add-ons')
                 tickets_list = resp.cssselect('#tickets_list')[1]
                 tickets_list = tickets_list.cssselect('.list')
-                for ticket in tickets_list:
-                    tickets.append({
-                        'id': ticket.attrib['id'].split('_')[1],
-                        'name': ticket.cssselect('div:nth-child(2) h3')[0].text.strip()
-                        })
-                    ticket_ids.append(ticket.attrib['id'].split('_')[1])
-                try:
-                    ret.append('Deleting removed tickets')
-                    Product.query.filter_by(event=event, source='doattend').filter(~Product.id.in_(ticket_ids)).delete(synchronize_session=False)
-                    db.session.commit()
-                    ret.append('Removed tickets deleted')
-                except Exception as e:
-                    ret.append("Error deleting removed tickets: %s" % str(e))
-                for ticket in tickets:
-                    try:
-                        t = Product.query.filter_by(id_source=ticket['id'], event=event, source='doattend').one()
-                        ret.append("Ticket %s(%s) exists as %s" % (ticket['name'], ticket['id'], t.title))
-                    except NoResultFound:
-                        try:
-                            t = Product(id_source=ticket['id'], event=event, title=ticket['name'], source='doattend')
-                            t.make_name()
-                            db.session.add(t)
-                            db.session.commit()
-                            ret.append("Added ticket %s(%s)" % (ticket['name'], ticket['id']))
-                        except Exception as e:
-                            ret.append("Error adding ticket %s: %s" % (ticket['name'], str(e)))
-                    db.session.commit()
+                process_tickets(tickets_list, 'addons')
+                ret.append('Add-ons Synced')
                 browser.open(urljoin(uri, 'events/' + event.doattend_id + '/orders/registration_sheet.csv'))
                 csv_data = browser.response().read()
                 browser.open(urljoin(uri, 'events/' + event.doattend_id + '/orders/confirmed_guests.csv'))

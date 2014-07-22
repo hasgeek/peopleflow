@@ -24,5 +24,5 @@ class Product(db.Model, BaseScopedNameMixin):
     ticket = db.relationship(Ticket, primaryjoin=ticket_id == Ticket.id)
 
     #: Source of purchase item
-    source = db.Column(db.Unicode(10), default=None)
+    source = db.Column(db.Unicode(30), default=None)
     id_source = db.Column(db.Unicode(30), default=None)

@@ -3,6 +3,8 @@ from .participant import *
 from .kiosk import *
 from .venue import *
 from .activity import *
+from .product import *
+from .ticket import *
 
 import wtforms
 import wtforms.fields.html5

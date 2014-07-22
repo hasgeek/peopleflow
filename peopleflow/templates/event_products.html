@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block title %}Products — {{ event.title }}{% endblock %}
+{% block headline %}
+<a class="btn" href="{{ url_for('product_new', id=event.id) }}"><span class="icon-plus"></span>Add a product</a>
+{% endblock %}
+{% block content %}
+<div class="boxed_list">
+  {% for product in event.products %}
+    <div class="item">
+      <div class="links">
+        <a href="{{ url_for('product_edit', event=event.id, product=product.id) }}" title="Edit"><span class="icon-edit"></span>Edit</a>
+        {% if not product.source %}<a href="{{ url_for('product_delete', event=event.id, product=product.id) }}" title="Delete" class="red"><span class="icon-trash"></span>Delete</a>{% endif %}
+      </div>
+      <span class="link">
+        <div class="serial">{{ loop.index }}</div>
+        <div class="l1">{{ product.title }}</div>
+        {% if product.ticket -%}<div class="l2">Ticket: {{ product.ticket.title }}</div>{%- endif %}
+        {% if product.source -%}<div class="l3">Source: {{ product.source }}</div>{%- endif %}
+      </span>
+    </div>
+  {%- else -%}
+    <p></p>
+    <p>There are no products currently.<a href="{{ url_for('product_new', id=event.id) }}">Add a product</a></p>
+  {% endfor %}
+</div>
+{% endblock %}
