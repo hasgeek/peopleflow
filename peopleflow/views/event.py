@@ -10,7 +10,7 @@ import simplejson as json
 from . import nav
 from .. import app
 from .. import lastuser
-from ..models import db, Event, Participant, Venue, Activity
+from ..models import db, Event, Participant, Venue, Activity, Product
 from ..forms import NewEventForm, EditEventForm, EventLogoForm, WelcomeLogoForm, ConfirmSignoutForm, EventSyncForm, SelectActivityForm, ActivityCheckinForm
 from ..helpers import levenshtein, upload, delete_upload
 from pytz import utc, timezone
@@ -25,6 +25,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from collections import defaultdict
 from urllib import urlencode
 from hashlib import md5
+from lxml import html
 from base64 import b64encode
 
 hideemail = re.compile('.{1,3}@')
@@ -114,7 +115,7 @@ def sync_event(event):
                     db.session.commit()
                     ret.append("Deleted removed venues")
                 except Exception as e:
-                        ret.append("Error deleting removed venues: %s" % str(e))
+                    ret.append("Error deleting removed venues: %s" % str(e))
                 venues = dict()
                 for venue in funnel_data['venues']:
                     try:
@@ -164,140 +165,189 @@ def sync_event(event):
                 browser.open(event.eventframe_sync)
                 eventframe_data = json.loads(browser.response().read())['attendees']
                 ret.append("Fetched %s people from Eventframe" % len(eventframe_data))
-        if app.config['DOATTEND_EMAIL'] in [None, ''] or app.config['DOATTEND_PASS'] in [None, ''] or event.doattend_id in [None, '']:
-            return 'Data not available'
-        uri = 'http://doattend.com/'
-        forms = ParseResponse(urlopen(urljoin(uri, 'accounts/sign_in')))
-        form = forms[0]
-        form['account[email]'] = app.config['DOATTEND_EMAIL']
-        form['account[password]'] = app.config['DOATTEND_PASS']
-        urlopen(form.click())
-        csv_data = urlopen(urljoin(uri, 'events/' + event.doattend_id + '/orders/registration_sheet.csv')).read()
-        guests_csv = urlopen(urljoin(uri, 'events/' + event.doattend_id + '/orders/confirmed_guests.csv')).read()
-        urlopen(urljoin(uri, 'accounts/sign_out'))
-        f = StringIO.StringIO(csv_data)
-        headers = [make_name(field).replace(u'-', u'').replace(u'\n', u'') for field in f.next().split(',')]
-        users = unicodecsv.reader(f, delimiter=',')
-
         added = [0]
         failed = []
         updated = [0]
         deleted = 0
-        tickets = []
-        ret.append("Starting Participants")
-        def process_ticket(user):
-            user[columns['name']] = user[columns['name']].title()
-            participant = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
-            if not participant:
-                for p in Participant.query.filter_by(email=user[columns['email']].strip(), event_id=event.id).all():
-                    if levenshtein(p.name, user[columns['name']].strip()) <= 3:
-                        participant = p
-                        break
-            elif participant.email != user[columns['email']]:
-                participant.image = 'LOAD'
-            if not columns['name'] or user[columns['name']] == 'Cancelled' or user[columns['name']] == 'Not Attending':
-                return
-            new = participant is None
-            if new:
-                participant = Participant()
-                participant.event_id = event.id
-                participant.purchases = []
-                participant.image = 'LOAD'
+        if app.config['DOATTEND_EMAIL'] in [None, ''] or app.config['DOATTEND_PASS'] in [None, ''] or event.doattend_id in [None, '']:
+            ret.append('DoAttend details not available')
+        else:
+            uri = 'http://doattend.com/'
+            browser.open(urljoin(uri, 'accounts/sign_in'))
+            browser.select_form(nr=0)
+            form = browser.form
+            form['account[email]'] = app.config['DOATTEND_EMAIL']
+            form['account[password]'] = app.config['DOATTEND_PASS']
+            browser.open(form.click())
+            if browser.geturl() == urljoin(uri, 'accounts/sign_in'):
+                ret.append('DoAttend Login Failed')
             else:
-                if participant.purchases is None:
-                    participant.purchases = []
-                else:
-                    participant.purchases = participant.purchases.split(', ')
-            if 'order_id' in columns and columns['order_id'] and user[columns['order_id']]:
-                user[columns['order_id']] = int(user[columns['order_id']])
-            if columns['twitter'] and user[columns['twitter']] and '@' in user[columns['twitter']]:
-                user[columns['twitter']] = user[columns['twitter']].strip().replace('@', '').strip()
-            if columns['phone'] and user[columns['phone']]:
-                user[columns['phone']] = user[columns['phone']].strip().replace(' ', '').replace('-','')
-            for field in columns.keys():
-                if columns[field]:
-                    value = user[columns[field]]
-                    if type(value) == unicode:
-                        value = value.strip()
-                    value = None if value == '*' or value == '' or value == 'empty' else value
-                    if (new or (field != 'ticket_number' and getattr(participant, field))) and value != getattr(participant, field):
-                        setattr(participant, field, value)
-            if speakers_fetched and participant.speaker and (participant.name, participant.email) not in speakers:
-                participant.speaker = False
-            if (participant.name, participant.email) in speakers:
-                participant.speaker = True
-            if user[others['ticket_type']]:
-                participant.purchases.append(user[others['ticket_type']].strip())
-            if 'addons' in others and others['addons'] and user[others['addons']]:
-                participant.purchases = participant.purchases + (user[others['addons']]).strip().split(',')
-            for i, purchase in enumerate(participant.purchases):
-                participant.purchases[i] = purchase.strip().replace(u'Apr 18 - 19', u'May 16 - 17').replace(u'Apr 16 - 17', u'May 14 - 15').replace(u'Apr 16 - 19', u'May 14 - 17')
-            if u"T-shirt" in participant.purchases or u"Corporate" in participant.purchases:
-                participant.purchased_tee = True
-            participant.purchases = ', '.join(list(set(participant.purchases)))
-            participant.online_reg = True
-            if participant.ticket_number:
-                tickets.append(participant.ticket_number)
-            try:
-                if new:
-                    db.session.add(participant)
-                db.session.commit()
-                if new:
-                    added[0] = added[0] + 1
-                    ret.append("Added " + participant.name.encode('utf-8'))
-                else:
-                    updated[0] = updated[0] + 1
-                    ret.append("Updated " + participant.name.encode('utf-8'))
-            except Exception as e:
-                ret.append("Error adding/updating " + participant.name.encode('utf-8') + ': ' + str(e))
-                failed.append(participant.name.encode('utf-8') + '(' + participant.email.encode('utf-8') + '): ' + str(e))
-                db.session.rollback()
-        def indexof(name):
-            try:
-                return headers.index(name)
-            except ValueError:
-                return None
-        columns = dict(
-            ticket_number=indexof(u'ticketnumber'),
-            name=indexof(u'name'),
-            email=indexof(u'email'),
-            company=indexof(u'company'),
-            job=indexof(u'jobtitle'),
-            city=indexof(u'city'),
-            phone=indexof(u'phone'),
-            twitter=indexof(u'twitterhandle'),
-            regdate=indexof(u'date'),
-            order_id=indexof(u'orderid')
-            )
-        others = dict(
-            ticket_type=indexof(u'ticketname'),
-            addons=indexof(u'addonspurchased')
-            )
+                ret.append('Syncing tickets')
+                tickets = []
+                browser.open(urljoin(uri, 'events/' + event.doattend_id + '/tickets'))
+                resp = html.fromstring(browser.response().read())
+                tickets_list = resp.get_element_by_id('tickets_list')
+                tickets_list = tickets_list.cssselect('.list')
+                ticket_ids = []
+                for ticket in tickets_list:
+                    tickets.append({
+                        'id': ticket.attrib['id'].split('_')[1],
+                        'name': ticket.cssselect('div:nth-child(2) h3')[0].text.strip()
+                        })
+                    ticket_ids.append(ticket.attrib['id'].split('_')[1])
+                tickets_list = resp.cssselect('#tickets_list')[1]
+                tickets_list = tickets_list.cssselect('.list')
+                for ticket in tickets_list:
+                    tickets.append({
+                        'id': ticket.attrib['id'].split('_')[1],
+                        'name': ticket.cssselect('div:nth-child(2) h3')[0].text.strip()
+                        })
+                    ticket_ids.append(ticket.attrib['id'].split('_')[1])
+                try:
+                    ret.append('Deleting removed tickets')
+                    Product.query.filter_by(event=event, source='doattend').filter(~Product.id.in_(ticket_ids)).delete(synchronize_session=False)
+                    db.session.commit()
+                    ret.append('Removed tickets deleted')
+                except Exception as e:
+                    ret.append("Error deleting removed tickets: %s" % str(e))
+                for ticket in tickets:
+                    try:
+                        t = Product.query.filter_by(id_source=ticket['id'], event=event, source='doattend').one()
+                        ret.append("Ticket %s(%s) exists as %s" % (ticket['name'], ticket['id'], t.title))
+                    except NoResultFound:
+                        try:
+                            t = Product(id_source=ticket['id'], event=event, title=ticket['name'], source='doattend')
+                            t.make_name()
+                            db.session.add(t)
+                            db.session.commit()
+                            ret.append("Added ticket %s(%s)" % (ticket['name'], ticket['id']))
+                        except Exception as e:
+                            ret.append("Error adding ticket %s: %s" % (ticket['name'], str(e)))
+                    db.session.commit()
+                browser.open(urljoin(uri, 'events/' + event.doattend_id + '/orders/registration_sheet.csv'))
+                csv_data = browser.response().read()
+                browser.open(urljoin(uri, 'events/' + event.doattend_id + '/orders/confirmed_guests.csv'))
+                guests_csv = browser.response().read()
+                browser.open(urljoin(uri, 'accounts/sign_out'))
+                tickets = []
+                f = StringIO.StringIO(csv_data)
+                headers = [make_name(field).replace(u'-', u'').replace(u'\n', u'') for field in f.next().split(',')]
+                users = unicodecsv.reader(f, delimiter=',')
 
-        for user in users:
-            process_ticket(user)
-        ret.append("Done with Participants")
-        ret.append("Starting Guests")
-        f = StringIO.StringIO(guests_csv)
-        headers = [make_name(field).replace(u'-', u'').replace(u'\n', u'') for field in f.next().split(',')]
-        users = unicodecsv.reader(f, delimiter=',')
-        columns = dict(
-            ticket_number=indexof(u'ticketnumber'),
-            name=indexof(u'name'),
-            email=indexof(u'email'),
-            company=indexof(u'company'),
-            job=indexof(u'jobtitle'),
-            city=indexof(u'city'),
-            phone=indexof(u'phone'),
-            twitter=indexof(u'twitterhandle'),
-            regdate=indexof(u'confirmedon')
-            )
-        others = dict(
-            ticket_type=indexof(u'ticket')
-            )
-        for user in users:
-            process_ticket(user)
-        ret.append("Done with Guests")
+                ret.append("Starting Participants")
+                def process_ticket(user):
+                    user[columns['name']] = user[columns['name']].title()
+                    participant = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
+                    if not participant:
+                        for p in Participant.query.filter_by(email=user[columns['email']].strip(), event_id=event.id).all():
+                            if levenshtein(p.name, user[columns['name']].strip()) <= 3:
+                                participant = p
+                                break
+                    elif participant.email != user[columns['email']]:
+                        participant.image = 'LOAD'
+                    if not columns['name'] or user[columns['name']] == 'Cancelled' or user[columns['name']] == 'Not Attending':
+                        return
+                    new = participant is None
+                    if new:
+                        participant = Participant()
+                        participant.event_id = event.id
+                        participant.purchases = []
+                        participant.image = 'LOAD'
+                    else:
+                        if participant.purchases is None:
+                            participant.purchases = []
+                        else:
+                            participant.purchases = participant.purchases.split(', ')
+                    if 'order_id' in columns and columns['order_id'] and user[columns['order_id']]:
+                        user[columns['order_id']] = int(user[columns['order_id']])
+                    if columns['twitter'] and user[columns['twitter']] and '@' in user[columns['twitter']]:
+                        user[columns['twitter']] = user[columns['twitter']].strip().replace('@', '').strip()
+                    if columns['phone'] and user[columns['phone']]:
+                        user[columns['phone']] = user[columns['phone']].strip().replace(' ', '').replace('-','')
+                    for field in columns.keys():
+                        if columns[field]:
+                            value = user[columns[field]]
+                            if type(value) == unicode:
+                                value = value.strip()
+                            value = None if value == '*' or value == '' or value == 'empty' else value
+                            if (new or (field != 'ticket_number' and getattr(participant, field))) and value != getattr(participant, field):
+                                setattr(participant, field, value)
+                    if speakers_fetched and participant.speaker and (participant.name, participant.email) not in speakers:
+                        participant.speaker = False
+                    if (participant.name, participant.email) in speakers:
+                        participant.speaker = True
+                    if user[others['ticket_type']]:
+                        participant.purchases.append(user[others['ticket_type']].strip())
+                    if 'addons' in others and others['addons'] and user[others['addons']]:
+                        participant.purchases = participant.purchases + (user[others['addons']]).strip().split(',')
+                    for i, purchase in enumerate(participant.purchases):
+                        participant.purchases[i] = purchase.strip().replace(u'Apr 18 - 19', u'May 16 - 17').replace(u'Apr 16 - 17', u'May 14 - 15').replace(u'Apr 16 - 19', u'May 14 - 17')
+                    if u"T-shirt" in participant.purchases or u"Corporate" in participant.purchases:
+                        participant.purchased_tee = True
+                    participant.purchases = ', '.join(list(set(participant.purchases)))
+                    participant.online_reg = True
+                    if participant.ticket_number:
+                        tickets.append(participant.ticket_number)
+                    try:
+                        if new:
+                            db.session.add(participant)
+                        db.session.commit()
+                        if new:
+                            added[0] = added[0] + 1
+                            ret.append("Added " + participant.name.encode('utf-8'))
+                        else:
+                            updated[0] = updated[0] + 1
+                            ret.append("Updated " + participant.name.encode('utf-8'))
+                    except Exception as e:
+                        ret.append("Error adding/updating " + participant.name.encode('utf-8') + ': ' + str(e))
+                        failed.append(participant.name.encode('utf-8') + '(' + participant.email.encode('utf-8') + '): ' + str(e))
+                        db.session.rollback()
+                def indexof(name):
+                    try:
+                        return headers.index(name)
+                    except ValueError:
+                        return None
+                columns = dict(
+                    ticket_number=indexof(u'ticketnumber'),
+                    name=indexof(u'name'),
+                    email=indexof(u'email'),
+                    company=indexof(u'company'),
+                    job=indexof(u'jobtitle'),
+                    city=indexof(u'city'),
+                    phone=indexof(u'phone'),
+                    twitter=indexof(u'twitterhandle'),
+                    regdate=indexof(u'date'),
+                    order_id=indexof(u'orderid')
+                    )
+                others = dict(
+                    ticket_type=indexof(u'ticketname'),
+                    addons=indexof(u'addonspurchased')
+                    )
+
+                for user in users:
+                    process_ticket(user)
+                ret.append("Done with Participants")
+                ret.append("Starting Guests")
+                f = StringIO.StringIO(guests_csv)
+                headers = [make_name(field).replace(u'-', u'').replace(u'\n', u'') for field in f.next().split(',')]
+                users = unicodecsv.reader(f, delimiter=',')
+                columns = dict(
+                    ticket_number=indexof(u'ticketnumber'),
+                    name=indexof(u'name'),
+                    email=indexof(u'email'),
+                    company=indexof(u'company'),
+                    job=indexof(u'jobtitle'),
+                    city=indexof(u'city'),
+                    phone=indexof(u'phone'),
+                    twitter=indexof(u'twitterhandle'),
+                    regdate=indexof(u'confirmedon')
+                    )
+                others = dict(
+                    ticket_type=indexof(u'ticket')
+                    )
+                for user in users:
+                    process_ticket(user)
+                ret.append("Done with Guests")
         if eventframe_data:
             ret.append("Starting Eventframe RSVP data")
             columns = dict(
