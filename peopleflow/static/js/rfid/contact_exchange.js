@@ -295,12 +295,12 @@ var userui = function() {
             timer.start();
 
             if( typeof users[user.id] == 'undefined') {
-                if(add(user)) toastr.success("", "Added " + user.name + ".");
+                if(add(user)) toastr.success("", "Added " + user.name);
                 else toastr.warning("Upto " + (MAX.COLUMNS * MAX.ROWS) + " members can be connected only.", "Limit reached");
             }
             else {
                 remove(user.id);
-                toastr.success("", "Removed " + user.name + ".");
+                toastr.success("", "Removed " + user.name);
             }
             timer.update();
         }

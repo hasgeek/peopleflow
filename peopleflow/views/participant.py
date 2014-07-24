@@ -49,7 +49,7 @@ def add_new_participant(event):
         db.session.add(participant)
         try:
             db.session.commit()
-            flash(u'Participant %s added.' % participant.name, 'success')
+            flash(u'Participant %s added' % participant.name, 'success')
             return render_redirect(url_for('event', event=event.id))
         except:
             pass
