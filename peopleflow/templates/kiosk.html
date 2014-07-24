@@ -57,6 +57,11 @@ rfid.on( 'tag_placed', function(data) {
   //timer = window.setTimeout("stop_listening();", 5000);
   
   if (data['tag_id']) {
+    if (window.localStorage !== undefined) {
+      // Log the tap
+      window.localStorage["tap." + (+new Date)] = data['tag_id'] + " @ " + window.location.pathname;
+    };
+
     url = "/event/{{ event.id }}/participant/"+data['tag_id'];
     $('input#nfc_id').attr("value",data['tag_id'] );
     // $('input#share').removeClass("hidden")
