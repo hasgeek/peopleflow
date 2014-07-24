@@ -7,6 +7,7 @@
 #indicators a:hover {
 	opacity: 1; text-decoration: none
 }
-#indicators a.red {color:#A00}
-#indicators a.green {color:#0A0}
-#indicators a.yellow {color:#F0EC00}
+#indicators a.red {color:#A00;}
+#indicators a.green {color:#0A0;}
+#indicators a.yellow {color:#F0EC00;}
+#indicators a.black {color: #000000;}

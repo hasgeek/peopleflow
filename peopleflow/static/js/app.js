@@ -8,7 +8,7 @@
 				indicators.state('server_connectivity', 'green');
 			},
 			error: function() {
-				indicators.state('server_connectivity', 'red');
+				indicators.state('server_connectivity', 'black');
 			}
 		});
 	};

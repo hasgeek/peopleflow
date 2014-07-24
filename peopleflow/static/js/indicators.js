@@ -5,7 +5,7 @@ var indicators = function() {
 	var prefixed = function(name) {
 		return 'indicator_' + name;
 	};
-	var classes = ['red', 'green', 'yellow'];
+	var classes = ['red', 'green', 'yellow', 'black'];
 	var default_class = 0;
 
 	var init = function() {
