@@ -10,7 +10,7 @@ import simplejson as json
 from . import nav
 from .. import app
 from .. import lastuser
-from ..models import db, Event, Participant, Venue, Activity, Product
+from ..models import db, Event, Participant, Venue, Activity, Product, Purchase
 from ..forms import NewEventForm, EditEventForm, EventLogoForm, WelcomeLogoForm, ConfirmSignoutForm, EventSyncForm, SelectActivityForm, ActivityCheckinForm
 from ..helpers import levenshtein, upload, delete_upload
 from pytz import utc, timezone
@@ -206,13 +206,14 @@ def sync_event(event):
                             ret.append("%s(%s) exists as %s" % (ticket['name'], ticket['id'], t.title))
                         except NoResultFound:
                             try:
-                                t = Product(id_source=ticket['id'], event=event, title=ticket['name'], source='doattend_' + ticket_type)
+                                t = Product(id_source=ticket['id'], event=event, title=ticket['name'].strip(), source='doattend_' + ticket_type)
                                 t.make_name()
                                 db.session.add(t)
                                 db.session.commit()
                                 ret.append("Added %s(%s)" % (ticket['name'], ticket['id']))
                             except Exception as e:
                                 ret.append("Error adding %s: %s" % (ticket['name'], str(e)))
+                                db.session.rollback()
                 ret.append('Syncing tickets')
                 tickets_list = resp.get_element_by_id('tickets_list')
                 tickets_list = tickets_list.cssselect('.list')
@@ -257,6 +258,7 @@ def sync_event(event):
                             participant.purchases = []
                         else:
                             participant.purchases = participant.purchases.split(', ')
+                    print "Inited: ", participant.purchases
                     if 'order_id' in columns and columns['order_id'] and user[columns['order_id']]:
                         user[columns['order_id']] = int(user[columns['order_id']])
                     if columns['twitter'] and user[columns['twitter']] and '@' in user[columns['twitter']]:
@@ -277,10 +279,49 @@ def sync_event(event):
                         participant.speaker = True
                     if user[others['ticket_type']]:
                         participant.purchases.append(user[others['ticket_type']].strip())
+                        print "Assigned Ticket: ", participant.purchases, type(participant.purchases)
+                        product = None
+                        try:
+                            product = Product.query.filter_by(event=event, source='doattend_tickets', title=user[others['ticket_type']].strip()).one()
+                        except Exception as e:
+                            ret.append('Product %s does not exist in list of DoAttend Tickets' % user[others['ticket_type']].strip())
+                            product = Product(event=event, title=user[others['ticket_type']].strip(), source='doattend_tickets')
+                            product.make_name()
+                            db.session.add(product)
+                            db.session.commit()
+                            ret.append('Added doattend_tickets product ' + product.title)
+                        if product not in participant.products:
+                            purchase = Purchase(participant=participant, product=product)
+                            db.session.add(purchase)
+                            db.session.commit()
+                            ret.append('Added doattend_tickets purchase %s for %s' % (product.title, participant.name))
+                        else:
+                            ret.append('doattend_tickets purchase %s exists for %s' % (product.title, participant.name))
                     if 'addons' in others and others['addons'] and user[others['addons']]:
                         participant.purchases = participant.purchases + (user[others['addons']]).strip().split(',')
-                    for i, purchase in enumerate(participant.purchases):
-                        participant.purchases[i] = purchase.strip().replace(u'Apr 18 - 19', u'May 16 - 17').replace(u'Apr 16 - 17', u'May 14 - 15').replace(u'Apr 16 - 19', u'May 14 - 17')
+                        print "Added an addon: ", participant.purchases, type(participant.purchases)
+                        for purchase in (user[others['addons']]).strip().split(','):
+                            product = None
+                            try:
+                                product = Product.query.filter_by(event=event, source='doattend_addons', title=p.strip()).one()
+                            except Exception as e:
+                                ret.append('Product %s does not exist in DoAttend Add-ons' % purchase.strip())
+                                product = Product(event=event, title=purchase.strip(), source='doattend_addons')
+                                product.make_name()
+                                db.session.add(product)
+                                db.session.commit()
+                                ret.append('Added doattend_addons product ' + product.title)
+                            if product not in participant.products:
+                                purchase = Purchase(participant=participant, product=product)
+                                db.session.add(purchase)
+                                db.session.commit()
+                                ret.append('Added doattend_addons purchase %s for %s' % (product.title, participant.name))
+                            else:
+                                ret.append('doattend_addons purchase %s exists for %s' % (product.title, participant.name))
+                    print "Final: ", participant.purchases, type(participant.purchases)
+                    print ret
+                    for i, p in enumerate(participant.purchases):
+                        participant.purchases[i] = p.strip()
                     if u"T-shirt" in participant.purchases or u"Corporate" in participant.purchases:
                         participant.purchased_tee = True
                     participant.purchases = ', '.join(list(set(participant.purchases)))

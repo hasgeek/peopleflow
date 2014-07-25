@@ -10,3 +10,4 @@ from .venue import *
 from .activity import *
 from .ticket import *
 from .product import *
+from .purchase import *

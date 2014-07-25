@@ -60,3 +60,12 @@ class Participant(db.Model, BaseMixin):
 
     def __repr__(self):
         return self.name
+
+    @property
+    def tickets(self):
+        return list(set(
+            [purchase.ticket for purchase in self.purchase_list if purchase.type == 'ticket' and purchase.ticket]
+            + [purchase.product.ticket for purchase in self.purchase_list if purchase.type == 'ticket' and purchase.product]))
+    @property
+    def products(self):
+        return [purchase.product for purchase in self.purchase_list if purchase.type == 'product']
