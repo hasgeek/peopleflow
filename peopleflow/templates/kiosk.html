@@ -74,14 +74,14 @@ rfid.on( 'tag_placed', function(data) {
         $('div#email').html('<h2>'+data['email']+'</h2>');
         $('#info .name').html(data.name);
         $('#info').modal();
+        setTimeout(function(){
+          $('#kiosk').submit();
+        }, 5000);
+        interval = window.setInterval(function(){
+          var tout = $('#kiosk .timeout'); 
+          tout.html(Number(tout.text()) - 1);
+        }, 1000);
       };
-      setTimeout(function(){
-        $('#kiosk').submit();
-      }, 5000);
-      interval = window.setInterval(function(){
-        var tout = $('#kiosk .timeout'); 
-        tout.html(Number(tout.text()) - 1);
-      }, 1000);
     });
   }
 });
