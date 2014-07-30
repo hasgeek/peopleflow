@@ -14,7 +14,7 @@ from ..helpers.printlabel import printlabel, make_label_content
 from flask import request, flash, url_for, render_template, jsonify, make_response
 from baseframe.forms import render_redirect, ConfirmDeleteForm
 from jinja2 import Markup
-from coaster import make_name
+from coaster.utils import make_name
 from coaster.views import jsonp, load_model, load_models
 from coaster.gfm import markdown
 from flask.ext.mail import Mail, Message
@@ -123,7 +123,7 @@ def share(event, kiosk):
         # share = Share()
         # share.share_date = datetime.utcnow()
         # share.participant_id = participant
-        if participant not in kiosk.participants:
+        if participant is not None and participant not in kiosk.participants:
             kiosk.participants.append(participant)
             # share.kiosk_id = kiosk.id
             db.session.commit()
@@ -172,7 +172,7 @@ def event_kiosks(event):
 def export_kiosk(kiosk):
     participants = StringIO()
     fieldnames= ['Name', 'Email','Company', 'Job', 'Phone', 'City']
-    writer = csv.DictWriter(participants, fieldnames=fieldnames, delimiter=',',quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    writer = csv.DictWriter(participants, fieldnames=fieldnames)
     writer.writeheader()
     for participant in kiosk.participants:
         writer.writerow({"Name":participant.name,
@@ -183,8 +183,8 @@ def export_kiosk(kiosk):
                         "City": participant.city
                             })
     response = make_response(participants.getvalue())
-    response.headers['Content-Type']='text/csv';'charset=utf-8'
-    response.headers['Content-Disposition']='attachment; filename=participants.csv'
+    response.headers['Content-Type'] = 'text/csv; charset=utf-8'
+    response.headers['Content-Disposition'] = 'attachment; filename=%s.csv' % make_name(kiosk.name)
     return response
 
 @app.route('/event/<event>/contact_exchange', methods=['GET','POST'])
