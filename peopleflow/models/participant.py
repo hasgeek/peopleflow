@@ -43,12 +43,12 @@ class Participant(db.Model, BaseMixin):
     purchased_tee = db.Column(db.Boolean, default=False, nullable=True)
     #: Date of registration
     regdate = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    #:NFC ID
+    #: NFC ID
     nfc_id = db.Column(db.Unicode(80), nullable=True, default=None)
     #: Source of registration, whether online(True) or offline(False)
     online_reg = db.Column(db.Boolean, default=True, nullable=True)
     #: Order ID
-    order_id = db.Column(db.Integer, nullable=True)
+    order_id = db.Column(db.Unicode(80), nullable=True)
     #: Purchases made by the participant
     purchases = db.Column(db.Unicode(200), nullable=True)
     #: Additional notes for a participant
