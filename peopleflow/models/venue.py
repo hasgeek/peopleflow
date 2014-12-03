@@ -1,10 +1,9 @@
 
-from . import db, BaseMixin, BaseNameMixin
+from . import db, BaseMixin, BaseScopedNameMixin
 from .event import Event
-from datetime import datetime
 from sqlalchemy.ext.hybrid import hybrid_property
 
-class Venue(db.Model, BaseNameMixin):
+class Venue(BaseScopedNameMixin, db.Model):
 
     __tablename__ = 'venue'
     #: Venue Name
@@ -12,10 +11,13 @@ class Venue(db.Model, BaseNameMixin):
 
     #: Venue is for this event
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
-    event = db.relationship(Event, primaryjoin=event_id == Event.id, backref=db.backref('venues'))
+    event = db.relationship(Event, foreign_keys=[event_id], backref=db.backref('venues'))
+    parent = db.synonym('event')
 
     #: Whether this was fetched from Funnel
     from_funnel = db.Column(db.Boolean, default=False, nullable=False)
+
+    __table_args__ = (db.UniqueConstraint('event_id', 'name'),)
 
     @hybrid_property
     def activity_dates(self):
