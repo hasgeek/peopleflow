@@ -3,7 +3,6 @@
 
 import StringIO
 import unicodecsv
-import os
 import re
 import requests
 import simplejson as json
@@ -11,24 +10,22 @@ from . import nav
 from .. import app
 from .. import lastuser
 from ..models import db, Event, Participant, Venue, Activity, Product
-from ..forms import NewEventForm, EditEventForm, EventLogoForm, WelcomeLogoForm, ConfirmSignoutForm, EventSyncForm, SelectActivityForm, ActivityCheckinForm
+from ..forms import NewEventForm, EditEventForm, EventLogoForm, WelcomeLogoForm, EventSyncForm, SelectActivityForm, ActivityCheckinForm
 from ..helpers import levenshtein, upload, delete_upload
 from pytz import utc, timezone
-from datetime import datetime
 from flask import request, flash, url_for, render_template, jsonify
-from werkzeug import secure_filename
 from baseframe.forms import render_redirect, ConfirmDeleteForm
-from coaster.views import jsonp, load_model, load_models
+from coaster.views import load_model, load_models
 from coaster.utils import make_name
-from mechanize import ParseResponse, urlopen, urljoin, Browser, RobustFactory
+from mechanize import urljoin, Browser, RobustFactory
 from sqlalchemy.orm.exc import NoResultFound
 from collections import defaultdict
-from urllib import urlencode
 from hashlib import md5
 from lxml import html
 from base64 import b64encode
 
 hideemail = re.compile('.{1,3}@')
+
 
 @app.route('/event/new', methods=['GET', 'POST'])
 @nav.init(
@@ -58,6 +55,7 @@ def event_new():
             pass
     return render_template('form.html', form=form, title=u"New Event", submit=u"Add", cancel_url=url_for('index'))
 
+
 @app.route('/event/<event>/sync', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id': 'event'}, 'event')
@@ -71,7 +69,7 @@ def sync_event(event):
     syncform = EventSyncForm()
     if request.method == 'GET' or not syncform.validate_on_submit():
         return render_template('form.html', form=syncform, title=u"Sync", submit=u"Sync Now")
-    else:   
+    else:
         browser = Browser(factory=RobustFactory())
         speakers = []
         speakers_fetched = False
@@ -169,6 +167,8 @@ def sync_event(event):
         failed = []
         updated = [0]
         deleted = 0
+
+        tickets = []
         if app.config['DOATTEND_EMAIL'] in [None, ''] or app.config['DOATTEND_PASS'] in [None, ''] or event.doattend_id in [None, '']:
             ret.append('DoAttend details not available')
         else:
@@ -183,7 +183,6 @@ def sync_event(event):
                 ret.append('DoAttend Login Failed')
             else:
                 ret.append('Syncing tickets')
-                tickets = []
                 browser.open(urljoin(uri, 'events/' + event.doattend_id + '/tickets'))
                 resp = html.fromstring(browser.response().read())
                 tickets_list = resp.get_element_by_id('tickets_list')
@@ -235,6 +234,7 @@ def sync_event(event):
                 users = unicodecsv.reader(f, delimiter=',')
 
                 ret.append("Starting Participants")
+
                 def process_ticket(user):
                     user[columns['name']] = user[columns['name']].title()
                     participant = Participant.query.filter_by(ticket_number=user[columns['ticket_number']].strip(), event_id=event.id, online_reg=True).first()
@@ -263,7 +263,7 @@ def sync_event(event):
                     if columns['twitter'] and user[columns['twitter']] and '@' in user[columns['twitter']]:
                         user[columns['twitter']] = user[columns['twitter']].strip().replace('@', '').strip()
                     if columns['phone'] and user[columns['phone']]:
-                        user[columns['phone']] = user[columns['phone']].strip().replace(' ', '').replace('-','')
+                        user[columns['phone']] = user[columns['phone']].strip().replace(' ', '').replace('-', '')
                     for field in columns.keys():
                         if columns[field]:
                             value = user[columns[field]]
@@ -302,6 +302,7 @@ def sync_event(event):
                         ret.append("Error adding/updating " + participant.name.encode('utf-8') + ': ' + str(e))
                         failed.append(participant.name.encode('utf-8') + '(' + participant.email.encode('utf-8') + '): ' + str(e))
                         db.session.rollback()
+
                 def indexof(name):
                     try:
                         return headers.index(name)
@@ -368,7 +369,8 @@ def sync_event(event):
                     process_ticket(user)
             ret.append("Done with RSVPs")
         ret.append("Removing deleted tickets")
-        participants = Participant.query.filter(~Participant.ticket_number.in_(tickets), Participant.online_reg==True, Participant.event_id==event.id).all()
+
+        participants = Participant.query.filter(~Participant.ticket_number.in_(tickets), Participant.online_reg == True, Participant.event_id == event.id).all()
         for participant in participants:
             try:
                 db.session.delete(participant)
@@ -380,7 +382,7 @@ def sync_event(event):
         ret.append("Deleting complete")
 
         for participant in Participant.query.filter_by(event=event, image='LOAD').all():
-                ret.append("Loading gravatar image for %s" % ( participant.email))
+                ret.append("Loading gravatar image for %s" % (participant.email))
                 try:
                     response = requests.get(
                         "http://www.gravatar.com/avatar/" + md5(participant.email.lower()).hexdigest(),
@@ -402,6 +404,7 @@ def sync_event(event):
             failed=failed,
             trace=ret
             ))
+
 
 @app.route('/event/<event>', methods=['GET'])
 @lastuser.requires_permission('registrations')
@@ -447,8 +450,8 @@ def event_signin(event, participant):
 
 @app.route('/event/<event>/participant/<participant>/status', methods=['GET'])
 @load_models(
-    (Event, {'id':'event'}, 'event'),
-    (Participant, {'id':'participant'}, 'participant')
+    (Event, {'id': 'event'}, 'event'),
+    (Participant, {'id': 'participant'}, 'participant')
     )
 @lastuser.requires_permission('registrations')
 def participation_status(event, participant):
@@ -457,8 +460,8 @@ def participation_status(event, participant):
 
 @app.route('/event/<event>/participant/<participant>/signout', methods=['POST'])
 @load_models(
-    (Event, {'id':'event'}, 'event'),
-    (Participant, {'id':'participant'}, 'participant')
+    (Event, {'id': 'event'}, 'event'),
+    (Participant, {'id': 'participant'}, 'participant')
     )
 @lastuser.requires_permission('registrations')
 def event_signout(event, participant):
@@ -469,7 +472,7 @@ def event_signout(event, participant):
     return jsonify(status=True)
 
 
-@app.route('/event/<id>/edit', methods=['GET','POST'])
+@app.route('/event/<id>/edit', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id': 'id'}, 'event')
 @nav.init(
@@ -493,7 +496,8 @@ def event_edit(event):
             flash("Could not save event '%s'." % event.title, 'error')
     return render_template('form.html', form=form, title=u"Edit — " + event.title, submit=u"Save", cancel_url=url_for('index'))
 
-@app.route('/event/<id>/editlogo', methods=['GET','POST'])
+
+@app.route('/event/<id>/editlogo', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id': 'id'}, 'event')
 @nav.init(
@@ -523,7 +527,7 @@ def event_editlogo(event):
     return render_template('form.html', form=form, title=u"Update Logo — " + event.title, submit=u"Save", cancel_url=url_for('index'))
 
 
-@app.route('/event/<id>/editwelcomelogo', methods=['GET','POST'])
+@app.route('/event/<id>/editwelcomelogo', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
 @load_model(Event, {'id': 'id'}, 'event')
 @nav.init(
@@ -553,9 +557,9 @@ def event_edit_welcome_logo(event):
     return render_template('form.html', form=form, title=u"Update Logo — " + event.title, submit=u"Save", cancel_url=url_for('index'))
 
 
-@app.route('/event/<id>/delete', methods=['GET','POST'])
+@app.route('/event/<id>/delete', methods=['GET', 'POST'])
 @lastuser.requires_permission('siteadmin')
-@load_model(Event, {'id':'id'}, 'event')
+@load_model(Event, {'id': 'id'}, 'event')
 @nav.init(
     parent='event',
     title="Confirm Delete",
@@ -583,14 +587,14 @@ def event_nfc_checkin(event):
         if event.active:
             activity = event.activity(today=True)
             if len(activity) > 1:
-                checkin_for = request.args.get('checkin_for') 
+                checkin_for = request.args.get('checkin_for')
                 for item in activity:
                     if item.id == checkin_for:
                         checkin_for = item
                         break
                 if not checkin_for:
                     activity_form = SelectActivityForm()
-                    activity_form.checkin_for.choices = [item.id for item in activity] 
+                    activity_form.checkin_for.choices = [item.id for item in activity]
                     return render_template('form.html', form=activity_form)
                 else:
                     checkin_form.activity_id.data = checkin_for.id
@@ -604,6 +608,7 @@ def event_nfc_checkin(event):
         if not participant:
             return jsonify(status=False, msg="You are not signed up for the event")
         activity = event.activity(today=True)
+
         def make_checkin(activity):
             name = participant.name.split(' ')
             name = name[0] if len(name[0]) > 3 else participant.name

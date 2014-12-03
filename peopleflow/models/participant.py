@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 TSHIRT_SIZES = [
-    ('0',  u''),
+    ('0', u''),
     ('1', u'XS'),
     ('2', u'S'),
     ('3', u'M'),
@@ -16,9 +16,9 @@ TSHIRT_SIZES = [
 
 
 class Participant(db.Model, BaseMixin):
-  
+
     __tablename__ = 'participant'
-    
+
     #: Ticket number
     ticket_number = db.Column(db.Unicode(15), nullable=True)
     #: Name of the participant
