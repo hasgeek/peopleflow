@@ -5,4 +5,6 @@ script:
   - nosetests --with-coverage
 notifications:
   email: false
-  irc: "irc.freenode.net#hasgeek-dev"
+  slack:
+    - hasgeek:HDCoMDj3T4ICB59qFFVorCG8
+    - friendsofhasgeek:3bLViYSzhfaThJovFYCVD3fX

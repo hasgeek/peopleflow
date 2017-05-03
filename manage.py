@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-from flask.ext.script import Manager, Server, Option, prompt_bool
-from flask.ext.script.commands import Clean, ShowUrls
-from flask.ext.alembic import ManageMigrations, FlaskAlembicConfig
+from flask_script import Manager, Server, Option, prompt_bool
+from flask_script.commands import Clean, ShowUrls
+from flask_alembic import ManageMigrations, FlaskAlembicConfig
 from alembic import command
 
 from peopleflow import app, init_for
