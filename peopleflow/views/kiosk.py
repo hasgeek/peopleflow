@@ -17,7 +17,7 @@ from jinja2 import Markup
 from coaster.utils import make_name
 from coaster.views import jsonp, load_model, load_models
 from coaster.gfm import markdown
-from flask.ext.mail import Mail, Message
+from flask_mail import Mail, Message
 
 
 @app.route('/event/<id>/kiosk/new', methods=['GET', 'POST'])

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import g
-from flask.ext.lastuser.sqlalchemy import UserBase
+from flask_lastuser.sqlalchemy import UserBase
 from . import db
 
 
