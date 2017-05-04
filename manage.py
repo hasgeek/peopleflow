@@ -5,7 +5,7 @@ from flask_script.commands import Clean, ShowUrls
 from flask_alembic import ManageMigrations, FlaskAlembicConfig
 from alembic import command
 
-from peopleflow import app, init_for
+from peopleflow import app
 from peopleflow import models
 from peopleflow.models import db
 
@@ -21,34 +21,28 @@ class InitedServer(Server):
         )
 
     def handle(self, *args, **kwargs):
-        if 'env' in kwargs:
-            init_for(kwargs.pop('env'))
         super(InitedServer, self).handle(*args, **kwargs)
 
 
 class InitedMigrations(ManageMigrations):
     def run(self, args):
-        if len(args) and not args[0].startswith('-'):
-            init_for(args[0])
         super(InitedMigrations, self).run(args[1:])
 
 
 @manager.shell
 def _make_context():
-    return dict(app=app, db=db, models=models, init_for=init_for)
+    return dict(app=app, db=db, models=models)
 
 
 @database.option('-e', '--env', default='dev', help="runtime environment [default 'dev']")
 def drop(env):
     "Drops database tables"
-    init_for(env)
     if prompt_bool("Are you sure you want to lose all your data?"):
         db.drop_all()
 
 @database.option('-e', '--env', default='dev', help="runtime environment [default 'dev']")
 def create(env):
     "Creates database tables from sqlalchemy models"
-    init_for(env)
     db.create_all()
     config = FlaskAlembicConfig("alembic.ini")
     command.stamp(config, "head")
@@ -59,7 +53,6 @@ def setversion(env):
     Manually set the alembic version of the
     database to the provided value.
     '''
-    init_for(env)
     config = FlaskAlembicConfig("alembic.ini")
     version = raw_input("Enter the alembic version to be set:")
     command.stamp(config, version)
