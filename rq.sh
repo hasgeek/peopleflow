@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rqworker -c rqdev peopleflow
+rqworker -c rqinit peopleflow
