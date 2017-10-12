@@ -1,6 +1,6 @@
-{% extends "baseframe.html" %}
-{% from "baseframe/components.html" import flash_messages with context %}
-{% from "macros.html" import breadcrumbs %}
+{% extends "baseframe.html.jinja2" %}
+{% from "baseframe/components.html.jinja2" import flash_messages with context %}
+{% from "macros.html.jinja2" import breadcrumbs %}
 {% block messages %}{# Don't use baseframe's messages #}{% endblock %}
 {%- block titletags %}
 	<title>{% block title %}{{ title }}{% endblock %}{% if config['SITE_TITLE'] %} {% if self.title() %}— {% endif %}{{ config['SITE_TITLE'] }}{% endif %}</title>

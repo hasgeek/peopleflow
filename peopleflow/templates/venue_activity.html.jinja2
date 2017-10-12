@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "layout.html.jinja2" %}
 {% block title %}Venues — {{ event.title }}{% endblock %}
 {% block headline %}
 <a class="btn" href="{{ url_for('activity_new', event=event.id, venue=venue.id) }}"><span class="icon-plus"></span>Add an activity</a>

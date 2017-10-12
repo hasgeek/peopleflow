@@ -1,5 +1,5 @@
-{% extends "layout.html" %}
-{% from "baseframe/forms.html" import renderform, tinymce3_editor, tinymce4_editor %}
+{% extends "layout.html.jinja2" %}
+{% from "baseframe/forms.html.jinja2" import renderform, tinymce3_editor, tinymce4_editor %}
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
   {%- if message %}
@@ -18,7 +18,7 @@
   {%- endfor %}
   <script type="text/javascript">
     $(function() {
-      $('input.datetime-time').timepicker({ 'scrollDefaultNow': true });  
+      $('input.datetime-time').timepicker({ 'scrollDefaultNow': true });
     });
   </script>
 {% endblock %}

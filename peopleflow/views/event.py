@@ -53,7 +53,7 @@ def event_new():
         except:
             flash('There was an issue in adding the event')
             pass
-    return render_template('form.html', form=form, title=u"New Event", submit=u"Add", cancel_url=url_for('index'))
+    return render_template('form.html.jinja2', form=form, title=u"New Event", submit=u"Add", cancel_url=url_for('index'))
 
 
 @app.route('/event/<event>/sync', methods=['GET', 'POST'])
@@ -68,7 +68,7 @@ def event_new():
 def sync_event(event):
     syncform = EventSyncForm()
     if request.method == 'GET' or not syncform.validate_on_submit():
-        return render_template('form.html', form=syncform, title=u"Sync", submit=u"Sync Now")
+        return render_template('form.html.jinja2', form=syncform, title=u"Sync", submit=u"Sync Now")
     else:
         browser = Browser(factory=RobustFactory())
         speakers = []
@@ -85,7 +85,7 @@ def sync_event(event):
             browser.open(form.click())
             if browser.geturl() == "https://auth.hasgeek.com/login":
                 flash("Problem logging into LastUser", "danger")
-                return render_template('form.html', form=EventSyncForm(), title=u"Sync", submit=u"Sync Now")
+                return render_template('form.html.jinja2', form=EventSyncForm(), title=u"Sync", submit=u"Sync Now")
             else:
                 lastuser_loggedin = True
 
@@ -418,7 +418,7 @@ def sync_event(event):
 def event(event):
     tz = timezone(app.config['TIMEZONE'])
     participants = Participant.query.filter_by(event_id=event.id).order_by('name').all()
-    return render_template('participants.html', participants=participants, event=event, hideemail=hideemail, enumerate=enumerate,
+    return render_template('participants.html.jinja2', participants=participants, event=event, hideemail=hideemail, enumerate=enumerate,
         utc=utc, tz=tz)
 
 
@@ -494,7 +494,7 @@ def event_edit(event):
             return render_redirect(url_for('index'), code=303)
         except:
             flash("Could not save event '%s'." % event.title, 'error')
-    return render_template('form.html', form=form, title=u"Edit — " + event.title, submit=u"Save", cancel_url=url_for('index'))
+    return render_template('form.html.jinja2', form=form, title=u"Edit — " + event.title, submit=u"Save", cancel_url=url_for('index'))
 
 
 @app.route('/event/<id>/editlogo', methods=['GET', 'POST'])
@@ -524,7 +524,7 @@ def event_editlogo(event):
             return render_redirect(url_for('index'), code=303)
         except:
             flash("Could not update logo for event '%s'." % event.title, 'error')
-    return render_template('form.html', form=form, title=u"Update Logo — " + event.title, submit=u"Save", cancel_url=url_for('index'))
+    return render_template('form.html.jinja2', form=form, title=u"Update Logo — " + event.title, submit=u"Save", cancel_url=url_for('index'))
 
 
 @app.route('/event/<id>/editwelcomelogo', methods=['GET', 'POST'])
@@ -554,7 +554,7 @@ def event_edit_welcome_logo(event):
             return render_redirect(url_for('index'), code=303)
         except:
             flash("Could not update logo for event '%s'." % event.title, 'error')
-    return render_template('form.html', form=form, title=u"Update Logo — " + event.title, submit=u"Save", cancel_url=url_for('index'))
+    return render_template('form.html.jinja2', form=form, title=u"Update Logo — " + event.title, submit=u"Save", cancel_url=url_for('index'))
 
 
 @app.route('/event/<id>/delete', methods=['GET', 'POST'])
@@ -573,7 +573,7 @@ def event_delete(event):
             db.session.delete(event)
             db.session.commit()
         return render_redirect(url_for('index'), code=303)
-    return render_template('baseframe/delete.html', form=form, title=u"Delete '%s' ?" % (event.title),
+    return render_template('baseframe/delete.html.jinja2', form=form, title=u"Delete '%s' ?" % (event.title),
         message=u"Do you really want to delete the event '%s'?" % (event.title))
 
 
@@ -595,12 +595,12 @@ def event_nfc_checkin(event):
                 if not checkin_for:
                     activity_form = SelectActivityForm()
                     activity_form.checkin_for.choices = [item.id for item in activity]
-                    return render_template('form.html', form=activity_form)
+                    return render_template('form.html.jinja2', form=activity_form)
                 else:
                     checkin_form.activity_id.data = checkin_for.id
             else:
                 checkin_for = activity[0]
-        return render_template('activity_checkin.html', event=event, checkin_for=checkin_for, checkin_form=checkin_form)
+        return render_template('activity_checkin.html.jinja2', event=event, checkin_for=checkin_for, checkin_form=checkin_form)
     else:
         if not event.active:
             return jsonify(status=False, msg="Event not active")
