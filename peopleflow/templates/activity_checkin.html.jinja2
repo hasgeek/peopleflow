@@ -1,5 +1,5 @@
-{% extends "kiosks_layout.html" %}
-{% from 'baseframe/forms.html' import renderform_inner %}
+{% extends "kiosks_layout.html.jinja2" %}
+{% from 'baseframe/forms.html.jinja2' import renderform_inner %}
 {% block title %}Checkin — {{ event.title }}{% endblock %}
 {% block bodytag %}<body class="activity_checkin">{% endblock %}
 

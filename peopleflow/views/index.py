@@ -16,7 +16,7 @@ from coaster.views import load_model
     )
 def index():
     events = Event.query.order_by('from_date desc, to_date desc').all()
-    return render_template('index.html', events=events, siteadmin=lastuser.has_permission('siteadmin'), kioskadmin=lastuser.has_permission('kioskadmin'), registrations=lastuser.has_permission('registrations'))
+    return render_template('index.html.jinja2', events=events, siteadmin=lastuser.has_permission('siteadmin'), kioskadmin=lastuser.has_permission('kioskadmin'), registrations=lastuser.has_permission('registrations'))
 
 @app.route('/ping', methods=['GET'])
 def ping():

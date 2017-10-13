@@ -1,4 +1,4 @@
-{% extends "kiosks_layout.html" %}
+{% extends "kiosks_layout.html.jinja2" %}
 {% block title %}{{ kiosk.name }} Kiosk — {{ event.title }}{% endblock %}
 {% block bodytag %}<body class="contact_point">{% endblock %}
 
@@ -83,7 +83,7 @@ rfid.on( 'tag_placed', function(data) {
           $('#kiosk').submit();
         }, 5000);
         interval = window.setInterval(function(){
-          var tout = $('#kiosk .timeout'); 
+          var tout = $('#kiosk .timeout');
           tout.html(Number(tout.text()) - 1);
         }, 1000);
       };

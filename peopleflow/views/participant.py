@@ -40,7 +40,7 @@ def add_new_participant(event):
             someone = None
         if someone:
             flash(u'This badge is already assigned to %s' % someone.name, 'error')
-            return render_template('new_participant.html', form=form, event=event)
+            return render_template('new_participant.html.jinja2', form=form, event=event)
         participant.phone = participant.phone.replace(' ','').replace('-','').strip()
         participant.twitter = participant.twitter.replace('@','').strip()
         participant.purchases = u','.join(participant.purchases)
@@ -53,7 +53,7 @@ def add_new_participant(event):
             return render_redirect(url_for('event', event=event.id))
         except:
             pass
-    return render_template('new_participant.html', form=form, event=event, cancel_url=url_for('event', event=event.id))
+    return render_template('new_participant.html.jinja2', form=form, event=event, cancel_url=url_for('event', event=event.id))
 
 @app.route('/event/<id>/participant/new', methods=['GET', 'POST'])
 @load_model(Event, {'id': 'id'}, 'event')

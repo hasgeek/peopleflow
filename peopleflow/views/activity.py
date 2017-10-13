@@ -29,7 +29,7 @@ def activity_new(event, venue):
         db.session.commit()
         flash("Activity added")
         return render_redirect(url_for('venue_activity', event=event.id, venue=venue.id))
-    return render_template('form.html', form=form, title=u"New Activity — %s - %s" % (venue.title, event.title), submit=u"Add", cancel_url=url_for('venue_activity', event=event.id, venue=venue.id))
+    return render_template('form.html.jinja2', form=form, title=u"New Activity — %s - %s" % (venue.title, event.title), submit=u"Add", cancel_url=url_for('venue_activity', event=event.id, venue=venue.id))
 
 
 @app.route('/event/<event>/venue/<venue>/activity', methods=['GET'])
@@ -44,7 +44,7 @@ def activity_new(event, venue):
     urlvars=lambda objects: {'event': objects['event'].id, 'venue': objects['venue'].id}
     )
 def venue_activity(event, venue):
-    return render_template('venue_activity.html', event=event, venue=venue)
+    return render_template('venue_activity.html.jinja2', event=event, venue=venue)
 
 
 @app.route('/event/<event>/venue/<venue>/activity/<activity>/edit', methods=['GET', 'POST'])
@@ -66,7 +66,7 @@ def activity_edit(event, venue, activity):
         db.session.commit()
         flash("Activity updated")
         return render_redirect(url_for('venue_activity', event=event.id, venue=venue.id))
-    return render_template('form.html', form=form, title=u"Edit Activity: %s — %s - %s" % (activity.title, venue.title, event.title), submit=u"Update", cancel_url=url_for('venue_activity', event=event.id, venue=venue.id))
+    return render_template('form.html.jinja2', form=form, title=u"Edit Activity: %s — %s - %s" % (activity.title, venue.title, event.title), submit=u"Update", cancel_url=url_for('venue_activity', event=event.id, venue=venue.id))
 
 @app.route('/event/<event>/venue/<venue>/activity/<activity>/delete', methods=['GET','POST'])
 @lastuser.requires_permission('siteadmin')
@@ -91,5 +91,5 @@ def activity_delete(event, venue, activity):
             flash("Deleted activity %s" % activity.title)
             db.session.commit()
         return render_redirect(url_for('venue_activity', event=event.id, venue=venue.id), code=303)
-    return render_template('baseframe/delete.html', form=form, title=u"Delete '%s' ?" % (activity.title),
+    return render_template('baseframe/delete.html.jinja2', form=form, title=u"Delete '%s' ?" % (activity.title),
         message=u"Do you really want to delete the activity '%s'? All checkins related to it will be deleted." % (activity.title))
